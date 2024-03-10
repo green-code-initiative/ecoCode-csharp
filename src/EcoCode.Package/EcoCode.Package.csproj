@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<EnablePackageValidation>true</EnablePackageValidation>
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+		<DevelopmentDependency>true</DevelopmentDependency>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<Title>EcoCode.Package</Title>
+		<Product>EcoCode.Package</Product>
+		<PackageId>EcoCode</PackageId>
+		<PackageProjectUrl>https://ecocode.io</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/green-code-initiative/ecoCode</RepositoryUrl>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageTags>EcoCode, Analyzers, Environment</PackageTags>
+		<PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+
+		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
+		<RestoreSources>https://api.nuget.org/v3/index.json</RestoreSources>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
+		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
+		<None Include="..\..\icon.png" Pack="true" PackagePath="" />
+		<None Include="..\..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\EcoCode.Analyzers\bin\$(Configuration)\$(TargetFramework)\EcoCode.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="..\EcoCode.CodeFixes\bin\$(Configuration)\$(TargetFramework)\EcoCode.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="..\EcoCode.Shared\bin\$(Configuration)\$(TargetFramework)\EcoCode.Shared.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DotNet.ReproducibleBuilds">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

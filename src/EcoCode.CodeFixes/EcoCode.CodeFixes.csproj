@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Title>EcoCode.CodeFixes</Title>
+		<Product>EcoCode.CodeFixes</Product>
+
+		<IsPackable>false</IsPackable>
+		<RootNamespace>EcoCode</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DotNet.ReproducibleBuilds">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
+		<ProjectReference Include="..\EcoCode.Shared\EcoCode.Shared.csproj" />
+	</ItemGroup>
+
+</Project>

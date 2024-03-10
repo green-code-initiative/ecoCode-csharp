@@ -1,0 +1,30 @@
+<Project>
+	<PropertyGroup>
+		<Authors>Green Code Initiative</Authors>
+		<Company>Green Code Initiative</Company>
+		<Description>A set of Roslyn analyzers implementing the ecoCode rules for scanning your C# projects and reducing your code environmental footprint.</Description>
+		<Copyright>Copyright EcoCode © 2024</Copyright>
+
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<GenerateDependencyFile>false</GenerateDependencyFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<Nullable>enable</Nullable>
+		<NeutralLanguage>en</NeutralLanguage>
+
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+		<CodeAnalysisRuleSet>..\..\ProductionCode.ruleset</CodeAnalysisRuleSet>
+		<TreatWarningsAsErrors Condition="'$(Configuration)' != 'Debug'">true</TreatWarningsAsErrors>
+
+		<Version>0.0.1</Version>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
+	</ItemGroup>
+</Project>
