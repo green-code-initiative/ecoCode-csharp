@@ -14,8 +14,8 @@ internal static class Rule
 
     public static class Ids
     {
-        public const string DontCallFunctionsInLoopCondition = "EC69";
-        public const string DontExecuteSqlCommandsInLoops = "EC72";
-        public const string DontConcatenateStringsInLoops = "EC75";
+        public const string EC69_DontCallFunctionsInLoopCondition = "EC69";
+        public const string EC72_DontExecuteSqlCommandsInLoops = "EC72";
+        public const string EC75_DontConcatenateStringsInLoops = "EC75";
     }
 }

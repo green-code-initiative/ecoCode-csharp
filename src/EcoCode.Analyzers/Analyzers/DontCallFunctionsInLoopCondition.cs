@@ -11,14 +11,14 @@ public sealed class DontCallFunctionsInLoopCondition : DiagnosticAnalyzer
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.DontCallFunctionsInLoopCondition,
+        Rule.Ids.EC69_DontCallFunctionsInLoopCondition,
         title: "Don't call functions in a loop condition",
         messageFormat: "Don't call functions in a loop condition",
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: string.Empty,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.DontCallFunctionsInLoopCondition));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC69_DontCallFunctionsInLoopCondition));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];

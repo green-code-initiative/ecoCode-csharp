@@ -6,14 +6,14 @@ public sealed class DontExecuteSqlCommandsInLoops : DiagnosticAnalyzer
 {
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.DontExecuteSqlCommandsInLoops,
+        Rule.Ids.EC72_DontExecuteSqlCommandsInLoops,
         title: "Don't execute SQL commands in loops",
         messageFormat: "Don't execute SQL commands in loops",
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: string.Empty,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.DontExecuteSqlCommandsInLoops));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC72_DontExecuteSqlCommandsInLoops));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];

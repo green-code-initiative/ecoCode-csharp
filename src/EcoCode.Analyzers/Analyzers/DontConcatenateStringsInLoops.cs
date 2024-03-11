@@ -12,14 +12,14 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.DontConcatenateStringsInLoops,
+        Rule.Ids.EC75_DontConcatenateStringsInLoops,
         title: "Don't concatenate strings in loops",
         messageFormat: "Don't concatenate strings in loops",
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: string.Empty,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.DontConcatenateStringsInLoops));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC75_DontConcatenateStringsInLoops));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
