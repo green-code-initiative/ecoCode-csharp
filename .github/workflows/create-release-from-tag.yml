@@ -54,7 +54,13 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build and pack NuGet package
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test --configuration Release --no-restore --logger "trx;LogFileName=test_results.trx"
+
+    - name: Create NuGet package
       run: dotnet pack --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.versioning.outputs.version }}
 
     - name: Publish NuGet package # Use --skip-duplicate in case we need to overwrite an existing package version on nuget.org
