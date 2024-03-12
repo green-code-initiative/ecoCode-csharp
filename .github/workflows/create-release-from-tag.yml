@@ -10,7 +10,8 @@ env:
 on:    
   push:
     tags:
-      - 'v*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
 
 permissions:
   actions: write
@@ -38,28 +39,14 @@ jobs:
           exit 1
         fi
 
-        if [[ $FULL_VERSION =~ ^v([0-9]+\.[0-9]+\.[0-9]+)-beta[0-9]+$ ]]; then
-          VERSION=${BASH_REMATCH[1]}
-          echo "This is a pre-release for version $VERSION"
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=pre_release::true"
-        elif [[ $FULL_VERSION =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
-          VERSION=${BASH_REMATCH[1]}
-          echo "This is a final release for version $VERSION"
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=pre_release::false"
+        if [[ $FULL_VERSION =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-beta[0-9]+)?$ ]]; then
+          echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          echo "pre_release=$( [[ -n ${BASH_REMATCH[2]} ]] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
+          echo "full_version=$FULL_VERSION" >> $GITHUB_OUTPUT
         else
-          echo "Error, invalid version tag: $FULL_VERSION"
+          echo "Error: Tag does not match the expected format 'vX.Y.Z' or 'vX.Y.Z-betaN'"
           exit 1
         fi
-        echo "::set-output name=full_version::$FULL_VERSION"
-
-    - name: Apply version number
-      run: |
-        sed -i "s|<Version>.*</Version>|<Version>${{ steps.versioning.outputs.version }}</Version>|g" Directory.Build.props
-        sed -i "s|<AssemblyVersion>.*</AssemblyVersion>|<AssemblyVersion>${{ steps.versioning.outputs.version }}</AssemblyVersion>|g" Directory.Build.props
-        sed -i "s|<FileVersion>.*</FileVersion>|<FileVersion>${{ steps.versioning.outputs.version }}</FileVersion>|g" Directory.Build.props
-        sed -i "s|<AssemblyInformationalVersion>.*</AssemblyInformationalVersion>|<AssemblyInformationalVersion>${{ steps.versioning.outputs.version }}</AssemblyInformationalVersion>|g" Directory.Build.props
 
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
@@ -67,45 +54,32 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build project
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Pack project
-      run: dotnet pack --configuration Release --no-build --output ./nupkg
+    - name: Build and pack NuGet package
+      run: dotnet pack --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.versioning.outputs.version }}
 
     - name: Publish NuGet package # Use --skip-duplicate in case we need to overwrite an existing package version on nuget.org
       run: dotnet nuget push ./nupkg/*.nupkg -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
 
-    - name: List/unlist package
+    - name : Unlist beta NuGet package
+      if: ${{ steps.versioning.outputs.pre_release }} == 'true'
       env:
-        PRERELEASE: ${{ steps.versioning.outputs.pre_release }}
         PACKAGE_VERSION: ${{ steps.versioning.outputs.version }}
         PACKAGE_NAME: ${{ env.PackageName }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        $listed = $Env:PRERELEASE -eq 'false'
-        $url = "https://www.nuget.org/api/v2/package/$Env:PACKAGE_NAME/$Env:PACKAGE_VERSION"
-        Invoke-RestMethod -Method Put -Uri $url -Headers @{ "X-NuGet-ApiKey" = $Env:NUGET_API_KEY } -Body (@{ listed = $listed } | ConvertTo-Json)
-      shell: pwsh
+      run: dotnet nuget delete $Env:PACKAGE_NAME $Env:PACKAGE_VERSION -k "${{ secrets.NUGET_API_KEY }}" --non-interactive
 
     - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.versioning.outputs.full_version }}
-        release_name: Release ${{ steps.versioning.outputs.full_version }}
-        draft: false
-        prerelease: steps.versioning.outputs.pre_release == 'true'
-        body: "Release of version ${{ steps.versioning.outputs.full_version }}"
-
-    - name: Upload package asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./nupkg/${{ PackageName }}.${{ steps.versioning.outputs.version }}.nupkg
-        asset_name: ${{ PackageName }}.${{ steps.versioning.outputs.version }}.nupkg
-        asset_content_type: application/octet-stream
+      run: |
+        curl \
+          -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/${{ github.repository }}/releases" \
+          -d '{
+            "tag_name": "${{ steps.versioning.outputs.full_version }}",
+            "target_commitish": "main",
+            "name": "${{ steps.versioning.outputs.full_version }}",
+            "body": "Release of version ${{ steps.versioning.outputs.full_version }}",
+            "draft": false,
+            "prerelease": ${{ steps.versioning.outputs.pre_release == 'true' }}
+          }'

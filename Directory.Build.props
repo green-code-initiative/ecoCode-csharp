@@ -22,6 +22,7 @@
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
+		<PackageVersion>$(Version)</PackageVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
