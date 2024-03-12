@@ -75,17 +75,13 @@ jobs:
       run: dotnet nuget delete $Env:PACKAGE_NAME $Env:PACKAGE_VERSION -k "${{ secrets.NUGET_API_KEY }}" --non-interactive
 
     - name: Create GitHub Release
-      run: |
-        curl \
-          -X POST \
-          -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          "https://api.github.com/repos/${{ github.repository }}/releases" \
-          -d '{
-            "tag_name": "${{ steps.versioning.outputs.full_version }}",
-            "target_commitish": "main",
-            "name": "${{ steps.versioning.outputs.full_version }}",
-            "body": "Release of version ${{ steps.versioning.outputs.full_version }}",
-            "draft": false,
-            "prerelease": ${{ steps.versioning.outputs.pre_release == 'true' }}
-          }'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.versioning.outputs.full_version }}
+        release_name: ${{ steps.versioning.outputs.full_version }}
+        commitish: "main"
+        draft: false
+        prerelease: ${{ steps.versioning.outputs.pre_release == 'true' }}
+        body: "Release of version ${{ steps.versioning.outputs.full_version }}"
