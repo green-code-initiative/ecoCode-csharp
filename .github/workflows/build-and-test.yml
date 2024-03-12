@@ -7,19 +7,21 @@ env:
   DOTNET_NOLOGO: true
 
 on:
-  workflow_dispatch: # Allow running the workflow manually from the GitHub UI
+  workflow_dispatch:
   push:
     branches:
       - 'main'
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+    - name: Check out code
+      uses: actions/checkout@v4
 
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
