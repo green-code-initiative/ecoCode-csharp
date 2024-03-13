@@ -3,7 +3,7 @@
 internal static class Rule
 {
     public static string GetHelpUri(string id) =>
-        $"https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/{id}/cs/{id}.asciidoc";
+        $"https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/{id}/csharp/{id}.asciidoc";
 
     public static class Categories
     {
@@ -14,7 +14,7 @@ internal static class Rule
 
     public static class Ids
     {
-        public const string EC69_DontCallFunctionsInLoopCondition = "EC69";
+        public const string EC69_DontCallFunctionsInLoopConditions = "EC69";
         public const string EC72_DontExecuteSqlCommandsInLoops = "EC72";
         public const string EC75_DontConcatenateStringsInLoops = "EC75";
     }

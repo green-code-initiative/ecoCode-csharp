@@ -1,11 +1,11 @@
 ﻿using Verifier = EcoCode.Tests.CodeFixVerifier<
-    EcoCode.Analyzers.DontCallFunctionsInLoopCondition,
-    EcoCode.CodeFixes.DontCallFunctionsInLoopConditionCodeFixProvider>;
+    EcoCode.Analyzers.DontCallFunctionsInLoopConditions,
+    EcoCode.CodeFixes.DontCallFunctionsInLoopConditionsCodeFixProvider>;
 
 namespace EcoCode.Tests;
 
 [TestClass]
-public class DontCallFunctionsInLoopConditionUnitTests
+public class DontCallFunctionsInLoopConditionsUnitTests
 {
     [TestMethod]
     public async Task EmptyCodeAsync() => await Verifier.VerifyAsync("").ConfigureAwait(false);
