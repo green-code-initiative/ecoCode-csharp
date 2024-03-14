@@ -14,7 +14,7 @@
 		<Title>EcoCode.Package</Title>
 		<Product>EcoCode.Package</Product>
 		<PackageId>EcoCode</PackageId>
-		<PackageProjectUrl>https://ecocode.io</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/green-code-initiative/ecoCode-csharp</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/green-code-initiative/ecoCode-csharp</RepositoryUrl>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
