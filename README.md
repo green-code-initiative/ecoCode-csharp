@@ -21,12 +21,12 @@ You can find a list of all our other plugins in the [ecoCode repository](https:/
 🚀 Getting Started
 ------------------
 
-Provide link to NuGet package. Simply install the package in your project and let the analysis run.
+Install the EcoCode NuGet package in your .Net project, and automatically benefit from the enhanced Roslyn analysis.
 
 🛒 Distribution
 ------------------
 
-Ready to use binaries are available [from GitHub](https://github.com/green-code-initiative/ecoCode-java/releases).
+You can find the EcoCode NuGet package at [this URL](https://www.nuget.org/packages/EcoCode/), or through your usual NuGet package manager.
 
 🧩 Compatibility
 -----------------
