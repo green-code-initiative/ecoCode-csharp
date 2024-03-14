@@ -40,7 +40,7 @@ jobs:
         fi
 
         if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta[0-9]+)?$ ]]; then
-          echo "pre_release=$( [[ -n ${BASH_REMATCH[2]} ]] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
+          echo "pre_release=$( [[ -n ${BASH_REMATCH[1]} ]] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
         else
           echo "Error: Tag does not match the expected format 'X.Y.Z' or 'X.Y.Z-betaN'"
           exit 1
