@@ -66,13 +66,9 @@ jobs:
     - name: Publish NuGet package # Use --skip-duplicate in case we need to overwrite an existing package version on nuget.org
       run: dotnet nuget push ./nupkg/*.nupkg -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --skip-duplicate
 
-    - name : Unlist beta NuGet package
+    - name: Unlist beta NuGet package
       if: ${{ steps.versioning.outputs.pre_release }} == 'true'
-      env:
-        PACKAGE_VERSION: ${{ steps.versioning.outputs.version }}
-        PACKAGE_NAME: ${{ env.PackageName }}
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget delete $Env:PACKAGE_NAME $Env:PACKAGE_VERSION -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --non-interactive
+      run: dotnet nuget delete ${{ env.PackageName }} ${{ steps.versioning.outputs.version }} -k ${{ secrets.NUGET_API_KEY }} --non-interactive -s https://api.nuget.org/v3/index.json
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
