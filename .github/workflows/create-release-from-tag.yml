@@ -72,7 +72,7 @@ jobs:
         PACKAGE_VERSION: ${{ steps.versioning.outputs.version }}
         PACKAGE_NAME: ${{ env.PackageName }}
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget delete $Env:PACKAGE_NAME $Env:PACKAGE_VERSION -k "${{ secrets.NUGET_API_KEY }}" --non-interactive
+      run: dotnet nuget delete $Env:PACKAGE_NAME $Env:PACKAGE_VERSION -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json --non-interactive
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
