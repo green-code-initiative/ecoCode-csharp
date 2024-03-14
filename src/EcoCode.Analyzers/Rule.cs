@@ -3,7 +3,7 @@
 internal static class Rule
 {
     public static string GetHelpUri(string id) =>
-        $"https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC{id}/csharp/EC{id}.asciidoc";
+        $"https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/{id}/csharp/{id}.asciidoc";
 
     public static class Categories
     {
