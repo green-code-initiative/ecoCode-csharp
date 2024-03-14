@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for don't call functions in a loop condition.</summary>
+/// <summary>Analyzer for don't call loop invariant functions in loop conditions.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontCallFunctionsInLoopCondition : DiagnosticAnalyzer
+public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [
         SyntaxKind.ForStatement,
@@ -11,14 +11,14 @@ public sealed class DontCallFunctionsInLoopCondition : DiagnosticAnalyzer
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC69_DontCallFunctionsInLoopCondition,
-        title: "Don't call functions in a loop condition",
-        messageFormat: "Don't call functions in a loop condition",
+        Rule.Ids.EC69_DontCallFunctionsInLoopConditions,
+        title: "Don't call loop invariant functions in loop conditions",
+        messageFormat: "Don't call loop invariant functions in loop conditions",
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: string.Empty,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC69_DontCallFunctionsInLoopCondition));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC69_DontCallFunctionsInLoopConditions));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
