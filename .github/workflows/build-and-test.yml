@@ -30,7 +30,7 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore /p:ExcludeVsix=true
 
     - name: Pack # Check that packing the project works
       run: dotnet pack --configuration Release --no-build
