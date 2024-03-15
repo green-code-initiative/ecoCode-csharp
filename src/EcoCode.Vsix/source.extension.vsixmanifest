@@ -6,7 +6,7 @@
 		<Description>EcoCode extension for the .NET Compiler Platform ("Roslyn").</Description>
 		<License>license.txt</License>
 		<GettingStartedGuide>https://github.com/green-code-initiative/ecoCode-csharp</GettingStartedGuide>
-		<Icon>..\..\icon.png</Icon>
+		<Icon>../../icon.png</Icon>
 		<Tags>EcoCode, Extension, Analyzer, Environment</Tags>
 	</Metadata>
 	<Installation>
