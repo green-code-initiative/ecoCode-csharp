@@ -1,0 +1,11 @@
+{
+  "solution": {
+    "path": "EcoCode.sln",
+    "projects": [
+      "src\\EcoCode.Analyzers\\EcoCode.Analyzers.csproj",
+      "src\\EcoCode.CodeFixes\\EcoCode.CodeFixes.csproj",
+      "src\\EcoCode.Shared\\EcoCode.Shared.csproj",
+	  "src\\EcoCode.Vsix\\EcoCode.Vsix.csproj"
+    ]
+  }
+}
