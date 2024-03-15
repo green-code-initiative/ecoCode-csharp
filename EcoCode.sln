@@ -21,9 +21,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{810939C8-2A48-4F56-84C3-E433CDB923EE}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
-		.github\workflows\build-vsix-test.yml = .github\workflows\build-vsix-test.yml
-		.github\workflows\create-release-from-tag.yml = .github\workflows\create-release-from-tag.yml
 		Directory.Build.props = Directory.Build.props
+		.github\workflows\create-tag-release.yml = .github\workflows\create-tag-release.yml
 		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json
 		icon.png = icon.png

@@ -1,0 +1,113 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Create tag release
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+  PackageName: "EcoCode"
+
+on:    
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
+
+permissions:
+  actions: write
+  contents: write
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.versioning.outputs.version }}
+      prerelease: ${{ steps.versioning.outputs.pre_release }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necessary to fetch tags
+
+      - name: Versioning analysis
+        id: versioning
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "Full version tag: $VERSION"
+
+          TAG_COMMIT=$(git rev-list -n 1 $VERSION)
+          MAIN_BRANCH_COMMIT=$(git rev-parse origin/main)
+          if ! git merge-base --is-ancestor $TAG_COMMIT $MAIN_BRANCH_COMMIT; then
+            echo "Tag is not on main branch, stopping workflow."
+            exit 1
+          fi
+
+          if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta[0-9]+)?$ ]]; then
+            echo "pre_release=$( [[ -n ${BASH_REMATCH[1]} ]] && echo 'true' || echo 'false' )" >> $GITHUB_OUTPUT
+          else
+            echo "Error: Tag does not match the expected format 'X.Y.Z' or 'X.Y.Z-betaN'"
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+  publish-nuget:
+    needs: versioning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: Build
+        run: dotnet build NoVsix.slnf -c Release
+
+      - name: Run tests
+        run: dotnet test NoVsix.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
+
+      - name: Create NuGet package
+        run: dotnet pack NoVsix.slnf -c Release --no-build --output ./nupkg /p:Version=${{ needs.versioning.outputs.version }}
+
+      - name: Publish NuGet package
+        run: dotnet nuget push ./nupkg/*.nupkg -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
+
+  publish-vsix:
+    needs: versioning
+    runs-on: windows-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Update VSIX version
+        run: |
+          path="src/EcoCode.Vsix/source.extension.vsixmanifest"
+          version="${{ needs.versioning.outputs.version }}"
+          sed -i -E "s/(<Identity[^>]+Version=\")[^\"]+/\1$version/" $path
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build VSIX project
+        run: msbuild VsixOnly.slnf -property:Configuration=Release -nologo
+
+      # TODO : Publish VSIX to the marketplace
+
+  create-release:
+    needs: [versioning, publish-nuget, publish-vsix]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.versioning.outputs.version }}
+          release_name: ${{ needs.versioning.outputs.version }}
+          commitish: "main"
+          draft: false
+          prerelease: ${{ needs.versioning.outputs.pre_release == 'true' }}
+          body: "Release of version ${{ needs.versioning.outputs.version }}"
