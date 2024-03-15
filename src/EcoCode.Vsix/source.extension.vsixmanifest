@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="EcoCode.21e19537-86e5-4135-94fc-c64c6630b1bb" Version="1.0" Language="en-US" Publisher="vlajoumard"/>
-		<DisplayName>EcoCode C#</DisplayName>
-		<Description xml:space="preserve">EcoCode C# extension for the .NET Compiler Platform ("Roslyn").</Description>
-		<Icon>../../icon.png</Icon>
-		<Tags>EcoCode, Analyzers, Environment</Tags>
+		<Identity Id="EcoCode.21e19537-86e5-4135-94fc-c64c6630b1bb" Version="1.0" Language="en-US" Publisher="EcoCode"/>
+		<DisplayName>EcoCode</DisplayName>
+		<Description>EcoCode extension for the .NET Compiler Platform ("Roslyn").</Description>
+		<License>license.txt</License>
+		<GettingStartedGuide>https://github.com/green-code-initiative/ecoCode-csharp</GettingStartedGuide>
+		<Icon>..\..\icon.png</Icon>
+		<Tags>EcoCode, Extension, Analyzer, Environment</Tags>
 	</Metadata>
 	<Installation>
 		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,)" />

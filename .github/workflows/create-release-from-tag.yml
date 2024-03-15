@@ -47,6 +47,12 @@ jobs:
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+    - name: Update VSIX version
+      run: |
+        path="src/EcoCode.Vsix/source.extension.vsixmanifest"
+        version="${{ steps.versioning.outputs.version }}"
+        sed -i -E "s/(<Identity[^>]+Version=\")[^\"]+/\1$version/" $path
+
     - name: Set up .NET
       uses: actions/setup-dotnet@v4
 
@@ -64,6 +70,8 @@ jobs:
 
     - name: Publish NuGet package
       run: dotnet nuget push ./nupkg/*.nupkg -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
+
+    # TODO : upload VSIX extension to VS marketplace with a PAT
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
