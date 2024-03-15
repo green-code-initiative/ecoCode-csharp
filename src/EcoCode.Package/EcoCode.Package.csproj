@@ -16,7 +16,7 @@
 		<PackageId>EcoCode</PackageId>
 		<PackageProjectUrl>https://github.com/green-code-initiative/ecoCode-csharp</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/green-code-initiative/ecoCode-csharp</RepositoryUrl>
-		<PackageIcon>icon.png</PackageIcon>
+		<PackageIcon>icon.jpeg</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -34,7 +34,7 @@
 
 	<ItemGroup>
 		<None Update="tools\*.ps1" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" />
-		<None Include="..\..\icon.png" Pack="true" PackagePath="" />
+		<None Include="..\..\icon.jpeg" Pack="true" PackagePath="" />
 		<None Include="..\..\README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
