@@ -48,9 +48,4 @@
 		<ProjectReference Update="@(ProjectReference)" Name="%(Filename)" />
 	</ItemGroup>
 
-	<Target Name="PreventBuild" BeforeTargets="Build" Condition="'$(ExcludeVsix)' == 'true'">
-		<Message Text="Skipping VSIX project build" Importance="high" />
-		<Exec Command="exit 0" />
-	</Target>
-
 </Project>

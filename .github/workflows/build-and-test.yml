@@ -27,16 +27,16 @@ jobs:
       uses: actions/setup-dotnet@v4
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore NoVsix.slnf
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore /p:ExcludeVsix=true
+      run: dotnet build NoVsix.slnf -c Release --no-restore
 
     - name: Pack # Check that packing the project works
-      run: dotnet pack --configuration Release --no-build
+      run: dotnet pack NoVsix.slnf -c Release --no-build
 
     - name: Run tests
-      run: dotnet test --configuration Release --no-restore --logger "trx;LogFileName=test_results.trx"
+      run: dotnet test NoVsix.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
