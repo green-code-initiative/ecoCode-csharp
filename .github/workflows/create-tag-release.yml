@@ -1,0 +1,130 @@
+name: Create tag release
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
+permissions:
+  actions: write
+  contents: write
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.versioning.outputs.tag }}
+      version: ${{ steps.versioning.outputs.version }} # same as tag but without the -betaN part at the end, if present
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Necessary to fetch tags
+
+    - id: versioning
+      run: |
+        TAG=${GITHUB_REF#refs/tags/}
+        echo "Full version tag: $TAG"
+
+        TAG_COMMIT=$(git rev-list -n 1 $TAG)
+        MAIN_BRANCH_COMMIT=$(git rev-parse origin/${{ github.event.repository.default_branch }})
+        if ! git merge-base --is-ancestor $TAG_COMMIT $MAIN_BRANCH_COMMIT; then
+          echo "Tag is not on the main branch, stopping workflow."
+          exit 1
+        fi
+
+        if [[ $TAG =~ ^([0-9]+\.[0-9]+\.[0-9]+)(-beta[0-9]+)?$ ]]; then
+          echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        else
+          echo "Error: Tag does not match the expected format 'X.Y.Z' or 'X.Y.Z-betaN'"
+          exit 1
+        fi
+
+  build-nuget:
+    needs: versioning
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+    - run: dotnet restore NoVsix.slnf
+    - run: dotnet build NoVsix.slnf -c Release --no-restore
+    - run: dotnet test NoVsix.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
+    - run: dotnet pack NoVsix.slnf -c Release --no-build -o ./nupkg -p:Version=${{ needs.versioning.outputs.tag }}
+    - uses: actions/cache/save@v4
+      with:
+        path: nupkg
+        key: cache-${{ github.sha }}
+
+  build-vsix:
+    needs: versioning
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: | # Update VSIX version
+        [xml]$manifest = Get-Content "src\EcoCode.Vsix\source.extension.vsixmanifest"
+        $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
+        if ($identity -ne $null) {
+            $identity.Version = "${{ needs.versioning.outputs.version }}"
+        }
+        $manifest.Save("src\EcoCode.Vsix\source.extension.vsixmanifest")
+    - uses: actions/setup-dotnet@v4
+    - run: dotnet restore VsixOnly.slnf
+    - uses: microsoft/setup-msbuild@v2
+    - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
+    - uses: actions/cache/save@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+
+  publish-nuget: # Only if both builds succeeded
+    needs: [versioning, build-nuget, build-vsix]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: nupkg
+        key: cache-${{ github.sha }}
+    - run: dotnet nuget push EcoCode.${{ needs.versioning.outputs.tag }}.nupkg -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json  
+
+  publish-vsix: # Only if both builds succeeded, and the tag is not a pre-release
+    needs: [versioning, build-nuget, build-vsix]
+    if: ${{ needs.versioning.outputs.tag == needs.versioning.outputs.version }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: cezarypiatek/VsixPublisherAction@1.1
+      with:
+        extension-file: vsix\EcoCode.vsix
+        publish-manifest-file: vsix\publishManifest.json
+        personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}
+
+  create-release: # Only if both builds succeeded
+    needs: [versioning, build-nuget, build-vsix]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: nupkg
+        key: cache-${{ github.sha }}
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ needs.versioning.outputs.tag }}
+        name: ${{ needs.versioning.outputs.tag }}
+        draft: false
+        prerelease: ${{ needs.versioning.outputs.tag != needs.versioning.outputs.version }}
+        body: "Release of version ${{ needs.versioning.outputs.tag }}"
+        files: |
+          nupkg/**/EcoCode.${{ needs.versioning.outputs.tag }}.nupkg
+          vsix/EcoCode.vsix

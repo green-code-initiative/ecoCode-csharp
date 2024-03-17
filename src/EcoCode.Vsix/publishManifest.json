@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "build", "coding", "performance" ],
+  "identity": {
+    "internalName": "ecoCode"
+  },
+  "overview": "README.md",
+  "priceCategory": "free",
+  "publisher": "EcoCode",
+  "private": false,
+  "qna": true,
+  "repo": "https://github.com/green-code-initiative/ecoCode-csharp"
+}
