@@ -87,7 +87,9 @@ jobs:
       with:
         path: nupkg
         key: cache-${{ github.sha }}
-    - run: dotnet nuget push EcoCode.${{ needs.versioning.outputs.tag }}.nupkg -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json  
+        fail-on-cache-miss: true
+    - run: echo "PACKAGE=$(find . -name "EcoCode.${{ needs.versioning.outputs.tag }}.nupkg" | head -n 1)" >> $GITHUB_ENV
+    - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
 
   publish-vsix: # Only if both builds succeeded, and the tag is not a pre-release
     needs: [versioning, build-nuget, build-vsix]
@@ -99,6 +101,7 @@ jobs:
         path: vsix
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+        fail-on-cache-miss: true
     - uses: cezarypiatek/VsixPublisherAction@1.1
       with:
         extension-file: vsix\EcoCode.vsix
@@ -113,11 +116,13 @@ jobs:
       with:
         path: nupkg
         key: cache-${{ github.sha }}
+        fail-on-cache-miss: true
     - uses: actions/cache/restore@v4
       with:
         path: vsix
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+        fail-on-cache-miss: true
     - uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ needs.versioning.outputs.tag }}
