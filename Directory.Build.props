@@ -18,6 +18,7 @@
 		<CodeAnalysisRuleSet>..\..\ProductionCode.ruleset</CodeAnalysisRuleSet>
 		<TreatWarningsAsErrors Condition="'$(Configuration)' != 'Debug'">true</TreatWarningsAsErrors>
 
+		<!--Dummy value, versioning is automatically handled by the create-tag-release GitHub workflow-->
 		<Version>0.0.1</Version>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>

@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="EcoCode.21e19537-86e5-4135-94fc-c64c6630b1bb" Version="1.0" Language="en-US" Publisher="EcoCode"/>
+		<Identity Id="EcoCode.a1e19812-86e5-4135-94fc-c64c6630b1bb" Version="1.0" Language="en-US" Publisher="EcoCode"/>
 		<DisplayName>EcoCode</DisplayName>
 		<Description>EcoCode extension for the .NET Compiler Platform ("Roslyn").</Description>
 		<License>license.txt</License>
 		<GettingStartedGuide>https://github.com/green-code-initiative/ecoCode-csharp</GettingStartedGuide>
-		<Icon>../../icon.png</Icon>
-		<Tags>EcoCode, Extension, Analyzer, Environment</Tags>
+		<Icon>icon.jpeg</Icon>
+		<Tags>EcoCode;Extension;Analyzer;Environment</Tags>
 	</Metadata>
 	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,)" />
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0,18.0)">
+			<ProductArchitecture>amd64</ProductArchitecture>
+		</InstallationTarget>
 	</Installation>
 	<Dependencies>
-		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7,)" />
 	</Dependencies>
 	<Assets>
 		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="EcoCode.Analyzers" Path="|EcoCode.Analyzers|"/>
@@ -22,7 +24,7 @@
 		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="EcoCode.CodeFixes" Path="|EcoCode.CodeFixes|"/>
 	</Assets>
 	<Prerequisites>
-		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
-		<Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[15.0,)" DisplayName="Roslyn Language Services" />
+		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+		<Prerequisite Id="Microsoft.VisualStudio.Component.Roslyn.LanguageServices" Version="[17.0,18.0)" DisplayName="Roslyn Language Services" />
 	</Prerequisites>
 </PackageManifest>
