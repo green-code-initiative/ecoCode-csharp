@@ -15,7 +15,7 @@ public class DontExecuteSqlCommandsInLoopsUnitTests
         using System.Data;
         public class Test
         {
-            public void Run(int p)
+            public void Run()
             {
                 var command = default(IDbCommand)!;
                 _ = command.ExecuteNonQuery();
