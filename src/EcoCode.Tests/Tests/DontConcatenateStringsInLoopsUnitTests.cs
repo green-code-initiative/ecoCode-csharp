@@ -22,27 +22,23 @@ public class DontConcatenateStringsInLoopsUnitTests
                 for (int i = 0; i < 10; i++)
                     [|s0 += i;|]
                 for (int i = 0; i < 10; i++)
-                    s0 = i.ToString(provider: null);
-                Console.WriteLine(s0);
+                    s0 = i.ToString();
 
                 for (int i = 0; i < 10; i++)
                     [|s1 += i;|]
                 for (int i = 0; i < 10; i++)
-                    s1 = i.ToString(provider: null);
-                Console.WriteLine(s1);
+                    s1 = i.ToString();
 
                 for (int i = 0; i < 10; i++)
                     [|s2 += i;|]
                 for (int i = 0; i < 10; i++)
-                    s2 = i.ToString(provider: null);
-                Console.WriteLine(s2);
+                    s2 = i.ToString();
 
                 string s3 = string.Empty;
                 for (int i = 0; i < 10; i++)
                     [|s3 += i;|]
                 for (int i = 0; i < 10; i++)
-                    s3 = i.ToString(provider: null);
-                Console.WriteLine(s3);
+                    s3 = i.ToString();
             }
         }
         """).ConfigureAwait(false);
@@ -59,26 +55,21 @@ public class DontConcatenateStringsInLoopsUnitTests
                 string s3 = string.Empty;
                 for (int i = 0; i < 10; i++)
                 {
-                    s0 = i.ToString(provider: null);
+                    s0 = i.ToString();
                     [|s0 += i;|]
-                    Console.WriteLine(s0);
 
-                    s1 = i.ToString(provider: null);
+                    s1 = i.ToString();
                     [|s1 += i;|]
-                    Console.WriteLine(s1);
 
-                    s2 = i.ToString(provider: null);
+                    s2 = i.ToString();
                     [|s2 += i;|]
-                    Console.WriteLine(s2);
 
-                    s3 = i.ToString(provider: null);
+                    s3 = i.ToString();
                     [|s3 += i;|]
-                    Console.WriteLine(s3);
 
                     string s4;
-                    s4 = i.ToString(provider: null);
+                    s4 = i.ToString();
                     s4 += i;
-                    Console.WriteLine(s4);
                 }
             }
         }
