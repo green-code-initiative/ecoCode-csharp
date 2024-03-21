@@ -11,11 +11,11 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<Nullable>enable</Nullable>
 		<NeutralLanguage>en</NeutralLanguage>
+		<IsPackable>false</IsPackable>
 
 		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-		<CodeAnalysisRuleSet>..\..\ProductionCode.ruleset</CodeAnalysisRuleSet>
 		<TreatWarningsAsErrors Condition="'$(Configuration)' != 'Debug'">true</TreatWarningsAsErrors>
 
 		<!--Dummy value, versioning is automatically handled by the create-tag-release GitHub workflow-->

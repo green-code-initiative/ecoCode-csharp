@@ -6,7 +6,7 @@
 		<RootNamespace>EcoCode.Vsix</RootNamespace>
 		<AssemblyName>EcoCode</AssemblyName>
 
-		<IsPackable>false</IsPackable>
+		<IsPackable>true</IsPackable>
 		<GeneratePkgDefFile>false</GeneratePkgDefFile>
 		<IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
 		<IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
@@ -39,6 +39,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
+
+		<!--Make sure the user benefits from the last Roslyn rules-->
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
 	</ItemGroup>
 
 	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

@@ -1,17 +1,17 @@
-﻿using Verifier = EcoCode.Tests.CodeFixVerifier<
-    EcoCode.Analyzers.DontConcatenateStringsInLoops,
-    EcoCode.CodeFixes.DontConcatenateStringsInLoopsCodeFixProvider>;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public class DontConcatenateStringsInLoopsUnitTests
 {
-    [TestMethod]
-    public async Task EmptyCodeAsync() => await Verifier.VerifyAsync("").ConfigureAwait(false);
+    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
+        DontConcatenateStringsInLoops,
+        DontConcatenateStringsInLoopsCodeFixProvider>;
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoops1Async() => await Verifier.VerifyAsync("""
+    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontConcatenateStringsInLoops1Async() => await VerifyAsync("""
         public class Test
         {
             private string s1 = string.Empty;
@@ -44,7 +44,7 @@ public class DontConcatenateStringsInLoopsUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoops2Async() => await Verifier.VerifyAsync("""
+    public async Task DontConcatenateStringsInLoops2Async() => await VerifyAsync("""
         public class Test
         {
             private string s1 = string.Empty;

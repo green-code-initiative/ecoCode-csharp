@@ -1,17 +1,17 @@
-﻿using Verifier = EcoCode.Tests.CodeFixVerifier<
-    EcoCode.Analyzers.DontCallFunctionsInLoopConditions,
-    EcoCode.CodeFixes.DontCallFunctionsInLoopConditionsCodeFixProvider>;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public class DontCallFunctionsInLoopConditionsUnitTests
 {
-    [TestMethod]
-    public async Task EmptyCodeAsync() => await Verifier.VerifyAsync("").ConfigureAwait(false);
+    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
+        DontCallFunctionsInLoopConditions,
+        DontCallFunctionsInLoopConditionsCodeFixProvider>;
 
     [TestMethod]
-    public async Task ForLoopFunctionCallShouldNotBeCalledAsync() => await Verifier.VerifyAsync("""
+    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task ForLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
         public class Test
         {
             private const int C = 10;
@@ -35,7 +35,7 @@ public class DontCallFunctionsInLoopConditionsUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task WhileLoopFunctionCallShouldNotBeCalledAsync() => await Verifier.VerifyAsync("""
+    public async Task WhileLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
         public class Test
         {
             private const int C = 10;
@@ -59,7 +59,7 @@ public class DontCallFunctionsInLoopConditionsUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DoWhileLoopFunctionCallShouldNotBeCalledAsync() => await Verifier.VerifyAsync("""
+    public async Task DoWhileLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
         public class Test
         {
             private const int C = 10;

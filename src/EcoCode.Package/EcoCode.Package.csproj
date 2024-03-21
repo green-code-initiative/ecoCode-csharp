@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<IsPackable>true</IsPackable>
 		<IncludeBuildOutput>false</IncludeBuildOutput>
 		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -8,6 +9,7 @@
 		<GenerateDependencyFile>false</GenerateDependencyFile>
 		<DevelopmentDependency>true</DevelopmentDependency>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
+		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -22,8 +24,6 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>EcoCode, Analyzers, Environment</PackageTags>
 		<PackageReleaseNotes></PackageReleaseNotes>
-
-		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
 		<RestoreSources>https://api.nuget.org/v3/index.json</RestoreSources>
 	</PropertyGroup>
 
@@ -53,6 +53,9 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+
+		<!--Make sure the user project benefits from the latest Roslyn rules-->
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
 	</ItemGroup>
 
 </Project>
