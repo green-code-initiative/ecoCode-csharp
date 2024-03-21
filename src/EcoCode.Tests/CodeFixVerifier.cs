@@ -1,16 +1,12 @@
 ﻿namespace EcoCode.Tests;
 
-public static class CodeFixVerifier<TAnalyzer, TCodeFix>
-    where TAnalyzer : DiagnosticAnalyzer, new()
-    where TCodeFix : CodeFixProvider, new()
+public delegate Task VerifyDlg(string source, DiagnosticResult? expected = null, string? fixedSource = null);
+
+internal static class CodeFixVerifier
 {
-    public static DiagnosticResult Diagnostic() => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic();
-
-    public static DiagnosticResult Diagnostic(string diagnosticId) => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(diagnosticId);
-
-    public static DiagnosticResult Diagnostic(DiagnosticDescriptor descriptor) => CSharpCodeFixVerifier<TAnalyzer, TCodeFix, MSTestVerifier>.Diagnostic(descriptor);
-
-    public static async Task VerifyAsync(string source, DiagnosticResult? expected = null, string? fixedSource = null)
+    public static async Task VerifyAsync<TAnalyzer, TCodeFix>(string source, DiagnosticResult? expected = null, string? fixedSource = null)
+        where TAnalyzer : DiagnosticAnalyzer, new()
+        where TCodeFix : CodeFixProvider, new()
     {
         var test = new CSharpCodeFixTest<TAnalyzer, TCodeFix, MSTestVerifier> { TestCode = source };
         if (fixedSource is not null)

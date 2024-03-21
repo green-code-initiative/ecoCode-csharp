@@ -3,13 +3,16 @@
 	<PropertyGroup>
 		<Title>EcoCode.Tests</Title>
 		<Product>EcoCode.Tests</Product>
-
 		<TargetFramework>net8.0</TargetFramework>
-		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
-		<TreatWarningsAsErrors>false</TreatWarningsAsErrors> <!--We need them for live warnings-->
+		<NoWarn>$(NoWarn);1591</NoWarn> <!--No need for mandatory code comments-->
 	</PropertyGroup>
 
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<!--To avoid spamming the build log with warnings in release mode-->
+		<Compile Remove="LiveWarnings/*.cs" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="EcoCode">
 		  <PrivateAssets>all</PrivateAssets>

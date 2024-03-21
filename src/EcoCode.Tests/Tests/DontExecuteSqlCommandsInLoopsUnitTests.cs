@@ -1,21 +1,21 @@
-﻿using Verifier = EcoCode.Tests.CodeFixVerifier<
-    EcoCode.Analyzers.DontExecuteSqlCommandsInLoops,
-    EcoCode.CodeFixes.DontExecuteSqlCommandsInLoopsCodeFixProvider>;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public class DontExecuteSqlCommandsInLoopsUnitTests
 {
-    [TestMethod]
-    public async Task EmptyCodeAsync() => await Verifier.VerifyAsync("").ConfigureAwait(false);
+    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
+        DontExecuteSqlCommandsInLoops,
+        DontExecuteSqlCommandsInLoopsCodeFixProvider>;
 
     [TestMethod]
-    public async Task DontExecuteSqlCommandsInLoopsAsync() => await Verifier.VerifyAsync("""
+    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontExecuteSqlCommandsInLoopsAsync() => await VerifyAsync("""
         using System.Data;
         public class Test
         {
-            public void Run()
+            public void Run(int p)
             {
                 var command = default(IDbCommand)!;
                 _ = command.ExecuteNonQuery();

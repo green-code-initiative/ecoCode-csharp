@@ -3,8 +3,6 @@
 	<PropertyGroup>
 		<Title>EcoCode.CodeFixes</Title>
 		<Product>EcoCode.CodeFixes</Product>
-
-		<IsPackable>false</IsPackable>
 		<RootNamespace>EcoCode</RootNamespace>
 	</PropertyGroup>
 

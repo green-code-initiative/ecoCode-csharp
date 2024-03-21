@@ -16,6 +16,9 @@ public static class SyntaxNodeExtensions
         return false;
     }
 
+    /// <summary>Returns the loop statements of a given node, if applicable.</summary>
+    /// <param name="node">The node.</param>
+    /// <returns>The loop statements, empty if not applicable.</returns>
     public static SyntaxList<StatementSyntax> GetLoopStatements(this SyntaxNode node)
     {
         var contentSyntax = node switch
