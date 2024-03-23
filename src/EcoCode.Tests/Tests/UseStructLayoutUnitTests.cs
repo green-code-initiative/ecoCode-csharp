@@ -1,6 +1,4 @@
-﻿using Microsoft;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public class UseStructLayoutUnitTests
