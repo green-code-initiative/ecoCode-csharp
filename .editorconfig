@@ -107,9 +107,9 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 
 # Code-block preferences
 csharp_prefer_braces = when_multiline:suggestion
-csharp_prefer_simple_using_statement = true:suggestion
+csharp_prefer_simple_using_statement = true
 csharp_style_namespace_declarations = file_scoped:warning
-csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_method_group_conversion = true
 
 # Expression-level preferences
 csharp_prefer_simple_default_expression = true
@@ -231,6 +231,7 @@ dotnet_diagnostic.RCS1123.severity = none
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
+insert_final_newline = true
 end_of_line = crlf
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
