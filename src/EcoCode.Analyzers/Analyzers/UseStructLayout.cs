@@ -8,14 +8,14 @@ public sealed class UseStructLayout : DiagnosticAnalyzer
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC00_UseStructLayout,
+        Rule.Ids.EC81_UseStructLayout,
         title: "Use struct layout",
         messageFormat: "Use struct layout",
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: string.Empty,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC00_UseStructLayout));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC81_UseStructLayout));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
