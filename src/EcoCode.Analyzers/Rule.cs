@@ -17,5 +17,6 @@ internal static class Rule
         public const string EC69_DontCallFunctionsInLoopConditions = "EC69";
         public const string EC72_DontExecuteSqlCommandsInLoops = "EC72";
         public const string EC75_DontConcatenateStringsInLoops = "EC75";
+        public const string EC00_UseStructLayout = "EC00";
     }
 }
