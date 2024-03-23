@@ -16,12 +16,17 @@ This set of Roslyn analyzers implements these catalogs as rules for scanning you
 🚀 Getting Started
 ------------------
 
-Reference the EcoCode NuGet package in your .Net projects : https://www.nuget.org/packages/EcoCode/, and make sure analyzers are not disabled.
+There are several ways you can use the ecoCode analyzers in your .Net projects:
+1. As a NuGet package : https://www.nuget.org/packages/EcoCode/.
+2. As a Visual Studio extension, you'll find the .vsix file in the [latest release](https://github.com/green-code-initiative/ecoCode-csharp/releases/latest) on GitHub. It will be published on the VS marketplace once everything is ready !
+3. Coming soon : as a VS Code extension.
+4. Coming soon : as a .Net CLI Tool to scan existing code bases.
+5. Coming soon : a documentation on how to set up [SonarScanner for .Net](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-dotnet/) and display the EcoCode warnings in [SonarQube](https://www.sonarsource.com/products/sonarqube/).
 
 🧩 Compatibility
 -----------------
 
-The EcoCode NuGet package targets .Net Standard 2.0 and can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported .Net Frameworks in .Net Standard 2.0.
+Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 2.0 and can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported .Net Frameworks in .Net Standard 2.0.
 
 🌿 Rules
 -------------------
