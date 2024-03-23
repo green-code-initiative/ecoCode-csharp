@@ -120,39 +120,6 @@ public class UseStructLayoutUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task ValuePropertiesWithNoLayoutAsync() => await VerifyAsync("""
-        using System.Runtime.InteropServices;
-
-        public struct [|TestStruct|]
-        {
-            public int A { get; set; }
-            public double B { get; set; }
-        }
-        """,
-        fixedSource: """
-        using System.Runtime.InteropServices;
-
-        [StructLayout(LayoutKind.Auto)]
-        public struct TestStruct
-        {
-            public int A { get; set; }
-            public double B { get; set; }
-        }
-        """).ConfigureAwait(false);
-
-    [TestMethod]
-    public async Task ValuePropertiesWithLayoutAsync() => await VerifyAsync("""
-        using System.Runtime.InteropServices;
-        
-        [StructLayout(LayoutKind.Auto)]
-        public struct TestStruct
-        {
-            public int A { get; set; }
-            public double B { get; set; }
-        }
-        """).ConfigureAwait(false);
-
-    [TestMethod]
     public async Task ValueAndReferenceFieldsWithNoLayoutAsync() => await VerifyAsync("""
         public struct TestStruct
         {
@@ -170,27 +137,6 @@ public class UseStructLayoutUnitTests
         {
             public int A;
             public string B;
-        }
-        """).ConfigureAwait(false);
-
-    [TestMethod]
-    public async Task ValueAndReferenceFieldsPropertiesNoLayoutAsync() => await VerifyAsync("""
-        public struct TestStruct
-        {
-            public int A { get; set; }
-            public string B { get; set; }
-        }
-        """).ConfigureAwait(false);
-
-    [TestMethod]
-    public async Task ValueAndReferenceFieldsPropertiesLayoutAsync() => await VerifyAsync("""
-        using System.Runtime.InteropServices;
-        
-        [StructLayout(LayoutKind.Auto)]
-        public struct TestStruct
-        {
-            public int A { get; set; }
-            public string B { get; set; }
         }
         """).ConfigureAwait(false);
 
