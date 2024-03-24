@@ -45,17 +45,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DotNet.ReproducibleBuilds">
-			<PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated">
-			<PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 
 		<!--Make sure the user project benefits from the latest Roslyn rules-->
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" />
 	</ItemGroup>
 
 </Project>

@@ -7,15 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DotNet.ReproducibleBuilds">
-			<PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated">
-			<PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" IncludeAssets="compile" />
 	</ItemGroup>
 
 	<ItemGroup>
