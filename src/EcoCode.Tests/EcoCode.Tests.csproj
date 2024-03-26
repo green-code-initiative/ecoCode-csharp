@@ -14,17 +14,13 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="EcoCode" PrivateAssets="all" IncludeAssets="analyzers">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="EcoCode" PrivateAssets="all" IncludeAssets="analyzers" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
 		<PackageReference Include="MSTest.TestAdapter" PrivateAssets="all" />
 		<PackageReference Include="MSTest.TestFramework" PrivateAssets="all" />
-		<PackageReference Include="coverlet.collector" PrivateAssets="all">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="coverlet.collector" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
