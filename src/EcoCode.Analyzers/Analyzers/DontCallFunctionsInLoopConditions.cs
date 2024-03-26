@@ -54,11 +54,15 @@ public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
                     _ = loopInvariantSymbols.Add(symbol);
             }
         }
+        if (loopInvariantSymbols.Count == 0) return;
 
         // Step 2: Remove the variables that are mutated in the loop body or the for loop incrementors
         RemoveMutatedSymbols(expression.DescendantNodes(), loopInvariantSymbols, context.SemanticModel);
+        if (loopInvariantSymbols.Count == 0) return;
+
         foreach (var inc in incrementors)
             RemoveMutatedSymbols(inc.DescendantNodesAndSelf(), loopInvariantSymbols, context.SemanticModel);
+        if (loopInvariantSymbols.Count == 0) return;
 
         // Step 3: Identify conditions that are loop invariant
         foreach (var node in condition.DescendantNodes())
