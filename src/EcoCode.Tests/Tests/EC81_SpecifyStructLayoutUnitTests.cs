@@ -24,13 +24,21 @@ public class SpecifyStructLayoutUnitTests
 
     [TestMethod]
     public async Task ValuePropsWithNoLayoutAsync() => await VerifyAsync("""
-        public record struct [|TestStruct|](int A, double B);
+        public struct [|TestStruct|]
+        {
+            public int A { get; set; }
+            public double B { get; set; }
+        };
         """,
         fixedSource: """
         using System.Runtime.InteropServices;
 
         [StructLayout(LayoutKind.Auto)]
-        public record struct TestStruct(int A, double B);
+        public struct TestStruct
+        {
+            public int A { get; set; }
+            public double B { get; set; }
+        };
         """).ConfigureAwait(false);
 
     [TestMethod]
