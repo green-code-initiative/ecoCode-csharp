@@ -23,8 +23,9 @@ public class SpecifyStructLayoutUnitTests
         "public record struct TestStruct(string A);").ConfigureAwait(false);
 
     [TestMethod]
-    public async Task ValuePropsWithNoLayoutAsync() => await VerifyAsync(
-        "public record struct [|TestStruct|](int A, double B);",
+    public async Task ValuePropsWithNoLayoutAsync() => await VerifyAsync("""
+        public record struct [|TestStruct|](int A, double B);
+        """,
         fixedSource: """
         using System.Runtime.InteropServices;
 
@@ -45,8 +46,9 @@ public class SpecifyStructLayoutUnitTests
         "public record struct TestStruct(int A, string B);").ConfigureAwait(false);
 
     [TestMethod]
-    public async Task AdditionalValuePropsWithNoLayout1Async() => await VerifyAsync(
-        "public record struct [|TestStruct|](int A, double B, int C);",
+    public async Task AdditionalValuePropsWithNoLayout1Async() => await VerifyAsync("""
+        public record struct [|TestStruct|](int A, double B, int C);
+        """,
         fixedSource: """
         using System.Runtime.InteropServices;
 
