@@ -4,7 +4,7 @@
 public class DontExecuteSqlCommandsInLoopsUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        DontExecuteSqlCommandsInLoops,
+        DontExecuteSqlCommandsInLoopsAnalyzer,
         DontExecuteSqlCommandsInLoopsCodeFixProvider>;
 
     [TestMethod]

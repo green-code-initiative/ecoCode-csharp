@@ -4,7 +4,7 @@
 public class DontCallFunctionsInLoopConditionsUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        DontCallFunctionsInLoopConditions,
+        DontCallFunctionsInLoopConditionsAnalyzer,
         DontCallFunctionsInLoopConditionsCodeFixProvider>;
 
     [TestMethod]

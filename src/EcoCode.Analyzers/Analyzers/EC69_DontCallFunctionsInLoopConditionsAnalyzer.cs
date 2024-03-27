@@ -2,7 +2,7 @@
 
 /// <summary>Analyzer for don't call loop invariant functions in loop conditions.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
+public sealed class DontCallFunctionsInLoopConditionsAnalyzer : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [
         SyntaxKind.ForStatement,

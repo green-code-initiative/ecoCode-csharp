@@ -7,11 +7,11 @@ using System.Threading;
 namespace EcoCode.CodeFixes;
 
 /// <summary>The code fix provider for use struct layout.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseStructLayoutCodeFixProvider)), Shared]
-public sealed class UseStructLayoutCodeFixProvider : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpecifyStructLayoutCodeFixProvider)), Shared]
+public sealed class SpecifyStructLayoutCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [UseStructLayout.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => [SpecifyStructLayoutAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for use struct layout.</summary>
+/// <summary>Analyzer for specify struct layout.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class UseStructLayout : DiagnosticAnalyzer
+public sealed class SpecifyStructLayoutAnalyzer : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SymbolKind> SymbolKinds = [SymbolKind.NamedType];
 

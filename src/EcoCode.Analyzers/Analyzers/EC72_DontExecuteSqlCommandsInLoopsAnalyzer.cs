@@ -2,7 +2,7 @@
 
 /// <summary>Analyzer for don't execute SQL commands in loops.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontExecuteSqlCommandsInLoops : DiagnosticAnalyzer
+public sealed class DontExecuteSqlCommandsInLoopsAnalyzer : DiagnosticAnalyzer
 {
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
