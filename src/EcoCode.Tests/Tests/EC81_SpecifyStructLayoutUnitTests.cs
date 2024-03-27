@@ -55,12 +55,16 @@ public class SpecifyStructLayoutUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task AdditionalValueFieldsWithNoLayout2Async() => await VerifyAsync(
-        "public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, System.DateTime F);",
+    public async Task AdditionalValueFieldsWithNoLayout2Async() => await VerifyAsync("""
+        using System;
+
+        public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, DateTime F);
+        """,
         fixedSource: """
+        using System;
         using System.Runtime.InteropServices;
 
         [StructLayout(LayoutKind.Auto)]
-        public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, System.DateTime F);
+        public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, DateTime F);
         """).ConfigureAwait(false);
 }

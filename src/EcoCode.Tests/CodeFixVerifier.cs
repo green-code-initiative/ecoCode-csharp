@@ -10,7 +10,7 @@ internal static class CodeFixVerifier
     {
         var test = new CSharpCodeFixTest<TAnalyzer, TCodeFix, MSTestVerifier> { TestCode = source };
         if (fixedSource is not null)
-            test.FixedCode = fixedSource.Replace(@"\r\n", @"\n", StringComparison.Ordinal);
+            test.FixedCode = fixedSource;
         if (expected is not null)
             test.ExpectedDiagnostics.Add(expected.GetValueOrDefault());
         await test.RunAsync().ConfigureAwait(false);
