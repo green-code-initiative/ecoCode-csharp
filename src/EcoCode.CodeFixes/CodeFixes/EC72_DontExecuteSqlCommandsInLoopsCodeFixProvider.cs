@@ -5,7 +5,7 @@
 public sealed class DontExecuteSqlCommandsInLoopsCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [DontExecuteSqlCommandsInLoops.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => [DontExecuteSqlCommandsInLoopsAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

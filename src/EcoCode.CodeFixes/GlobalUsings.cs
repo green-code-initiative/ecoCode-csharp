@@ -1,4 +1,5 @@
 ﻿global using EcoCode.Analyzers;
+global using EcoCode.Shared;
 global using Microsoft.CodeAnalysis;
 global using Microsoft.CodeAnalysis.CodeFixes;
 global using System.Collections.Immutable;

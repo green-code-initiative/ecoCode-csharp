@@ -4,7 +4,7 @@
 public class DontConcatenateStringsInLoopsUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        DontConcatenateStringsInLoops,
+        DontConcatenateStringsInLoopsAnalyzer,
         DontConcatenateStringsInLoopsCodeFixProvider>;
 
     [TestMethod]

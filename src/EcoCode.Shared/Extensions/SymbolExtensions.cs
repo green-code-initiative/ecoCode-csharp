@@ -79,4 +79,29 @@ public static class SymbolExtensions
         }
         return null;
     }
+
+    /// <summary>Returns the visibility of a symbol.</summary>
+    /// <param name="symbol">The symbol.</param>
+    /// <returns>The visibility of the symbol.</returns>
+    public static SymbolVisibility GetResultantVisibility(this ISymbol symbol)
+    {
+        if (symbol.Kind is SymbolKind.Alias or SymbolKind.TypeParameter)
+            return SymbolVisibility.Private;
+
+        if (symbol.Kind is SymbolKind.Parameter) // Parameters are only as visible as their containing symbol
+            return GetResultantVisibility(symbol.ContainingSymbol);
+
+        var visibility = SymbolVisibility.Public;
+        while (symbol is not null && symbol.Kind is not SymbolKind.Namespace)
+        {
+            if (symbol.DeclaredAccessibility is Accessibility.NotApplicable or Accessibility.Private)
+                return SymbolVisibility.Private;
+
+            if (symbol.DeclaredAccessibility is Accessibility.Internal or Accessibility.ProtectedAndInternal)
+                visibility = SymbolVisibility.Internal;
+
+            symbol = symbol.ContainingSymbol;
+        }
+        return visibility;
+    }
 }
