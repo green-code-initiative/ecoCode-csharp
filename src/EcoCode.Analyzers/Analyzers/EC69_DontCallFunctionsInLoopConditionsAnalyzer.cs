@@ -17,7 +17,7 @@ public sealed class DontCallFunctionsInLoopConditionsAnalyzer : DiagnosticAnalyz
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: string.Empty,
+        description: null,
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC69_DontCallFunctionsInLoopConditions));
 
     /// <inheritdoc/>
