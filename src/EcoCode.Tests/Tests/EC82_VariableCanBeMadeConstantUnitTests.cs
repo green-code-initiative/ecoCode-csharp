@@ -11,7 +11,7 @@ public class VariableCanBeMadeConstantUnitTests
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
-    public async Task VariableCouldBeConstAsync() => await VerifyAsync("""
+    public async Task VariableCanBeConstAsync() => await VerifyAsync("""
         using System;
         public class Program
         {
@@ -102,7 +102,7 @@ public class VariableCanBeMadeConstantUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task VariableWithMultipleInitializersCouldBeConstAsync() => await VerifyAsync("""
+    public async Task VariableWithMultipleInitializersCanBeConstAsync() => await VerifyAsync("""
         using System;
         public class Program
         {
@@ -152,7 +152,7 @@ public class VariableCanBeMadeConstantUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task StringCouldBeConstAsync() => await VerifyAsync("""
+    public async Task StringCanBeConstAsync() => await VerifyAsync("""
         using System;
         public class Program
         {
@@ -174,7 +174,7 @@ public class VariableCanBeMadeConstantUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task VarIntCouldBeConstAsync() => await VerifyAsync("""
+    public async Task VarIntCanBeConstAsync() => await VerifyAsync("""
         using System;
         public class Program
         {
@@ -196,7 +196,7 @@ public class VariableCanBeMadeConstantUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task VarStringCouldBeConstAsync() => await VerifyAsync("""
+    public async Task VarStringCanBeConstAsync() => await VerifyAsync("""
         using System;
         public class Program
         {

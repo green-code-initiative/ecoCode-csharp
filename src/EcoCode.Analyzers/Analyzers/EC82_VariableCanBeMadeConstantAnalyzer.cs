@@ -11,7 +11,7 @@ public sealed class VariableCanBeMadeConstantAnalyzer : DiagnosticAnalyzer
         Rule.Ids.EC82_VariableCanBeMadeConstant,
         title: "Variable can be made constant",
         messageFormat: "Variable can be made constant",
-        Rule.Categories.Performance,
+        Rule.Categories.Usage,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: null,
