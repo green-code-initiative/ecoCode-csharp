@@ -38,10 +38,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
+		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
 
 		<!--Make sure the user benefits from the last Roslyn rules-->
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" />
 	</ItemGroup>
 
 	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />

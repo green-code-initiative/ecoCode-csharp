@@ -2,7 +2,7 @@
 
 /// <summary>Analyzer for don't concatenate strings in loops.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
+public sealed class DontConcatenateStringsInLoopsAnalyzer : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [
         SyntaxKind.ForStatement,

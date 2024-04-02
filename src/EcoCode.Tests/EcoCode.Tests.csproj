@@ -14,19 +14,15 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="EcoCode">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="MSTest.TestAdapter" />
-		<PackageReference Include="MSTest.TestFramework" />
-		<PackageReference Include="coverlet.collector">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
+		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
+		<PackageReference Include="EcoCode" PrivateAssets="all" IncludeAssets="analyzers" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
+		<PackageReference Include="MSTest.TestAdapter" PrivateAssets="all" />
+		<PackageReference Include="MSTest.TestFramework" PrivateAssets="all" />
+		<PackageReference Include="coverlet.collector" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>

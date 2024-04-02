@@ -5,7 +5,7 @@
 public sealed class DontCallFunctionsInLoopConditionsCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [DontCallFunctionsInLoopConditions.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => [DontCallFunctionsInLoopConditionsAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
