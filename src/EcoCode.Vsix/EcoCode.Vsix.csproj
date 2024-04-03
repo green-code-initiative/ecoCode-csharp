@@ -21,20 +21,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="license.txt">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="publishManifest.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-		<Content Include="..\..\icon.jpeg">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<IncludeInVSIX>true</IncludeInVSIX>
-		</Content>
-		<Content Include="..\..\README.md">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+		<Content Include="publishManifest.json" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\icon.jpeg" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\LICENCE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\NOTICE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\README.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
 	</ItemGroup>
 
 	<ItemGroup>

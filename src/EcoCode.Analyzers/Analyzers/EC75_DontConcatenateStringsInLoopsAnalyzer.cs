@@ -18,7 +18,7 @@ public sealed class DontConcatenateStringsInLoopsAnalyzer : DiagnosticAnalyzer
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: string.Empty,
+        description: null,
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC75_DontConcatenateStringsInLoops));
 
     /// <inheritdoc/>
