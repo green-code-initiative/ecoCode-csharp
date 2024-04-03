@@ -12,7 +12,7 @@ public sealed class VariableCanBeMadeConstantAnalyzer : DiagnosticAnalyzer
         title: "Variable can be made constant",
         messageFormat: "Variable can be made constant",
         Rule.Categories.Usage,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         isEnabledByDefault: true,
         description: null,
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC82_VariableCanBeMadeConstant));

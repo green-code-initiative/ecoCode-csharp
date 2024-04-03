@@ -37,6 +37,7 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC72](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC72/csharp/EC72.asciidoc)|Don’t execute SQL queries in loops|⚠️|✔️|❌|
 |[EC75](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC75/csharp/EC75.asciidoc)|Don’t concatenate `strings` in loops|⚠️|✔️|❌|
 |[EC81](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC81/csharp/EC81.asciidoc)|Specify struct layouts|⚠️|✔️|✔️|
+|[EC82](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC82/csharp/EC82.asciidoc)|Variable can be made constant|ℹ️|✔️|✔️|
 
 🤝 Contribution
 ---------------
