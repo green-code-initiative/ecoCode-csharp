@@ -134,3 +134,30 @@ jobs:
         files: |
           nupkg/**/EcoCode.${{ needs.versioning.outputs.tag }}.nupkg
           vsix/EcoCode.vsix
+
+  # Use when the live warning project is hosted and ready
+  # update-live-warnings-project:
+  #   needs: create-release
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout live warnings project
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: 'your-github-username/live-warnings-repository'
+  #         token: ${{ secrets.ACCESS_TOKEN }}
+  #         path: 'live-warnings'
+
+  #     - name: Update package version in csproj
+  #       run: |
+  #         sed -i 's/<PackageReference Include="EcoCode" Version=".*">/<PackageReference Include="EcoCode" Version="${{ needs.versioning.outputs.tag }}">' live-warnings/ecoCode-csharp-livewarnings.csproj
+
+  #     - name: Commit and push if changed
+  #       run: |
+  #         cd live-warnings
+  #         git config user.name github-actions
+  #         git config user.email github-actions@github.com
+  #         git add .
+  #         git commit -m "Update EcoCode package version to ${{ needs.versioning.outputs.tag }}" || exit 0
+  #         git push
+  #       env:
+  #         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
