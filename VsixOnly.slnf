@@ -1,6 +1,6 @@
 {
   "solution": {
-    "path": "ecoCode-charp.sln",
+    "path": "ecoCode-csharp.sln",
     "projects": [
       "src\\EcoCode.Analyzers\\EcoCode.Analyzers.csproj",
       "src\\EcoCode.CodeFixes\\EcoCode.CodeFixes.csproj",
