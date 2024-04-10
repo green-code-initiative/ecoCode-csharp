@@ -30,7 +30,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENCE.md = LICENCE.md
 		NOTICE.md = NOTICE.md
 		README.md = README.md
+		NuGetOnly.slnf = NuGetOnly.slnf
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+		VsixOnly.slnf = VsixOnly.slnf
 	EndProjectSection
 EndProject
 Global

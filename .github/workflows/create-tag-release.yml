@@ -48,10 +48,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-dotnet@v4
-    - run: dotnet restore NoVsix.slnf
-    - run: dotnet build NoVsix.slnf -c Release --no-restore
-    - run: dotnet test NoVsix.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
-    - run: dotnet pack NoVsix.slnf -c Release --no-build -o ./nupkg -p:Version=${{ needs.versioning.outputs.tag }}
+    - run: dotnet restore NuGetOnly.slnf
+    - run: dotnet build NuGetOnly.slnf -c Release --no-restore
+    - run: dotnet test NuGetOnly.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
+    - run: dotnet pack NuGetOnly.slnf -c Release --no-build -o ./nupkg -p:Version=${{ needs.versioning.outputs.tag }}
     - uses: actions/cache/save@v4
       with:
         path: nupkg
