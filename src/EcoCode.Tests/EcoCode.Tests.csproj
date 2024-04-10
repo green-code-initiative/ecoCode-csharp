@@ -16,7 +16,6 @@
 	<ItemGroup>
 		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
 		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
-		<PackageReference Include="EcoCode" PrivateAssets="all" IncludeAssets="analyzers" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
