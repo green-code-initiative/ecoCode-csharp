@@ -1,0 +1,49 @@
+name: Create tag release
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  build-vsix:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: | # Update VSIX version
+        [xml]$manifest = Get-Content "src\EcoCode.Vsix\source.extension.vsixmanifest"
+        $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
+        if ($identity -ne $null) {
+            $identity.Version = "1.0.2"
+        }
+        $manifest.Save("src\EcoCode.Vsix\source.extension.vsixmanifest")
+    - uses: actions/setup-dotnet@v4
+    - run: dotnet restore VsixOnly.slnf
+    - uses: microsoft/setup-msbuild@v2
+    - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
+    - uses: actions/cache/save@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+
+  publish-vsix:
+    needs: build-vsix
+    runs-on: windows-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - uses: cezarypiatek/VsixPublisherAction@1.1
+      with:
+        extension-file: vsix\EcoCode.vsix
+        publish-manifest-file: vsix\publishManifest.json
+        personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}
