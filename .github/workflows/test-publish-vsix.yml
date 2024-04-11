@@ -19,7 +19,7 @@ jobs:
         [xml]$manifest = Get-Content "src\EcoCode.Vsix\source.extension.vsixmanifest"
         $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
         if ($identity -ne $null) {
-            $identity.Version = "1.0.2"
+            $identity.Version = "0.0.1"
         }
         $manifest.Save("src\EcoCode.Vsix\source.extension.vsixmanifest")
     - uses: actions/setup-dotnet@v4
