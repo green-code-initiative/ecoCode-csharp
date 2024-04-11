@@ -4,9 +4,11 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
+
 permissions:
   actions: write
   contents: write
+
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
@@ -91,23 +93,22 @@ jobs:
     - run: echo "PACKAGE=$(find . -name "EcoCode.${{ needs.versioning.outputs.tag }}.nupkg" | head -n 1)" >> $GITHUB_ENV
     - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
 
-  # Reenable when we have a VS Marketplace account and API key
-  # publish-vsix: # Only if both builds succeeded, and the tag is not a pre-release
-  #   needs: [versioning, build-nuget, build-vsix]
-  #   if: ${{ needs.versioning.outputs.tag == needs.versioning.outputs.version }}
-  #   runs-on: windows-latest
-  #   steps:
-  #   - uses: actions/cache/restore@v4
-  #     with:
-  #       path: vsix
-  #       key: cache-${{ github.sha }}
-  #       enableCrossOsArchive: true
-  #       fail-on-cache-miss: true
-  #   - uses: cezarypiatek/VsixPublisherAction@1.1
-  #     with:
-  #       extension-file: vsix\EcoCode.vsix
-  #       publish-manifest-file: vsix\publishManifest.json
-  #       personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}
+  publish-vsix: # Only if both builds succeeded, and the tag is not a pre-release
+    needs: [versioning, build-nuget, build-vsix]
+    if: ${{ needs.versioning.outputs.tag == needs.versioning.outputs.version }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+        fail-on-cache-miss: true
+    - uses: cezarypiatek/VsixPublisherAction@1.1
+      with:
+        extension-file: vsix\EcoCode.vsix
+        publish-manifest-file: vsix\publishManifest.json
+        personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}
 
   create-release: # Only if both builds succeeded
     needs: [versioning, build-nuget, build-vsix]
@@ -135,29 +136,29 @@ jobs:
           nupkg/**/EcoCode.${{ needs.versioning.outputs.tag }}.nupkg
           vsix/EcoCode.vsix
 
-  # Use when the live warning project is hosted and ready
-  # update-live-warnings-project:
+  # Adapt when the test project is hosted and ready
+  # update-test-project:
   #   needs: create-release
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - name: Checkout live warnings project
+  #     - name: Checkout test project
   #       uses: actions/checkout@v4
   #       with:
-  #         repository: 'your-github-username/live-warnings-repository'
-  #         token: ${{ secrets.ACCESS_TOKEN }}
-  #         path: 'live-warnings'
+  #         repository: 'your-github-username/ecoCode-csharp-test-project'
+  #         token: ${{ secrets.TESTPROJECT_ACCESS_TOKEN }}
+  #         path: 'test-project'
 
   #     - name: Update package version in csproj
   #       run: |
-  #         sed -i 's/<PackageReference Include="EcoCode" Version=".*">/<PackageReference Include="EcoCode" Version="${{ needs.versioning.outputs.tag }}">' live-warnings/ecoCode-csharp-livewarnings.csproj
+  #         sed -i 's/<PackageReference Include="EcoCode" Version=".*">/<PackageReference Include="EcoCode" Version="${{ needs.versioning.outputs.tag }}">' test-project/ecoCode-csharp-test-project.csproj
 
   #     - name: Commit and push if changed
   #       run: |
-  #         cd live-warnings
+  #         cd test-project
   #         git config user.name github-actions
   #         git config user.email github-actions@github.com
   #         git add .
   #         git commit -m "Update EcoCode package version to ${{ needs.versioning.outputs.tag }}" || exit 0
   #         git push
   #       env:
-  #         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  #         ACCESS_TOKEN: ${{ secrets.TESTPROJECT_ACCESS_TOKEN }}

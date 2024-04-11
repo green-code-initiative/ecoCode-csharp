@@ -46,4 +46,15 @@
 		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<!-- https://github.com/dotnet/sdk/issues/433 -->
+		<ProjectReference Update="@(ProjectReference)" AdditionalProperties="TargetFramework=netstandard2.0" />
+
+		<!-- https://github.com/Microsoft/extendvs/issues/57 -->
+		<ProjectReference Update="@(ProjectReference)" Name="%(Filename)" />
+	</ItemGroup>
+
+	<Target Name="VsixCompatibilityAnalyzer"> <!-- Skip the very long analysis step on every publication pipeline -->
+	</Target>
+
 </Project>
