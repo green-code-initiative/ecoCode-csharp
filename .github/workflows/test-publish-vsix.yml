@@ -1,6 +1,6 @@
-name: Create tag release
+name: Test publish VSIX
 on:
-  workflow_dispatch:
+  pull_request:
 
 permissions:
   actions: write
