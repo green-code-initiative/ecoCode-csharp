@@ -31,20 +31,17 @@
 	<ItemGroup>
 		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
 		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" /> <!--Include latest Roslyn rules as transitive-->
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
 
-		<!--Make sure the user benefits from the last Roslyn rules-->
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" />
+		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
+		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
+		<ProjectReference Include="..\EcoCode.Shared\EcoCode.Shared.csproj" />
 	</ItemGroup>
 
 	<Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" />
 
 	<Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="Exists('$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets')" />
-
-	<ItemGroup>
-		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
-		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<!-- https://github.com/dotnet/sdk/issues/433 -->
@@ -54,7 +51,6 @@
 		<ProjectReference Update="@(ProjectReference)" Name="%(Filename)" />
 	</ItemGroup>
 
-	<Target Name="VsixCompatibilityAnalyzer"> <!-- Skip the very long analysis step on every publication pipeline -->
-	</Target>
+	<Target Name="VsixCompatibilityAnalyzer" /> <!-- Skip the very long analysis step on every publication pipeline -->
 
 </Project>
