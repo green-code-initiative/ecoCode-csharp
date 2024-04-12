@@ -13,13 +13,13 @@
 		<NeutralLanguage>en</NeutralLanguage>
 		<IsPackable>false</IsPackable>
 
-		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<AnalysisMode>all</AnalysisMode>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
 		<TreatWarningsAsErrors Condition="'$(Configuration)' != 'Debug'">true</TreatWarningsAsErrors>
 
 		<!--Dummy value, versioning is automatically handled by the create-tag-release GitHub workflow-->
-		<Version>0.0.1</Version>
+		<Version>1.0.0</Version>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>

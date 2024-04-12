@@ -8,11 +8,6 @@
 		<NoWarn>$(NoWarn);1591</NoWarn> <!--No need for mandatory code comments-->
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<!--To avoid spamming the build log with warnings in release mode-->
-		<Compile Remove="LiveWarnings/*.cs" />
-	</ItemGroup>
-	
 	<ItemGroup>
 		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
 		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
