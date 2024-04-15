@@ -1,9 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Simplification;
-using System.Threading;
+﻿using Microsoft.CodeAnalysis.Formatting;
 
 namespace EcoCode.CodeFixes;
 
@@ -26,20 +21,22 @@ public sealed class VariableCanBeMadeConstantCodeFixProvider : CodeFixProvider
         var root = await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is null) return;
 
-        var diagnostic = context.Diagnostics[0];
-        var parent = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent;
-        if (parent is null) return;
-
-        foreach (var node in parent.AncestorsAndSelf())
+        foreach (var diagnostic in context.Diagnostics)
         {
-            if (node is not LocalDeclarationStatementSyntax declaration) continue;
-            context.RegisterCodeFix(
-            CodeAction.Create(
-                    title: "Make variable constant",
-                    createChangedDocument: token => RefactorAsync(document, declaration, token),
-                    equivalenceKey: "Make variable constant"),
-                diagnostic);
-            break;
+            var parent = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent;
+            if (parent is null) return;
+
+            foreach (var node in parent.AncestorsAndSelf())
+            {
+                if (node is not LocalDeclarationStatementSyntax declaration) continue;
+                context.RegisterCodeFix(
+                    CodeAction.Create(
+                        title: "Make variable constant",
+                        createChangedDocument: token => RefactorAsync(document, declaration, token),
+                        equivalenceKey: "Make variable constant"),
+                    diagnostic);
+                break;
+            }
         }
     }
 

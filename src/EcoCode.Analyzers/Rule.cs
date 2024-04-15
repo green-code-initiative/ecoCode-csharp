@@ -20,5 +20,6 @@ internal static class Rule
         public const string EC81_UseStructLayout = "EC81";
         public const string EC82_VariableCanBeMadeConstant = "EC82";
         public const string EC83_ReplaceEnumToStringWithNameOf = "EC83";
+        public const string EC84_AvoidAsyncVoidMethod = "EC84";
     }
 }
