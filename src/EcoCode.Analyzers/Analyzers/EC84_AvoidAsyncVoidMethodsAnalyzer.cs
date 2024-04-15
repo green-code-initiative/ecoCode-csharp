@@ -1,19 +1,19 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for avoid async void method.</summary>
+/// <summary>Analyzer for avoid async void methods.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class AvoidAsyncVoidMethodAnalyzer : DiagnosticAnalyzer
+public sealed class AvoidAsyncVoidMethodsAnalyzer : DiagnosticAnalyzer
 {
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC84_AvoidAsyncVoidMethod,
-        title: "Avoid async void method",
-        messageFormat: "Avoid async void method",
+        Rule.Ids.EC84_AvoidAsyncVoidMethods,
+        title: "Avoid async void methods",
+        messageFormat: "Avoid async void methods",
         Rule.Categories.Design,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC84_AvoidAsyncVoidMethod));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC84_AvoidAsyncVoidMethods));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];

@@ -1,11 +1,11 @@
 ﻿namespace EcoCode.CodeFixes;
 
-/// <summary>The code fix provider for avoid async void method.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidAsyncVoidMethodCodeFixProvider)), Shared]
-public sealed class AvoidAsyncVoidMethodCodeFixProvider : CodeFixProvider
+/// <summary>The code fix provider for avoid async void methods.</summary>
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidAsyncVoidMethodsCodeFixProvider)), Shared]
+public sealed class AvoidAsyncVoidMethodsCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [AvoidAsyncVoidMethodAnalyzer.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => [AvoidAsyncVoidMethodsAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

@@ -1,11 +1,11 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class AvoidAsyncVoidMethodUnitTests
+public class AvoidAsyncVoidMethodsUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        AvoidAsyncVoidMethodAnalyzer,
-        AvoidAsyncVoidMethodCodeFixProvider>;
+        AvoidAsyncVoidMethodsAnalyzer,
+        AvoidAsyncVoidMethodsCodeFixProvider>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
