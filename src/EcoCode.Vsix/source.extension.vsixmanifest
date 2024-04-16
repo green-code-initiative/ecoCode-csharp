@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
 	<Metadata>
-		<Identity Id="EcoCode.87dc1d7b-0f90-4344-b318-74635af6ffea" Version="1.0.4" Language="en-US" Publisher="Green Code Initiative"/>
+		<Identity Id="EcoCode.87dc1d7b-0f90-4344-b318-74635af6ccea" Version="1.0.0" Language="en-US" Publisher="Green Code Initiative"/>
 		<DisplayName>EcoCode</DisplayName>
 		<Description xml:space="preserve">EcoCode extension for the .NET Compiler Platform ("Roslyn").</Description>
 		<MoreInfo>https://github.com/green-code-initiative/ecoCode-csharp</MoreInfo>
