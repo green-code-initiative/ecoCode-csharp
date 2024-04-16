@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class VariableCanBeMadeConstantUnitTests
+public sealed class VariableCanBeMadeConstantUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
         VariableCanBeMadeConstantAnalyzer,

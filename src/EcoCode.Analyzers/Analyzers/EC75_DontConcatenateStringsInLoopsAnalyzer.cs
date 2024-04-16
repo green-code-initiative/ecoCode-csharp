@@ -22,7 +22,8 @@ public sealed class DontConcatenateStringsInLoopsAnalyzer : DiagnosticAnalyzer
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC75_DontConcatenateStringsInLoops));
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
+    private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics = [Descriptor];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)

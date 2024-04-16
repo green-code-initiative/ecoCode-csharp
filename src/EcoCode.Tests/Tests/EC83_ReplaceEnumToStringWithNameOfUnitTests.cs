@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class ReplaceEnumToStringWithNameOfUnitTests
+public sealed class ReplaceEnumToStringWithNameOfUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
         ReplaceEnumToStringWithNameOfAnalyzer,

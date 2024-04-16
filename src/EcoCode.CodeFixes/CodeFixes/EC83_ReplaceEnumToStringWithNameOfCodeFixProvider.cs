@@ -7,7 +7,8 @@ namespace EcoCode.CodeFixes;
 public sealed class ReplaceEnumToStringWithNameOfCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [ReplaceEnumToStringWithNameOfAnalyzer.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [ReplaceEnumToStringWithNameOfAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

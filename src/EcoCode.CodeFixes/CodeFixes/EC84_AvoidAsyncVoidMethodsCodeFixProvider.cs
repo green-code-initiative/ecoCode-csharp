@@ -5,7 +5,8 @@
 public sealed class AvoidAsyncVoidMethodsCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [AvoidAsyncVoidMethodsAnalyzer.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [AvoidAsyncVoidMethodsAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

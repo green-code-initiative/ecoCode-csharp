@@ -6,7 +6,8 @@
 public sealed class DontConcatenateStringsInLoopsCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [DontConcatenateStringsInLoopsAnalyzer.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [DontConcatenateStringsInLoopsAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
