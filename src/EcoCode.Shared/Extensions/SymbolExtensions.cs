@@ -58,9 +58,10 @@ public static class SymbolExtensions
         switch (symbol)
         {
             case ILocalSymbol localSymbol:
-                if (localSymbol.DeclaringSyntaxReferences.FirstOrDefault() is SyntaxReference syntaxRef)
+                var localRefs = localSymbol.DeclaringSyntaxReferences;
+                if (localRefs.Length != 0)
                 {
-                    for (var node = syntaxRef.GetSyntax(); node is not null; node = node.Parent)
+                    for (var node = localRefs[0].GetSyntax(); node is not null; node = node.Parent)
                     {
                         if (node is BlockSyntax or MethodDeclarationSyntax or CompilationUnitSyntax)
                             return node;
@@ -69,13 +70,19 @@ public static class SymbolExtensions
                 break;
 
             case IFieldSymbol fieldSymbol:
-                return fieldSymbol.ContainingType.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+                var fieldRefs = fieldSymbol.ContainingType.DeclaringSyntaxReferences;
+                if (fieldRefs.Length != 0) return fieldRefs[0].GetSyntax();
+                break;
 
             case IPropertySymbol propertySymbol:
-                return propertySymbol.ContainingType.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+                var propRefs = propertySymbol.ContainingType.DeclaringSyntaxReferences;
+                if (propRefs.Length != 0) return propRefs[0].GetSyntax();
+                break;
 
             case IParameterSymbol parameterSymbol:
-                return parameterSymbol.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+                var paramRefs = parameterSymbol.DeclaringSyntaxReferences;
+                if (paramRefs.Length != 0) return paramRefs[0].GetSyntax();
+                break;
         }
         return null;
     }

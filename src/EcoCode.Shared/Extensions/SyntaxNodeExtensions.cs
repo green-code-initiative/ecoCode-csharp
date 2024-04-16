@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
-using System.Reflection.Metadata.Ecma335;
 
 namespace EcoCode.Shared;
 
@@ -49,7 +48,7 @@ public static class SyntaxNodeExtensions
     {
         foreach (var descendant in node.DescendantNodes())
         {
-            if (descendant is UsingDirectiveSyntax usingNode && usingNode.Name?.ToString() == @namespace)
+            if ((descendant as UsingDirectiveSyntax)?.Name?.ToString() == @namespace)
                 return true;
         }
         return false;
