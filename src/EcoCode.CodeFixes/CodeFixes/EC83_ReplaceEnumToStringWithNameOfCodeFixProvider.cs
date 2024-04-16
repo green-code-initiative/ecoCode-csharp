@@ -1,9 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Operations;
-using System.Threading;
+﻿using Microsoft.CodeAnalysis.Operations;
 
 namespace EcoCode.CodeFixes;
 
@@ -32,7 +27,7 @@ public sealed class ReplaceEnumToStringWithNameOfCodeFixProvider : CodeFixProvid
                 title: "Use nameof",
                 createChangedDocument: token => RefactorAsync(document, nodeToFix, token),
                 equivalenceKey: "Use nameof"),
-            context.Diagnostics[0]);
+            context.Diagnostics);
     }
 
     private static async Task<Document> RefactorAsync(Document document, SyntaxNode node, CancellationToken token)

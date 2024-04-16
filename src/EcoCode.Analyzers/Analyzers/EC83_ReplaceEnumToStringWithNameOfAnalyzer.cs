@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis.Operations;
-using System.Linq;
 
 namespace EcoCode.Analyzers;
 
@@ -34,7 +33,7 @@ public sealed class ReplaceEnumToStringWithNameOfAnalyzer : DiagnosticAnalyzer
     }
 
     private static IFieldSymbol GetStringEmptySymbol(Compilation compilation) =>
-        (IFieldSymbol)compilation.GetTypeByMetadataName("System.String")!.GetMembers("Empty").First();
+        (IFieldSymbol)compilation.GetTypeByMetadataName("System.String")!.GetMembers("Empty")[0];
 
     private static bool UsesConstantFormat(object? format) =>
         format is null || format is string str && (str.Length == 0 || str is "g" or "G" or "f" or "F");

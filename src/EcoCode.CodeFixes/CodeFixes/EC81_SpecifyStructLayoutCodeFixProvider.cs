@@ -1,10 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
-using Microsoft.CodeAnalysis.Simplification;
-using System.Threading;
-
-namespace EcoCode.CodeFixes;
+﻿namespace EcoCode.CodeFixes;
 
 /// <summary>The code fix provider for use struct layout.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpecifyStructLayoutCodeFixProvider)), Shared]
@@ -19,6 +13,8 @@ public sealed class SpecifyStructLayoutCodeFixProvider : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
+        if (context.Diagnostics.Length == 0) return;
+
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         var node = root?.FindNode(context.Span, getInnermostNodeForTie: true);
         if (node is not TypeDeclarationSyntax nodeToFix) return;
