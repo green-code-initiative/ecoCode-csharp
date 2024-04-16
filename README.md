@@ -18,7 +18,7 @@ This set of Roslyn analyzers implements these catalogs as rules for scanning you
 
 There are several ways you can use the ecoCode analyzers in your .Net projects:
 1. As a NuGet package : https://www.nuget.org/packages/EcoCode/.
-2. As a Visual Studio extension : https://marketplace.visualstudio.com/items?itemName=ecoCode.ecoCode
+2. As a Visual Studio extension : https://marketplace.visualstudio.com/items?itemName=greencodeinitiative.ecoCode
 3. Coming soon : as a VS Code extension.
 4. Coming soon : as a .Net CLI Tool to scan existing code bases.
 5. Coming soon : a documentation on how to set up [SonarScanner for .Net](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-dotnet/) and display the EcoCode warnings in [SonarQube](https://www.sonarsource.com/products/sonarqube/).
@@ -39,6 +39,7 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC81](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC81/csharp/EC81.asciidoc)|Specify struct layouts|⚠️|✔️|✔️|
 |[EC82](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC82/csharp/EC82.asciidoc)|Variable can be made constant|ℹ️|✔️|✔️|
 |[EC83](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC83/csharp/EC83.asciidoc)|Replace Enum ToString() with nameof|⚠️|✔️|✔️|
+|[EC84](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC84/csharp/EC84.asciidoc)|Avoid async void methods|⚠️|✔️|✔️|
 
 🤝 Contribution
 ---------------

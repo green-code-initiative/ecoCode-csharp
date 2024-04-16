@@ -23,11 +23,9 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Necessary to fetch tags
-
     - id: versioning
       run: |
         TAG=${GITHUB_REF#refs/tags/}
-        echo "Full version tag: $TAG"
 
         TAG_COMMIT=$(git rev-list -n 1 $TAG)
         MAIN_BRANCH_COMMIT=$(git rev-parse origin/${{ github.event.repository.default_branch }})
@@ -43,13 +41,39 @@ jobs:
           echo "Error: Tag does not match the expected format 'X.Y.Z' or 'X.Y.Z-betaN'"
           exit 1
         fi
+    - name: Set Version in Directory.Build.props
+      run: xmlstarlet ed --inplace -u "/Project/PropertyGroup/Version" -v "${{ steps.versioning.outputs.version }}" Directory.Build.props
+    - name: Set Version in VSIX manifest
+      shell: pwsh
+      run: |
+        [xml]$manifest = Get-Content "src\EcoCode.Vsix\source.extension.vsixmanifest"
+        $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
+        if ($identity -ne $null) {
+            $identity.Version = "${{ steps.versioning.outputs.version }}"
+        }
+        $manifest.Save("src\EcoCode.Vsix\source.extension.vsixmanifest")
+    - name: Cache updated sources
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          !**/.git
+          **/*
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
 
   build-nuget:
     needs: versioning
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
     - uses: actions/setup-dotnet@v4
+    - name: Restore versioned sources
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          !**/.git
+          **/*
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
     - run: dotnet restore NuGetOnly.slnf
     - run: dotnet build NuGetOnly.slnf -c Release --no-restore
     - run: dotnet test NuGetOnly.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
@@ -58,20 +82,21 @@ jobs:
       with:
         path: nupkg
         key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
 
   build-vsix:
     needs: versioning
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v4
-    - run: | # Update VSIX version
-        [xml]$manifest = Get-Content "src\EcoCode.Vsix\source.extension.vsixmanifest"
-        $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
-        if ($identity -ne $null) {
-            $identity.Version = "${{ needs.versioning.outputs.version }}"
-        }
-        $manifest.Save("src\EcoCode.Vsix\source.extension.vsixmanifest")
     - uses: actions/setup-dotnet@v4
+    - name: Restore versioned sources
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          !**/.git
+          **/*
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
     - run: dotnet restore VsixOnly.slnf
     - uses: microsoft/setup-msbuild@v2
     - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
@@ -89,7 +114,7 @@ jobs:
       with:
         path: nupkg
         key: cache-${{ github.sha }}
-        fail-on-cache-miss: true
+        enableCrossOsArchive: true
     - run: echo "PACKAGE=$(find . -name "EcoCode.${{ needs.versioning.outputs.tag }}.nupkg" | head -n 1)" >> $GITHUB_ENV
     - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
 
@@ -103,7 +128,6 @@ jobs:
         path: vsix
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
-        fail-on-cache-miss: true
     - uses: cezarypiatek/VsixPublisherAction@1.1
       with:
         extension-file: vsix\EcoCode.vsix
@@ -118,13 +142,12 @@ jobs:
       with:
         path: nupkg
         key: cache-${{ github.sha }}
-        fail-on-cache-miss: true
+        enableCrossOsArchive: true
     - uses: actions/cache/restore@v4
       with:
         path: vsix
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
-        fail-on-cache-miss: true
     - uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ needs.versioning.outputs.tag }}
