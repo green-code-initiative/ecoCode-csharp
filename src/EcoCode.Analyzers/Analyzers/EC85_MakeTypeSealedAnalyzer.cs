@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Collections.Concurrent;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>Analyzer for make type sealed.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -26,16 +28,17 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.RegisterCompilationStartAction(compilationStartContext =>
         {
-            var sealableClasses = new List<INamedTypeSymbol>();
-            var inheritedClasses = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+            // Concurrent collections as RegisterSymbolAction is called once per symbol and can be parallelized
+            var sealableClasses = new ConcurrentBag<INamedTypeSymbol>();
+            var inheritedClasses = new ConcurrentDictionary<INamedTypeSymbol, bool>(SymbolEqualityComparer.Default);
 
-            compilationStartContext.RegisterSymbolAction(context =>
+            compilationStartContext.RegisterSymbolAction(analysisContext =>
             {
-                if (context.Symbol is not INamedTypeSymbol symbol || symbol.TypeKind is not TypeKind.Class || symbol.IsStatic)
+                if (analysisContext.Symbol is not INamedTypeSymbol symbol || symbol.TypeKind is not TypeKind.Class || symbol.IsStatic)
                     return;
 
                 if (symbol.BaseType is INamedTypeSymbol { IsAbstract: false, SpecialType: SpecialType.None, TypeKind: TypeKind.Class } baseType)
-                    _ = inheritedClasses.Add(baseType);
+                    _ = inheritedClasses.TryAdd(baseType, true);
 
                 // If the class is internal and has inheritance members, we'll propose to seal it and make those members non virtual and/or private
                 // If the class is public however, skip, as it can be inherited from in another assembly
@@ -51,7 +54,7 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
             {
                 foreach (var cls in sealableClasses)
                 {
-                    if (inheritedClasses.Contains(cls)) continue;
+                    if (inheritedClasses.ContainsKey(cls)) continue;
                     foreach (var location in cls.Locations)
                         compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
                 }
