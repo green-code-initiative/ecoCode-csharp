@@ -111,4 +111,15 @@ public static class SymbolExtensions
         }
         return visibility;
     }
+
+    /// <summary>Returns the original symbol overridden by the given symbol.</summary>
+    /// <param name="symbol">The symbol.</param>
+    /// <returns>The overriden symbol, null if none.</returns>
+    public static ISymbol? OverridenSymbol(this ISymbol symbol) => symbol switch
+    {
+        IMethodSymbol s => s.OverriddenMethod,
+        IPropertySymbol s => s.OverriddenProperty,
+        IEventSymbol eventSymbol => eventSymbol.OverriddenEvent,
+        _ => null
+    };
 }

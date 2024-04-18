@@ -40,11 +40,10 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 if (symbol.BaseType is INamedTypeSymbol { IsAbstract: false, SpecialType: SpecialType.None, TypeKind: TypeKind.Class } baseType)
                     _ = inheritedClasses.TryAdd(baseType, true);
 
-                // If the class is internal and has inheritance members, we'll propose to seal it and make those members non virtual and/or private
-                // If the class is public however, skip, as it can be inherited from in another assembly
+                // If the type is externally public and has at least one overridable member, skip, as it can be inherited from in another assembly
                 if (!symbol.IsAbstract && !symbol.IsSealed && !symbol.IsScriptClass &&
                     !symbol.IsImplicitlyDeclared && !symbol.IsImplicitClass &&
-                    (!IsPublic(symbol) || !symbol.HasInheritanceMembers()))
+                    (!symbol.IsExternallyPublic() || !symbol.HasAnyOverridableMember(recursive: true)))
                 {
                     sealableClasses.Add(symbol);
                 }
@@ -60,15 +59,5 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 }
             });
         });
-
-        static bool IsPublic(INamedTypeSymbol typeSymbol)
-        {
-            do
-            {
-                if (typeSymbol.DeclaredAccessibility is not Accessibility.Public) return false;
-                typeSymbol = typeSymbol.ContainingType;
-            } while (typeSymbol is not null);
-            return true;
-        }
     }
 }
