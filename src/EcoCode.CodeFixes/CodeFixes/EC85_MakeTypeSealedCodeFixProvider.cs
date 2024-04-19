@@ -45,17 +45,35 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
         if (root is null) return document;
 
-        var virtualToken = SyntaxFactory.Token(SyntaxKind.VirtualKeyword);
-        var sealedToken = SyntaxFactory.Token(SyntaxKind.SealedKeyword);
-        var updatedMembers = new List<MemberDeclarationSyntax>(decl.Members.Count);
+        const int virtualKeyword = (int)SyntaxKind.VirtualKeyword;
+        const int sealedKeyword = (int)SyntaxKind.SealedKeyword;
+
+        bool updated = false;
+        var newModifiers = new List<SyntaxToken>(8); // Pre-allocate to avoid resizing, 8 is more than enough for modifiers
+        var newMembers = new List<MemberDeclarationSyntax>(decl.Members.Count);
         foreach (var member in decl.Members)
         {
-            var modifiers = member.Modifiers.Remove(virtualToken).Remove(sealedToken);
-            updatedMembers.Add(member.Modifiers.Count == modifiers.Count ? member : member.WithModifiers(modifiers));
+            newModifiers.Clear();
+            foreach (var modifier in member.Modifiers)
+            {
+                if (modifier.RawKind is not virtualKeyword and not sealedKeyword)
+                    newModifiers.Add(modifier);
+            }
+
+            if (newModifiers.Count == member.Modifiers.Count)
+            {
+                newMembers.Add(member); // Don't allocate for nothing
+            }
+            else
+            {
+                updated = true;
+                newMembers.Add(member.WithModifiers(SyntaxFactory.TokenList(newModifiers)));
+            }
         }
 
-        return document.WithSyntaxRoot(root.ReplaceNode(decl, decl
-            .WithModifiers(decl.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword)))
-            .WithMembers(SyntaxFactory.List(updatedMembers))));
+        var updatedDecl = decl.WithModifiers(decl.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword)));
+        if (updated) updatedDecl = updatedDecl.WithMembers(SyntaxFactory.List(newMembers));
+
+        return document.WithSyntaxRoot(root.ReplaceNode(decl, updatedDecl));
     }
 }
