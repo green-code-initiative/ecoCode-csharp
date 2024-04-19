@@ -18,32 +18,36 @@ public static class NamedTypeSymbolExtensions
         return true;
     }
 
-    /// <summary>Returns whether a symbol has any overridable member.</summary>
+    /// <summary>Returns whether a symbol has any overridable member, excluding the default ones (Equals, GetHashCode, etc).</summary>
     /// <param name="symbol">The symbol.</param>
-    /// <param name="recursive">True to include the inherited members, false to restrict the search to the type declared members.</param>
-    /// <param name="excludeImplicits">Whether to excluded implicitly declared members, such as record methods like Equals and GetHashCode.</param>
     /// <returns>True if any member is overridable, false otherwise.</returns>
-    public static bool HasAnyOverridableMember(this INamedTypeSymbol symbol, bool recursive, bool excludeImplicits = true)
+    public static bool HasAnyOverridableMember(this INamedTypeSymbol symbol)
     {
-        var type = symbol;
-        var sealedMembers = default(HashSet<ISymbol>);
+        if (symbol.TypeKind is not TypeKind.Class || symbol.IsSealed)
+            return false;
+
+        var (current, sealedMembers) = (symbol, default(HashSet<ISymbol>));
         do
         {
-            foreach (var member in type.GetMembers())
+            if (current.SpecialType is SpecialType.System_Object) break;
+
+            foreach (var member in current.GetMembers())
             {
-                if (member.IsImplicitlyDeclared && excludeImplicits) continue;
+                if (member.IsImplicitlyDeclared) continue; // For records, ie. Equals, GetHashCode, etc
 
-                if (member.IsVirtual && sealedMembers?.Contains(member.OverridenSymbol()!) != true)
-                    return true;
+                if (member.IsVirtual && sealedMembers?.Contains(member) != true) return true;
 
-                if (member.IsOverride)
+                // If overridden, skip base object methods, ie. Equals, GetHashCode, etc
+                if (member.OverriddenSymbol() is { } overridden && overridden.ContainingType.SpecialType is not SpecialType.System_Object)
                 {
-                    if (!member.IsSealed) return true;
-                    _ = (sealedMembers ??= new HashSet<ISymbol>(SymbolEqualityComparer.Default)).Add(member.OverridenSymbol()!);
+                    if (member.IsSealed) // Cache the overriden member to prevent returning true when checking it in the parent
+                        _ = (sealedMembers ??= new(SymbolEqualityComparer.Default)).Add(overridden);
+                    else if (sealedMembers?.Contains(overridden) != true)
+                        return true; // Overriden but not sealed is still overridable
                 }
             }
-            type = type.BaseType;
-        } while (recursive && type is not null);
+            current = current.BaseType;
+        } while (current is not null);
 
         return false;
     }

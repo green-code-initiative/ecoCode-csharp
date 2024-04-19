@@ -43,7 +43,7 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 // If the type is externally public and has at least one overridable member, skip, as it can be inherited from in another assembly
                 if (!symbol.IsAbstract && !symbol.IsSealed && !symbol.IsScriptClass &&
                     !symbol.IsImplicitlyDeclared && !symbol.IsImplicitClass &&
-                    (!symbol.IsExternallyPublic() || !symbol.HasAnyOverridableMember(recursive: true)))
+                    (!symbol.IsExternallyPublic() || !symbol.HasAnyOverridableMember()))
                 {
                     sealableClasses.Add(symbol);
                 }

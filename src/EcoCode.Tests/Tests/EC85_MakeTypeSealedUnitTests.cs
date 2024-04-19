@@ -11,6 +11,28 @@ public sealed class MakeTypeSealed
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
+    public async Task PublicClasses1Async() => await VerifyAsync("""
+        public abstract class Test2 { public virtual void Overridable() { } }
+        public class Test3 : Test2;
+        public class [|Test4|] : Test3 { public sealed override void Overridable() { } }
+        public class [|Test5|] : Test3
+        {
+            public override int GetHashCode() => 0;
+            public sealed override void Overridable() { }
+        }
+        """,
+        fixedSource: """
+        public abstract class Test2 { public virtual void Overridable() { } }
+        public class Test3 : Test2;
+        public sealed class Test4 : Test3 { public override void Overridable() { } }
+        public sealed class Test5 : Test3
+        {
+            public override int GetHashCode() => 0;
+            public override void Overridable() { }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
     public async Task PublicClassesAsync() => await VerifyAsync("""
         public static class Test1;
         public abstract class Test2 { public virtual void Overridable() { } }
@@ -20,6 +42,34 @@ public sealed class MakeTypeSealed
         public class Test6 : Test4;
         public class Test7 : Test4 { public override void Overridable() { } }
         public class [|Test8|] : Test4 { public sealed override void Overridable() { } }
+        public class Test9 : Test4 { public sealed override void Overridable() { } }
+        public class [|Test10|] : Test9;
+        """,
+        fixedSource: """
+        public static class Test1;
+        public abstract class Test2 { public virtual void Overridable() { } }
+        public class Test3 : Test2;
+        public class Test4 : Test3;
+        public sealed class Test5 : Test4;
+        public class Test6 : Test4;
+        public class Test7 : Test4 { public override void Overridable() { } }
+        public sealed class Test8 : Test4 { public sealed override void Overridable() { } }
+        public class Test9 : Test4 { public sealed override void Overridable() { } }
+        public sealed class Test10 : Test9;
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task PublicClassesInPublicClassesAsync() => await VerifyAsync("""
+        public static class Test1;
+        public abstract class Test2 { public virtual void Overridable() { } }
+        public class Test3 : Test2;
+        public class Test4 : Test3;
+        public sealed class Test5 : Test4;
+        public class Test6 : Test4;
+        public class Test7 : Test4 { public override void Overridable() { } }
+        public class [|Test8|] : Test4 { public sealed override void Overridable() { } }
+        public class Test9 : Test4 { public sealed override void Overridable() { } }
+        public class [|Test10|] : Test9;
         
         public static class Container1
         {
@@ -80,6 +130,8 @@ public sealed class MakeTypeSealed
         public class Test6 : Test4;
         public class Test7 : Test4 { public override void Overridable() { } }
         public sealed class Test8 : Test4 { public sealed override void Overridable() { } }
+        public class Test9 : Test4 { public sealed override void Overridable() { } }
+        public sealed class Test10 : Test9;
 
         public static class Container1
         {

@@ -43,7 +43,19 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
     private static async Task<Document> RefactorAsync(Document document, TypeDeclarationSyntax decl, CancellationToken cancellationToken)
     {
         var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-        return root is null ? document : document.WithSyntaxRoot(
-            root.ReplaceNode(decl, decl.WithModifiers(decl.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword)))));
+        if (root is null) return document;
+
+        var virtualToken = SyntaxFactory.Token(SyntaxKind.VirtualKeyword);
+        var sealedToken = SyntaxFactory.Token(SyntaxKind.SealedKeyword);
+        var updatedMembers = new List<MemberDeclarationSyntax>(decl.Members.Count);
+        foreach (var member in decl.Members)
+        {
+            var modifiers = member.Modifiers.Remove(virtualToken).Remove(sealedToken);
+            updatedMembers.Add(member.Modifiers.Count == modifiers.Count ? member : member.WithModifiers(modifiers));
+        }
+
+        return document.WithSyntaxRoot(root.ReplaceNode(decl, decl
+            .WithModifiers(decl.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword)))
+            .WithMembers(SyntaxFactory.List(updatedMembers))));
     }
 }
