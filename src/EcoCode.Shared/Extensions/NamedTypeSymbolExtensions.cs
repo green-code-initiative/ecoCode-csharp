@@ -21,7 +21,7 @@ public static class NamedTypeSymbolExtensions
     /// <summary>Returns whether a symbol has any overridable member, excluding the default ones (Equals, GetHashCode, etc).</summary>
     /// <param name="symbol">The symbol.</param>
     /// <returns>True if any member is overridable, false otherwise.</returns>
-    public static bool HasAnyOverridableMember(this INamedTypeSymbol symbol)
+    public static bool HasAnyExternallyOverridableMember(this INamedTypeSymbol symbol)
     {
         if (symbol.TypeKind is not TypeKind.Class || symbol.IsSealed)
             return false;
@@ -33,7 +33,8 @@ public static class NamedTypeSymbolExtensions
 
             foreach (var member in current.GetMembers())
             {
-                if (member.IsImplicitlyDeclared) continue; // For records, ie. Equals, GetHashCode, etc
+                if (member.IsImplicitlyDeclared || member.DeclaredAccessibility is not Accessibility.Public and not Accessibility.Protected)
+                    continue; // IsImplicitlyDeclared is for record methods, ie. Equals, GetHashCode, etc
 
                 if (member.IsVirtual && sealedMembers?.Contains(member) != true) return true;
 

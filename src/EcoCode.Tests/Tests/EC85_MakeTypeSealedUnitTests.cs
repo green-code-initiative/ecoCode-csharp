@@ -159,6 +159,14 @@ public sealed class MakeTypeSealed
         """).ConfigureAwait(false);
 
     [TestMethod]
+    public async Task SealableClassesWithOverridable2Async() => await VerifyAsync("""
+        public class [|Test|] { internal virtual void Method() { } };
+        """,
+        fixedSource: """
+        public sealed class Test { internal void Method() { } };
+        """).ConfigureAwait(false);
+
+    [TestMethod]
     public async Task InheritanceAsync() => await VerifyAsync("""
         public abstract class Test2 { public virtual void Overridable() { } }
         public class Test3 : Test2;

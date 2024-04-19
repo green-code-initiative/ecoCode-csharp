@@ -40,13 +40,15 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 if (symbol.BaseType is INamedTypeSymbol { IsAbstract: false, SpecialType: SpecialType.None, TypeKind: TypeKind.Class } baseType)
                     _ = inheritedClasses.TryAdd(baseType, true);
 
-                // If the type is externally public and has at least one overridable member, skip, as it can be inherited from in another assembly
-                if (!symbol.IsAbstract && !symbol.IsSealed && !symbol.IsScriptClass &&
-                    !symbol.IsImplicitlyDeclared && !symbol.IsImplicitClass &&
-                    (!symbol.IsExternallyPublic() || !symbol.HasAnyOverridableMember()))
-                {
+                if (symbol.IsAbstract || symbol.IsSealed || symbol.IsScriptClass || symbol.IsImplicitlyDeclared || symbol.IsImplicitClass)
+                    return;
+
+                // Exclude types that are externally public (ie. inheritable from another assembly)
+                // AND have at least one externally public or protected overridable member
+                // An externally public type can still be inherited from without the second condition
+                // But in that case we'll let the user decide whether to seal it or not, and mute the warning if so
+                if (!symbol.IsExternallyPublic() || !symbol.HasAnyExternallyOverridableMember())
                     sealableClasses.Add(symbol);
-                }
             }, SymbolKind.NamedType);
 
             compilationStartContext.RegisterCompilationEndAction(compilationEndContext =>
