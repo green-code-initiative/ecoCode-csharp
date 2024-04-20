@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-
-namespace EcoCode.Shared;
+﻿namespace EcoCode.Shared;
 
 /// <summary>Extensions methods for <see cref="SyntaxNode"/>.</summary>
 public static class SyntaxNodeExtensions

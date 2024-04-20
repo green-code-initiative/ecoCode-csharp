@@ -261,4 +261,13 @@ public sealed class MakeTypeSealed
         public class Test8 : Test3 { public sealed override void Overridable() { } }
         public sealed class Test9 : Test8;
         """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task PartialAsync() => await VerifyAsync("""
+        public partial class [|Test1|];
+        partial class Test1 { public void Method() { } }
+        """, """
+        public sealed partial class Test1;
+        partial class Test1 { public void Method() { } }
+        """).ConfigureAwait(false);
 }

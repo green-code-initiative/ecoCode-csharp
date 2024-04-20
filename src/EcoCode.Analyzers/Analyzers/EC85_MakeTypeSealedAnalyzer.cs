@@ -1,4 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using Microsoft.CodeAnalysis;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading;
 
 namespace EcoCode.Analyzers;
 
@@ -56,8 +59,9 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 foreach (var cls in sealableClasses)
                 {
                     if (inheritedClasses.ContainsKey(cls)) continue;
-                    foreach (var location in cls.Locations)
-                        compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+                    // foreach (var location in cls.Locations) compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+                    // TODO: handle multiple locations when partial, choose one smartly
+                    compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, cls.Locations[0]));
                 }
             });
         });
