@@ -22,8 +22,7 @@ public sealed class AvoidAsyncVoidMethodsUnitTests
                 Console.WriteLine();
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         using System.Threading.Tasks;
         public static class Program
@@ -48,8 +47,7 @@ public sealed class AvoidAsyncVoidMethodsUnitTests
                 _ = await httpClient.GetAsync(new Uri("URL")).ConfigureAwait(false);
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         using System.Net.Http;
         public static class Program

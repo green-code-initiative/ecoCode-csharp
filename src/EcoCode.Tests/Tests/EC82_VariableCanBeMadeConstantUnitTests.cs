@@ -21,8 +21,7 @@ public sealed class VariableCanBeMadeConstantUnitTests
                 Console.WriteLine(i);
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public class Program
         {
@@ -113,8 +112,7 @@ public sealed class VariableCanBeMadeConstantUnitTests
                 Console.WriteLine(j);
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public class Program
         {
@@ -161,8 +159,7 @@ public sealed class VariableCanBeMadeConstantUnitTests
                 [|string s = "abc";|]
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public class Program
         {
@@ -183,8 +180,7 @@ public sealed class VariableCanBeMadeConstantUnitTests
                 [|var item = 4;|]
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public class Program
         {
@@ -205,8 +201,7 @@ public sealed class VariableCanBeMadeConstantUnitTests
                 [|var item = "abc";|]
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public class Program
         {

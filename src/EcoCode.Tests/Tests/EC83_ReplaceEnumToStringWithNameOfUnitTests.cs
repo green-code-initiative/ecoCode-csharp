@@ -24,8 +24,7 @@ public sealed class ReplaceEnumToStringWithNameOfUnitTests
                 Console.WriteLine([|MyEnum.D.ToString(format: null)|]);
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public static class Program
         {
@@ -53,8 +52,7 @@ public sealed class ReplaceEnumToStringWithNameOfUnitTests
                 Console.WriteLine(MyEnum.C.ToString("N"));
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public static class Program
         {
@@ -82,8 +80,7 @@ public sealed class ReplaceEnumToStringWithNameOfUnitTests
                 Console.WriteLine($"{MyEnum.D:N}");
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public static class Program
         {

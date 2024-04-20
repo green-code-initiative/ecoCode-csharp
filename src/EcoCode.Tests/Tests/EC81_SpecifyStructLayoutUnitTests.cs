@@ -30,8 +30,7 @@ public sealed class SpecifyStructLayoutUnitTests
             public int A { get; set; }
             public double B { get; set; }
         };
-        """,
-        fixedSource: """
+        """, """
         using System.Runtime.InteropServices;
 
         [StructLayout(LayoutKind.Auto)]
@@ -63,8 +62,7 @@ public sealed class SpecifyStructLayoutUnitTests
             public double B { get; set; }
             public int C { get; set; }
         };
-        """,
-        fixedSource: """
+        """, """
         using System.Runtime.InteropServices;
 
         [StructLayout(LayoutKind.Auto)]
@@ -81,8 +79,7 @@ public sealed class SpecifyStructLayoutUnitTests
         using System;
 
         public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, DateTime F);
-        """,
-        fixedSource: """
+        """, """
         using System;
         using System.Runtime.InteropServices;
 

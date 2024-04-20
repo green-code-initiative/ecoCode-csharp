@@ -12,7 +12,8 @@ public sealed class MakeTypeSealed
 
     [TestMethod]
     public async Task SealableClassesAsync() => await VerifyAsync("""
-        public class [|Test|];
+        public class [|TestA|];
+        internal class [|TestB|];
         public static class Test0
         {
             public class [|Test01|];
@@ -25,9 +26,9 @@ public sealed class MakeTypeSealed
             internal class [|Test12|];
             private class [|Test13|];
         }
-        """,
-        fixedSource: """
-        public sealed class Test;
+        """, """
+        public sealed class TestA;
+        internal sealed class TestB;
         public static class Test0
         {
             public sealed class Test01;
@@ -60,7 +61,8 @@ public sealed class MakeTypeSealed
 
     [TestMethod]
     public async Task AbstractClassesAsync() => await VerifyAsync("""
-        public abstract class Test;
+        public abstract class TestA;
+        internal abstract class TestB;
         public static class Test0
         {
             public abstract class Test01;
@@ -77,7 +79,8 @@ public sealed class MakeTypeSealed
 
     [TestMethod]
     public async Task SealedClassesAsync() => await VerifyAsync("""
-        public sealed class Test;
+        public sealed class TestA;
+        internal sealed class TestB;
         public static class Test0
         {
             public sealed class Test01;
@@ -95,7 +98,8 @@ public sealed class MakeTypeSealed
     [TestMethod]
     public async Task SealableClassesWithInterfaceAsync() => await VerifyAsync("""
         public interface ITest { void Method(); }
-        public class [|Test|] : ITest { public void Method() { } }
+        public class [|TestA|] : ITest { public void Method() { } }
+        internal class [|TestB|] : ITest { public void Method() { } }
         public static class Test0
         {
             public class [|Test01|] : ITest { public void Method() { } }
@@ -108,10 +112,10 @@ public sealed class MakeTypeSealed
             internal class [|Test12|] : ITest { public void Method() { } }
             private class [|Test13|] : ITest { public void Method() { } }
         }
-        """,
-        fixedSource: """
+        """, """
         public interface ITest { void Method(); }
-        public sealed class Test : ITest { public void Method() { } }
+        public sealed class TestA : ITest { public void Method() { } }
+        internal sealed class TestB : ITest { public void Method() { } }
         public static class Test0
         {
             public sealed class Test01 : ITest { public void Method() { } }
@@ -128,42 +132,113 @@ public sealed class MakeTypeSealed
 
     [TestMethod]
     public async Task SealableClassesWithOverridableAsync() => await VerifyAsync("""
-        public class Test { public virtual void Method() { } };
-        public static class Test0
-        {
-            public class Test01 { public virtual void Method() { } };
-            internal class [|Test02|] { public virtual void Method() { } };
-            private class [|Test03|] { public virtual void Method() { } };
-        }
-        internal static class Test1
-        {
-            public class [|Test11|] { public virtual void Method() { } };
-            internal class [|Test12|] { public virtual void Method() { } };
-            private class [|Test13|] { public virtual void Method() { } };
-        }
-        """,
-        fixedSource: """
-        public class Test { public virtual void Method() { } };
-        public static class Test0
-        {
-            public class Test01 { public virtual void Method() { } };
-            internal sealed class Test02 { public void Method() { } };
-            private sealed class Test03 { public void Method() { } };
-        }
-        internal static class Test1
-        {
-            public sealed class Test11 { public void Method() { } };
-            internal sealed class Test12 { public void Method() { } };
-            private sealed class Test13 { public void Method() { } };
-        }
-        """).ConfigureAwait(false);
+        public class TestA1 { public virtual void Method() { } };
+        public class [|TestA2|] { internal virtual void Method() { } };
+        public class TestA3 { protected virtual void Method() { } };
+        public class [|TestA4|] { protected internal virtual void Method() { } };
+        public class [|TestA5|] { private protected virtual void Method() { } };
 
-    [TestMethod]
-    public async Task SealableClassesWithOverridable2Async() => await VerifyAsync("""
-        public class [|Test|] { internal virtual void Method() { } };
-        """,
-        fixedSource: """
-        public sealed class Test { internal void Method() { } };
+        internal class [|TestB1|] { public virtual void Method() { } };
+        internal class [|TestB2|] { internal virtual void Method() { } };
+        internal class [|TestB3|] { protected virtual void Method() { } };
+        internal class [|TestB4|] { protected internal virtual void Method() { } };
+        internal class [|TestB5|] { private protected virtual void Method() { } };
+
+        public static class Test0
+        {
+            public class TestA1 { public virtual void Method() { } };
+            public class [|TestA2|] { internal virtual void Method() { } };
+            public class TestA3 { protected virtual void Method() { } };
+            public class [|TestA4|] { protected internal virtual void Method() { } };
+            public class [|TestA5|] { private protected virtual void Method() { } };
+        
+            internal class [|TestB1|] { public virtual void Method() { } };
+            internal class [|TestB2|] { internal virtual void Method() { } };
+            internal class [|TestB3|] { protected virtual void Method() { } };
+            internal class [|TestB4|] { protected internal virtual void Method() { } };
+            internal class [|TestB5|] { private protected virtual void Method() { } };
+
+            private class [|TestC1|] { public virtual void Method() { } };
+            private class [|TestC2|] { internal virtual void Method() { } };
+            private class [|TestC3|] { protected virtual void Method() { } };
+            private class [|TestC4|] { protected internal virtual void Method() { } };
+            private class [|TestC5|] { private protected virtual void Method() { } };
+        }
+
+        internal static class Test1
+        {
+            public class [|TestA1|] { public virtual void Method() { } };
+            public class [|TestA2|] { internal virtual void Method() { } };
+            public class [|TestA3|] { protected virtual void Method() { } };
+            public class [|TestA4|] { protected internal virtual void Method() { } };
+            public class [|TestA5|] { private protected virtual void Method() { } };
+        
+            internal class [|TestB1|] { public virtual void Method() { } };
+            internal class [|TestB2|] { internal virtual void Method() { } };
+            internal class [|TestB3|] { protected virtual void Method() { } };
+            internal class [|TestB4|] { protected internal virtual void Method() { } };
+            internal class [|TestB5|] { private protected virtual void Method() { } };
+        
+            private class [|TestC1|] { public virtual void Method() { } };
+            private class [|TestC2|] { internal virtual void Method() { } };
+            private class [|TestC3|] { protected virtual void Method() { } };
+            private class [|TestC4|] { protected internal virtual void Method() { } };
+            private class [|TestC5|] { private protected virtual void Method() { } };
+        }
+        """, """
+        public class TestA1 { public virtual void Method() { } };
+        public sealed class TestA2 { internal void Method() { } };
+        public class TestA3 { protected virtual void Method() { } };
+        public sealed class TestA4 { internal void Method() { } };
+        public sealed class TestA5 { private void Method() { } };
+
+        internal sealed class TestB1 { public void Method() { } };
+        internal sealed class TestB2 { internal void Method() { } };
+        internal sealed class TestB3 { private void Method() { } };
+        internal sealed class TestB4 { internal void Method() { } };
+        internal sealed class TestB5 { private void Method() { } };
+
+        public static class Test0
+        {
+            public class TestA1 { public virtual void Method() { } };
+            public sealed class TestA2 { internal void Method() { } };
+            public class TestA3 { protected virtual void Method() { } };
+            public sealed class TestA4 { internal void Method() { } };
+            public sealed class TestA5 { private void Method() { } };
+        
+            internal sealed class TestB1 { public void Method() { } };
+            internal sealed class TestB2 { internal void Method() { } };
+            internal sealed class TestB3 { private void Method() { } };
+            internal sealed class TestB4 { internal void Method() { } };
+            internal sealed class TestB5 { private void Method() { } };
+
+            private sealed class TestC1 { public void Method() { } };
+            private sealed class TestC2 { internal void Method() { } };
+            private sealed class TestC3 { private void Method() { } };
+            private sealed class TestC4 { internal void Method() { } };
+            private sealed class TestC5 { private void Method() { } };
+        }
+
+        internal static class Test1
+        {
+            public sealed class TestA1 { public void Method() { } };
+            public sealed class TestA2 { internal void Method() { } };
+            public sealed class TestA3 { private void Method() { } };
+            public sealed class TestA4 { internal void Method() { } };
+            public sealed class TestA5 { private void Method() { } };
+        
+            internal sealed class TestB1 { public void Method() { } };
+            internal sealed class TestB2 { internal void Method() { } };
+            internal sealed class TestB3 { private void Method() { } };
+            internal sealed class TestB4 { internal void Method() { } };
+            internal sealed class TestB5 { private void Method() { } };
+        
+            private sealed class TestC1 { public void Method() { } };
+            private sealed class TestC2 { internal void Method() { } };
+            private sealed class TestC3 { private void Method() { } };
+            private sealed class TestC4 { internal void Method() { } };
+            private sealed class TestC5 { private void Method() { } };
+        }
         """).ConfigureAwait(false);
 
     [TestMethod]
@@ -175,12 +250,8 @@ public sealed class MakeTypeSealed
         public class Test6 : Test3 { public override void Overridable() { } }
         public class [|Test7|] : Test3 { public sealed override void Overridable() { } }
         public class Test8 : Test3 { public sealed override void Overridable() { } }
-        public class [|Test9|] : Test8
-        {
-            public sealed override int GetHashCode() => 0;
-            public override string ToString() => string.Empty;
-        }
-        """, fixedSource: """
+        public class [|Test9|] : Test8;
+        """, """
         public abstract class Test2 { public virtual void Overridable() { } }
         public class Test3 : Test2;
         public sealed class Test4 : Test3;
@@ -188,10 +259,6 @@ public sealed class MakeTypeSealed
         public class Test6 : Test3 { public override void Overridable() { } }
         public sealed class Test7 : Test3 { public override void Overridable() { } }
         public class Test8 : Test3 { public sealed override void Overridable() { } }
-        public sealed class Test9 : Test8
-        {
-            public override int GetHashCode() => 0;
-            public override string ToString() => string.Empty;
-        }
+        public sealed class Test9 : Test8;
         """).ConfigureAwait(false);
 }

@@ -1,4 +1,6 @@
-﻿namespace EcoCode.CodeFixes;
+﻿using System.Linq;
+
+namespace EcoCode.CodeFixes;
 
 /// <summary>The code fix provider for make type sealed.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeTypeSealedCodeFixProvider)), Shared]
@@ -40,40 +42,52 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
         }
     }
 
-    private static async Task<Document> RefactorAsync(Document document, TypeDeclarationSyntax decl, CancellationToken cancellationToken)
+    private static async Task<Document> RefactorAsync(Document document, TypeDeclarationSyntax decl, CancellationToken token)
     {
-        var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-        if (root is null) return document;
+        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not SyntaxNode root ||
+            await document.GetSemanticModelAsync(token).ConfigureAwait(false) is not SemanticModel semanticModel)
+        {
+            return document;
+        }
 
-        const int virtualKeyword = (int)SyntaxKind.VirtualKeyword;
-        const int sealedKeyword = (int)SyntaxKind.SealedKeyword;
-
-        bool updated = false;
-        var newModifiers = new List<SyntaxToken>(8); // Pre-allocate to avoid resizing, 8 is more than enough for modifiers
+        var newModifiers = new List<SyntaxToken>(8); // Pre-allocate to avoid resizing, 8 is enough for modifiers
         var newMembers = new List<MemberDeclarationSyntax>(decl.Members.Count);
+        var privateKeyword = SyntaxFactory.Token(SyntaxKind.PrivateKeyword);
+        const int Keep = 0, ReplaceWithPrivate = 1, Remove = 2;
+
         foreach (var member in decl.Members)
         {
+            // Determine what to do with the protected modifier if present
+            int handleProtected = semanticModel.GetDeclaredSymbol(member, token)?.DeclaredAccessibility switch
+            {
+                Accessibility.Protected => ReplaceWithPrivate,
+                Accessibility.ProtectedOrInternal or Accessibility.ProtectedAndInternal => Remove,
+                _ => Keep,
+            };
+
+            // Build the new modifiers for the member
             newModifiers.Clear();
             foreach (var modifier in member.Modifiers)
             {
-                if (modifier.RawKind is not virtualKeyword and not sealedKeyword)
-                    newModifiers.Add(modifier);
+                if (modifier.IsKind(SyntaxKind.VirtualKeyword) || modifier.IsKind(SyntaxKind.SealedKeyword))
+                    continue; // Skip those modifiers
+
+                if (!modifier.IsKind(SyntaxKind.ProtectedKeyword) || handleProtected == Keep)
+                    newModifiers.Add(modifier); // Keep the other modifiers, including protected
+
+                if (handleProtected == ReplaceWithPrivate)
+                    newModifiers.Add(privateKeyword);
             }
 
-            if (newModifiers.Count == member.Modifiers.Count)
-            {
-                newMembers.Add(member); // Don't allocate for nothing
-            }
-            else
-            {
-                updated = true;
-                newMembers.Add(member.WithModifiers(SyntaxFactory.TokenList(newModifiers)));
-            }
+            newMembers.Add(newModifiers.Count == member.Modifiers.Count && handleProtected != ReplaceWithPrivate
+                ? member // Don't allocate if the modifiers haven't changed
+                : member.WithModifiers(SyntaxFactory.TokenList(newModifiers))
+                    .WithLeadingTriviaIfDifferent(member.GetLeadingTrivia())
+                    .WithTrailingTriviaIfDifferent(member.GetTrailingTrivia()));
         }
 
-        var updatedDecl = decl.WithModifiers(decl.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword)));
-        if (updated) updatedDecl = updatedDecl.WithMembers(SyntaxFactory.List(newMembers));
-
-        return document.WithSyntaxRoot(root.ReplaceNode(decl, updatedDecl));
+        return document.WithSyntaxRoot(root.ReplaceNode(decl, decl
+            .WithModifiers(decl.Modifiers.Add(SyntaxFactory.Token(SyntaxKind.SealedKeyword))) // Add the sealed keyword to the type
+            .WithMembers(SyntaxFactory.List(newMembers))));
     }
 }
