@@ -44,6 +44,57 @@ public sealed class MakeTypeSealed
         """).ConfigureAwait(false);
 
     [TestMethod]
+    public async Task SealableRecordsAsync() => await VerifyAsync("""
+        public record [|TestA|];
+        internal record [|TestB|];
+        public static class Test0
+        {
+            public record [|Test01|];
+            internal record [|Test02|];
+            private record [|Test03|];
+        }
+        internal static class Test1
+        {
+            public record [|Test11|];
+            internal record [|Test12|];
+            private record [|Test13|];
+        }
+        """, """
+        public sealed record TestA;
+        internal sealed record TestB;
+        public static class Test0
+        {
+            public sealed record Test01;
+            internal sealed record Test02;
+            private sealed record Test03;
+        }
+        internal static class Test1
+        {
+            public sealed record Test11;
+            internal sealed record Test12;
+            private sealed record Test13;
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task NonSealableStructsAsync() => await VerifyAsync("""
+        public struct TestA;
+        internal struct TestB;
+        public static class Test0
+        {
+            public struct Test01;
+            internal struct Test02;
+            private struct Test03;
+        }
+        internal static class Test1
+        {
+            public struct Test11;
+            internal struct Test12;
+            private struct Test13;
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
     public async Task StaticClassesAsync() => await VerifyAsync("""
         public static class Test0
         {
