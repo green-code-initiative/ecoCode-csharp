@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
+﻿using System.Collections.Concurrent;
 
 namespace EcoCode.Analyzers;
 

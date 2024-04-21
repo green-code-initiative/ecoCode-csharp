@@ -38,36 +38,6 @@ public static class SyntaxNodeExtensions
         };
     }
 
-    /// <summary>Returns whether a node has a given using directive, use with a document root.</summary>
-    /// <param name="node">The node.</param>
-    /// <param name="namespace">The namespace of the using directive.</param>
-    /// <returns>True if the node has the given using, false otherwise.</returns>
-    public static bool HasUsingDirective(this SyntaxNode node, string @namespace)
-    {
-        foreach (var descendant in node.DescendantNodes())
-        {
-            if ((descendant as UsingDirectiveSyntax)?.Name?.ToString() == @namespace)
-                return true;
-        }
-        return false;
-    }
-
-    /// <summary>Adds a using directive to the given node, use with a document root.</summary>
-    /// <param name="node">The node.</param>
-    /// <param name="namespace">The namespace of the using directive.</param>
-    /// <returns>The updated node with the using directive.</returns>
-    public static SyntaxNode AddUsingDirective(this SyntaxNode node, string @namespace)
-    {
-        var usingDirective = SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(@namespace)).NormalizeWhitespace();
-
-        foreach (var descendant in node.DescendantNodes())
-        {
-            if (descendant is NamespaceDeclarationSyntax namespaceDeclaration)
-                return node.ReplaceNode(namespaceDeclaration, namespaceDeclaration.AddUsings(usingDirective));
-        }
-        return ((CompilationUnitSyntax)node).AddUsings(usingDirective); // Add the using directive at the top of the file
-    }
-
     /// <summary>Returns the node with a given leading trivia, or the node directly if the trivia is the same.</summary>
     /// <param name="node">The node.</param>
     /// <param name="trivia">The trivia.</param>
