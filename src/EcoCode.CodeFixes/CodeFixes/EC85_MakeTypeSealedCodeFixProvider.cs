@@ -158,8 +158,7 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
 
                 if (!modifier.IsKind(SyntaxKind.ProtectedKeyword) || handleProtected == Keep)
                     newModifiers.Add(modifier); // Keep the other modifiers, including protected
-
-                if (handleProtected == ReplaceWithPrivate)
+                else if (handleProtected == ReplaceWithPrivate)
                     newModifiers.Add(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
             }
 
@@ -170,7 +169,7 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
                     .WithTrailingTriviaIfDifferent(member.GetTrailingTrivia()));
         }
 
-        var newDecl = newMembers.Count != declaration.Members.Count || !newMembers.SequenceEqual(declaration.Members)
+        var newDecl = newMembers.Count == declaration.Members.Count && newMembers.SequenceEqual(declaration.Members)
             ? declaration // Don't allocate if the members haven't changed
             : declaration.WithMembers(SyntaxFactory.List(newMembers));
 
