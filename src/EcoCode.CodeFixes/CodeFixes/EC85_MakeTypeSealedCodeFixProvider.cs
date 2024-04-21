@@ -39,13 +39,13 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
 
                 context.RegisterCodeFix(
                     symbol.DeclaringSyntaxReferences.Length == 1
-                    ? CodeAction.Create( // Non partial declaration
+                    ? CodeAction.Create( // Single declaration
                         title: "Make type sealed",
-                        createChangedDocument: token => RefactorNoPartialAsync(context.Document, decl, token),
+                        createChangedDocument: token => RefactorSingleAsync(context.Document, decl, token),
                         equivalenceKey: "Make type sealed")
-                    : CodeAction.Create( // Partial declaration
+                    : CodeAction.Create( // Multiple declarations, happens with partial
                         title: "Make type sealed",
-                        createChangedSolution: token => RefactorWithPartialAsync(context.Document, decl, token),
+                        createChangedSolution: token => RefactorMultipleAsync(context.Document, decl, token),
                         equivalenceKey: "Make type sealed"),
                     diagnostic);
                 break;
@@ -53,12 +53,21 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
         }
     }
 
-    private static async Task<Document> RefactorNoPartialAsync(Document document, TypeDeclarationSyntax decl, CancellationToken token) =>
-        await RefactorDocumentRootAsync(document, decl, sealDecl: true, token) is SyntaxNode newRoot
-        ? document.WithSyntaxRoot(newRoot)
-        : document;
+    private static async Task<Document> RefactorSingleAsync(Document document, TypeDeclarationSyntax decl, CancellationToken token)
+    {
+        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not SyntaxNode root ||
+            await document.GetSemanticModelAsync(token).ConfigureAwait(false) is not SemanticModel semanticModel)
+        {
+            return document;
+        }
 
-    private static async Task<Solution> RefactorWithPartialAsync(Document document, TypeDeclarationSyntax originalDecl, CancellationToken token)
+        var newModifiers = new List<SyntaxToken>(8); // Pre-allocate to avoid resizing, 8 is enough for modifiers
+        var newMembers = new List<MemberDeclarationSyntax>(decl.Members.Count);
+        var newDecl = RefactorDeclaration(decl, semanticModel, sealDecl: true, newModifiers, newMembers, token);
+        return decl == newDecl ? document : document.WithSyntaxRoot(root.ReplaceNode(decl, newDecl));
+    }
+
+    private static async Task<Solution> RefactorMultipleAsync(Document document, TypeDeclarationSyntax originalDecl, CancellationToken token)
     {
         var solution = document.Project.Solution;
         if (await document.GetSemanticModelAsync(token).ConfigureAwait(false) is not SemanticModel semanticModel ||
@@ -67,49 +76,67 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
             return solution;
         }
 
-        var documents = new Dictionary<DocumentId, List<SyntaxReference>>();
+        // Documents can be processed in parallel, but the references within a document must be processed sequentially
+        var documents = new Dictionary<Document, List<SyntaxReference>>();
         foreach (var reference in symbol.DeclaringSyntaxReferences)
         {
             if (solution.GetDocument(reference.SyntaxTree) is not Document doc) continue;
 
-            if (documents.TryGetValue(doc.Id, out var references))
+            if (documents.TryGetValue(doc, out var references))
                 references.Add(reference);
             else
-                documents.Add(doc.Id, [reference]);
+                documents.Add(doc, [reference]);
         }
 
-        var updates = await Task.WhenAll(symbol.DeclaringSyntaxReferences
-            .Select(reference => RefactorReference(reference, solution, originalDecl, token)))
+        var updates = await Task.WhenAll(documents
+            .Select(async kvp =>
+            {
+                var (doc, references) = (kvp.Key, kvp.Value);
+                if (await doc.GetSyntaxRootAsync(token).ConfigureAwait(false) is not SyntaxNode root ||
+                    await doc.GetSemanticModelAsync(token).ConfigureAwait(false) is not SemanticModel semanticModel)
+                {
+                    return default;
+                }
+
+                // Pre-allocated buffers to work with, to avoid allocations in RefactorDeclaration
+                var newModifiers = new List<SyntaxToken>(8);
+                var newMembers = new List<MemberDeclarationSyntax>(128);
+
+                var updates = new List<(TypeDeclarationSyntax Current, TypeDeclarationSyntax New)>(references.Count);
+                foreach (var reference in references) // Despite the await keyword in it's body, this loop is sequential
+                {
+                    if (await reference.GetSyntaxAsync(token) is not TypeDeclarationSyntax decl) continue;
+
+                    var newDecl = RefactorDeclaration(decl, semanticModel, decl == originalDecl, newModifiers, newMembers, token);
+                    if (decl != newDecl) updates.Add((decl, newDecl));
+                }
+                return updates.Count == 0 ? default : (doc.Id, root, updates);
+            }))
             .ConfigureAwait(false);
 
-        foreach (var (documentId, newRoot) in updates)
+        foreach (var (docId, docRoot, docUpdates) in updates)
         {
-            if (documentId is not null && newRoot is not null)
-                solution = solution.WithDocumentSyntaxRoot(documentId, newRoot);
+            if (docId is null) continue;
+
+            var newDocRoot = docRoot;
+            foreach (var (current, @new) in docUpdates)
+                newDocRoot = newDocRoot.ReplaceNode(current, @new);
+
+            if (newDocRoot != docRoot)
+                solution = solution.WithDocumentSyntaxRoot(docId, newDocRoot);
         }
         return solution;
-
-        static async Task<(DocumentId? DocumentId, SyntaxNode? NewRoot)> RefactorReference(
-            SyntaxReference reference, Solution solution, TypeDeclarationSyntax originalDecl, CancellationToken token) =>
-            await reference.GetSyntaxAsync(token) is TypeDeclarationSyntax decl &&
-            solution.GetDocument(decl.SyntaxTree) is Document declDocument &&
-            await declDocument.GetSyntaxRootAsync(token).ConfigureAwait(false) is SyntaxNode currentRoot &&
-            await RefactorDocumentRootAsync(declDocument, decl, decl == originalDecl, token) is SyntaxNode newRoot
-            ? (declDocument.Id, newRoot)
-            : default;
     }
 
-    private static async Task<SyntaxNode?> RefactorDocumentRootAsync(Document document, TypeDeclarationSyntax declaration, bool sealDecl, CancellationToken token)
+    // Because of the provided buffers, this needs to be called sequentially when reusing them
+    private static TypeDeclarationSyntax RefactorDeclaration(
+        TypeDeclarationSyntax declaration,
+        SemanticModel semanticModel,
+        bool sealDecl,
+        List<SyntaxToken> newModifiers, // Buffer to work on modifiers
+        List<MemberDeclarationSyntax> newMembers, // Buffer to work on members
+        CancellationToken token)
     {
-        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not SyntaxNode root ||
-            await document.GetSemanticModelAsync(token).ConfigureAwait(false) is not SemanticModel semanticModel)
-        {
-            return null;
-        }
-
-        var newModifiers = new List<SyntaxToken>(8); // Pre-allocate to avoid resizing, 8 is enough for modifiers
-        var newMembers = new List<MemberDeclarationSyntax>(declaration.Members.Count);
-        var privateKeyword = SyntaxFactory.Token(SyntaxKind.PrivateKeyword);
         const int Keep = 0, ReplaceWithPrivate = 1, Remove = 2;
 
         foreach (var member in declaration.Members)
@@ -133,7 +160,7 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
                     newModifiers.Add(modifier); // Keep the other modifiers, including protected
 
                 if (handleProtected == ReplaceWithPrivate)
-                    newModifiers.Add(privateKeyword);
+                    newModifiers.Add(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
             }
 
             newMembers.Add(newModifiers.Count == member.Modifiers.Count && handleProtected != ReplaceWithPrivate
@@ -143,7 +170,7 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
                     .WithTrailingTriviaIfDifferent(member.GetTrailingTrivia()));
         }
 
-        var newDecl = newMembers.Count == declaration.Members.Count && newMembers.SequenceEqual(declaration.Members)
+        var newDecl = newMembers.Count != declaration.Members.Count || !newMembers.SequenceEqual(declaration.Members)
             ? declaration // Don't allocate if the members haven't changed
             : declaration.WithMembers(SyntaxFactory.List(newMembers));
 
@@ -156,62 +183,6 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
             newDecl = newDecl.WithModifiers(SyntaxFactory.TokenList(newModifiers));
         }
 
-        return root.ReplaceNode(declaration, newDecl);
-    }
-
-    private static async Task<Solution> RefactorAsync(Document document, TypeDeclarationSyntax originalDecl, CancellationToken token)
-    {
-        var semanticModel = await document.GetSemanticModelAsync(token).ConfigureAwait(false);
-        var symbol = semanticModel.GetDeclaredSymbol(originalDecl, token);
-        if (symbol == null) return document.Project.Solution;
-
-        var solution = document.Project.Solution;
-        var documentsToProcess = new Dictionary<DocumentId, List<SyntaxReference>>();
-
-        foreach (var reference in symbol.DeclaringSyntaxReferences)
-        {
-            var syntax = await reference.GetSyntaxAsync(token) as TypeDeclarationSyntax;
-            if (syntax != null)
-            {
-                var declDocument = solution.GetDocument(syntax.SyntaxTree);
-                if (declDocument != null)
-                {
-                    if (!documentsToProcess.ContainsKey(declDocument.Id))
-                    {
-                        documentsToProcess[declDocument.Id] = new List<SyntaxReference>();
-                    }
-                    documentsToProcess[declDocument.Id].Add(reference);
-                }
-            }
-        }
-
-        var updateTasks = documentsToProcess.Select(async kvp =>
-        {
-            var doc = solution.GetDocument(kvp.Key);
-            if (doc == null) return null;
-
-            var root = await doc.GetSyntaxRootAsync(token).ConfigureAwait(false);
-            if (root == null) return null;
-
-            foreach (var reff in kvp.Value)
-            {
-                var decl = await reff.GetSyntaxAsync(token) as TypeDeclarationSyntax;
-                if (decl != null)
-                {
-                    root = await RefactorDocumentRootAsync(doc, decl, decl == originalDecl, token);
-                }
-            }
-
-            return root != null ? (kvp.Key, root) : default;
-        });
-
-        var updates = await Task.WhenAll(updateTasks);
-
-        foreach (var update in updates.Where(u => u != default))
-        {
-            solution = solution.WithDocumentSyntaxRoot(update.Key, update.root);
-        }
-
-        return solution;
+        return newDecl;
     }
 }
