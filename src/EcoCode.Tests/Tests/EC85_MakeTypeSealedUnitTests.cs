@@ -318,19 +318,34 @@ public sealed class MakeTypeSealed
         public partial class [|Test1|];
         partial class Test1 { public void Method() { } }
 
-        public partial class Test2;
-        partial class Test2 { public virtual void Method() { } }
+        partial class Test2 { public void Method() { } }
+        public partial class [|Test2|];
 
         public partial class Test3;
-        sealed partial class Test3 { public void Method() { } }
+        partial class Test3 { public virtual void Method() { } }
+
+        public partial class Test4;
+        sealed partial class Test4 { public void Method() { } }
         """, """
         public sealed partial class Test1;
         partial class Test1 { public void Method() { } }
 
-        public partial class Test2;
-        partial class Test2 { public virtual void Method() { } }
+        partial class Test2 { public void Method() { } }
+        public sealed partial class Test2;
 
         public partial class Test3;
-        sealed partial class Test3 { public void Method() { } }
+        partial class Test3 { public virtual void Method() { } }
+
+        public partial class Test4;
+        sealed partial class Test4 { public void Method() { } }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task Partial2Async() => await VerifyAsync("""
+        partial class Test1 { public void Method() { } }
+        public partial class [|Test1|];
+        """, """
+        partial class Test1 { public void Method() { } }
+        public sealed partial class Test1;
         """).ConfigureAwait(false);
 }

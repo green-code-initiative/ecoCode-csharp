@@ -56,9 +56,9 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 foreach (var cls in sealableClasses)
                 {
                     if (inheritedClasses.ContainsKey(cls)) continue;
-                    // foreach (var location in cls.Locations) compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
-                    // TODO: handle multiple locations when partial, choose one smartly
-                    compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, cls.Locations[0]));
+                    compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, cls.Locations.Length == 1
+                        ? cls.Locations[0]
+                        : cls.GetPartialClassMainDeclaration(compilationEndContext).Identifier.GetLocation()));
                 }
             });
         });
