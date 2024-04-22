@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 
 namespace EcoCode.Shared;
@@ -60,28 +61,24 @@ public static class NamedTypeSymbolExtensions
     /// <returns>The main class decalration syntax.</returns>
     public static ClassDeclarationSyntax GetPartialClassMainDeclaration(this INamedTypeSymbol symbol, CompilationAnalysisContext context)
     {
-        var analysis = new List<SyntaxReferenceAnalysis>(symbol.DeclaringSyntaxReferences.Length);
+        var bestAnalysis = default(SyntaxReferenceAnalysis);
         foreach (var syntaxRef in symbol.DeclaringSyntaxReferences)
-            analysis.Add(SyntaxReferenceAnalysis.AnalyzeSyntaxReference(syntaxRef, context));
-        analysis.Sort();
-        return analysis[0].DeclarationSyntax;
+        {
+            var curAnalysis = SyntaxReferenceAnalysis.AnalyzeSyntaxReference(syntaxRef, context);
+            if (curAnalysis.BetterThan(bestAnalysis)) bestAnalysis = curAnalysis;
+        }
+        return bestAnalysis.ClassDecl;
     }
 
-    private readonly struct SyntaxReferenceAnalysis : IEquatable<SyntaxReferenceAnalysis>, IComparable<SyntaxReferenceAnalysis>
+    private readonly struct SyntaxReferenceAnalysis(
+        ClassDeclarationSyntax classDecl, bool hasVisibility, int baseTypes, int modifiers, int constructors, int memberCount)
     {
-        public ClassDeclarationSyntax DeclarationSyntax { get; }
-        public bool HasVisibility { get; }
-        public int Modifiers { get; }
-        public int Constructors { get; }
-        public int MemberCount { get; }
-        public SyntaxReferenceAnalysis(ClassDeclarationSyntax declarationSyntax, bool hasVisibility, int modifiers, int constructors, int memberCount)
-        {
-            DeclarationSyntax = declarationSyntax;
-            HasVisibility = hasVisibility;
-            Modifiers = modifiers;
-            Constructors = constructors;
-            MemberCount = memberCount;
-        }
+        public ClassDeclarationSyntax ClassDecl { get; } = classDecl;
+        public bool HasVisibility { get; } = hasVisibility;
+        public int BaseTypes { get; } = baseTypes;
+        public int Modifiers { get; } = modifiers;
+        public int Constructors { get; } = constructors;
+        public int MemberCount { get; } = memberCount;
 
         public static SyntaxReferenceAnalysis AnalyzeSyntaxReference(SyntaxReference syntaxRef, CompilationAnalysisContext context)
         {
@@ -101,7 +98,9 @@ public static class NamedTypeSymbolExtensions
                 }
             }
 
-            int modifierCount = classDecl.Modifiers.Count, constructorCount = 0, memberCount = 0;
+            int baseTypes = classDecl.BaseList?.Types.Count ?? 0,
+                modifierCount = classDecl.Modifiers.Count,
+                constructorCount = 0, memberCount = 0;
             foreach (var member in classDecl.Members)
             {
                 if (member is ConstructorDeclarationSyntax)
@@ -109,30 +108,14 @@ public static class NamedTypeSymbolExtensions
                 else if (member is MethodDeclarationSyntax or PropertyDeclarationSyntax)
                     memberCount++;
             }
-            return new SyntaxReferenceAnalysis(classDecl, hasVisibility, modifierCount, constructorCount, memberCount);
+            return new SyntaxReferenceAnalysis(classDecl, hasVisibility, baseTypes, modifierCount, constructorCount, memberCount);
         }
 
-        public override int GetHashCode() => DeclarationSyntax.GetHashCode();
-
-        public bool Equals(SyntaxReferenceAnalysis other) =>
-            DeclarationSyntax == other.DeclarationSyntax &&
-            HasVisibility == other.HasVisibility &&
-            Modifiers == other.Modifiers &&
-            Constructors == other.Constructors &&
-            MemberCount == other.MemberCount;
-
-        public override bool Equals(object obj) => obj is SyntaxReferenceAnalysis other && Equals(other);
-
-        public int CompareTo(SyntaxReferenceAnalysis other)
-        {
-            int comp = Comparer<bool>.Default.Compare(other.HasVisibility, HasVisibility); // True first
-            if (comp != 0) return comp;
-
-            comp = Comparer<int>.Default.Compare(other.Modifiers, Modifiers); // Highest first
-            if (comp != 0) return comp;
-
-            comp = Comparer<int>.Default.Compare(other.Constructors, Constructors); // Highest first
-            return comp == 0 ? MemberCount.CompareTo(other.MemberCount) : comp;
-        }
+        public bool BetterThan(SyntaxReferenceAnalysis other) =>
+            HasVisibility != other.HasVisibility ? HasVisibility
+            : BaseTypes != other.BaseTypes ? BaseTypes > other.BaseTypes
+            : Modifiers != other.Modifiers ? Modifiers > other.Modifiers
+            : Constructors != other.Constructors ? Constructors > other.Constructors
+            : MemberCount > other.MemberCount;
     }
 }
