@@ -101,9 +101,7 @@ public static class NamedTypeSymbolExtensions
                 }
             }
 
-            int modifierCount = classDecl.Modifiers.Count;
-
-            int constructorCount = 0, memberCount = 0;
+            int modifierCount = classDecl.Modifiers.Count, constructorCount = 0, memberCount = 0;
             foreach (var member in classDecl.Members)
             {
                 if (member is ConstructorDeclarationSyntax)

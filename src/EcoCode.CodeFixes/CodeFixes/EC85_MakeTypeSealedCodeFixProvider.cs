@@ -139,6 +139,7 @@ public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
     {
         const int Keep = 0, ReplaceWithPrivate = 1, Remove = 2;
 
+        newMembers.Clear();
         foreach (var member in declaration.Members)
         {
             // Determine what to do with the protected modifier if present
