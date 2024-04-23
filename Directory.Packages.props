@@ -18,5 +18,8 @@
     <PackageVersion Include="MSTest.TestAdapter" Version="3.3.1" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.3.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Roslynator.Analyzers" Version="4.12.1" />
+    <PackageVersion Include="Roslynator.CodeAnalysis.Analyzers" Version="4.12.1" />
+    <PackageVersion Include="Roslynator.Formatting.Analyzers" Version="4.12.1" />
   </ItemGroup>
 </Project>
