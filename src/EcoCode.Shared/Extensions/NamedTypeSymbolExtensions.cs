@@ -1,5 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
+﻿using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Generic;
 
 namespace EcoCode.Shared;
@@ -88,19 +87,18 @@ public static class NamedTypeSymbolExtensions
             bool hasVisibility = false;
             foreach (var modifier in classDecl.Modifiers)
             {
-                if (modifier.IsKind(SyntaxKind.PublicKeyword) ||
-                    modifier.IsKind(SyntaxKind.PrivateKeyword) ||
-                    modifier.IsKind(SyntaxKind.InternalKeyword) ||
-                    modifier.IsKind(SyntaxKind.ProtectedKeyword))
+                if (modifier.IsAccessibilityKind())
                 {
                     hasVisibility = true;
                     break;
                 }
             }
 
-            int baseTypes = classDecl.BaseList?.Types.Count ?? 0,
-                modifierCount = classDecl.Modifiers.Count,
-                constructorCount = 0, memberCount = 0;
+            int baseTypes = classDecl.BaseList?.Types.Count ?? 0;
+            int modifierCount = classDecl.Modifiers.Count;
+            int constructorCount = 0;
+            int memberCount = 0;
+
             foreach (var member in classDecl.Members)
             {
                 if (member is ConstructorDeclarationSyntax)

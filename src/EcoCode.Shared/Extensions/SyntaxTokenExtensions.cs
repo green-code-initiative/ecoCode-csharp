@@ -21,4 +21,13 @@ public static class SyntaxTokenExtensions
     /// <param name="token">The token.</param>
     /// <returns>The token modifier order, -1 if not a modifier.</returns>
     public static int GetModifierOrder(this SyntaxToken token) => Array.IndexOf(ModifierOrder, token.Kind());
+
+    /// <summary>Returns whether the token is an accessibility kind.</summary>
+    /// <param name="token">The token.</param>
+    /// <returns>True if the token is accessibility kind, false otherwise.</returns>
+    public static bool IsAccessibilityKind(this SyntaxToken token) =>
+        token.IsKind(SyntaxKind.PublicKeyword) ||
+        token.IsKind(SyntaxKind.PrivateKeyword) ||
+        token.IsKind(SyntaxKind.InternalKeyword) ||
+        token.IsKind(SyntaxKind.ProtectedKeyword);
 }
