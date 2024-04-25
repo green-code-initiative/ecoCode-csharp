@@ -21,5 +21,6 @@ internal static class Rule
         public const string EC82_VariableCanBeMadeConstant = "EC82";
         public const string EC83_ReplaceEnumToStringWithNameOf = "EC83";
         public const string EC84_AvoidAsyncVoidMethods = "EC84";
+        public const string EC86_GCCollectShouldNotBeUsed = "EC86";
     }
 }
