@@ -1,11 +1,11 @@
 ﻿namespace EcoCode.CodeFixes;
 
 /// <summary>The code fix provider for avoid async void methods.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(GCCollectShouldNotBeUsedFixProvider)), Shared]
-public sealed class GCCollectShouldNotBeUsedFixProvider : CodeFixProvider
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(GCCollectShouldNotBeCalledFixProvider)), Shared]
+public sealed class GCCollectShouldNotBeCalledFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [GCCollectShouldNotBeUsedAnalyzer.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => [GCCollectShouldNotBeCalledAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

@@ -2,18 +2,18 @@
 
 /// <summary>Analyzer for avoid async void methods.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GCCollectShouldNotBeUsedAnalyzer : DiagnosticAnalyzer
+public sealed class GCCollectShouldNotBeCalledAnalyzer : DiagnosticAnalyzer
 {
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC86_GCCollectShouldNotBeUsed,
-        title: "Avoid using GC.Collect() method",
-        messageFormat: "Avoid using GC.Collect() method",
+        Rule.Ids.EC86_GCCollectShouldNotBeCalled,
+        title: "Avoid calling GC.Collect() method",
+        messageFormat: "Avoid calling GC.Collect() method",
         Rule.Categories.Performance,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC86_GCCollectShouldNotBeUsed));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC86_GCCollectShouldNotBeCalled));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];

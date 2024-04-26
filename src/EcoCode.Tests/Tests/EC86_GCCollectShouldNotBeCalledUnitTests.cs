@@ -1,17 +1,17 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class GCCollectShouldNotBeUsedUnitTests
+public class GCCollectShouldNotBeCalledUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        GCCollectShouldNotBeUsedAnalyzer,
-        GCCollectShouldNotBeUsedFixProvider>;
+        GCCollectShouldNotBeCalledAnalyzer,
+        GCCollectShouldNotBeCalledFixProvider>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedAsync() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledAsync() => await VerifyAsync("""
         using System;
         public static class Program
         {
@@ -23,7 +23,7 @@ public class GCCollectShouldNotBeUsedUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedMultipleCodeAsync() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledMultipleCodeAsync() => await VerifyAsync("""
         using System;
         public static class Program
         {
@@ -35,7 +35,7 @@ public class GCCollectShouldNotBeUsedUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedCommentedAsync() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledCommentedAsync() => await VerifyAsync("""
         using System;
         public static class Program
         {
@@ -47,7 +47,7 @@ public class GCCollectShouldNotBeUsedUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedGeneration0Async() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledGeneration0Async() => await VerifyAsync("""
         using System;
         public static class Program
         {
@@ -59,7 +59,7 @@ public class GCCollectShouldNotBeUsedUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedGeneration10Async() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledGeneration10Async() => await VerifyAsync("""
         using System;
         public static class Program
         {
@@ -71,7 +71,7 @@ public class GCCollectShouldNotBeUsedUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedGeneratio0CollectionModeAsync() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledGeneratio0CollectionModeAsync() => await VerifyAsync("""
         using System;
         public static class Program
         {
@@ -83,7 +83,7 @@ public class GCCollectShouldNotBeUsedUnitTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeUsedGeneration10CollectionModeAsync() => await VerifyAsync("""
+    public async Task GCCollectShouldNotBeCalledGeneration10CollectionModeAsync() => await VerifyAsync("""
         using System;
         public static class Program
         {
