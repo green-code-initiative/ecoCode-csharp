@@ -21,7 +21,8 @@ public sealed class ReplaceEnumToStringWithNameOfAnalyzer : DiagnosticAnalyzer
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC83_ReplaceEnumToStringWithNameOf));
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
+    private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics = [Descriptor];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)

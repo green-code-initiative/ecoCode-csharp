@@ -16,7 +16,8 @@ public sealed class DontExecuteSqlCommandsInLoopsAnalyzer : DiagnosticAnalyzer
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC72_DontExecuteSqlCommandsInLoops));
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
+    private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics = [Descriptor];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)

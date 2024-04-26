@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class DontCallFunctionsInLoopConditionsUnitTests
+public sealed class DontCallFunctionsInLoopConditionsUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
         DontCallFunctionsInLoopConditionsAnalyzer,

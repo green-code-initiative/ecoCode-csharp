@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class DontExecuteSqlCommandsInLoopsUnitTests
+public sealed class DontExecuteSqlCommandsInLoopsUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
         DontExecuteSqlCommandsInLoopsAnalyzer,

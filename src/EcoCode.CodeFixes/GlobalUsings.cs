@@ -7,6 +7,7 @@ global using Microsoft.CodeAnalysis.CSharp;
 global using Microsoft.CodeAnalysis.CSharp.Syntax;
 global using Microsoft.CodeAnalysis.Editing;
 global using Microsoft.CodeAnalysis.Simplification;
+global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.Composition;
 global using System.Runtime.InteropServices;

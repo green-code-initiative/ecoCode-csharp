@@ -7,7 +7,8 @@ namespace EcoCode.CodeFixes;
 public sealed class VariableCanBeMadeConstantCodeFixProvider : CodeFixProvider
 {
     /// <inheritdoc/>
-    public override ImmutableArray<string> FixableDiagnosticIds => [VariableCanBeMadeConstantAnalyzer.Descriptor.Id];
+    public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [VariableCanBeMadeConstantAnalyzer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

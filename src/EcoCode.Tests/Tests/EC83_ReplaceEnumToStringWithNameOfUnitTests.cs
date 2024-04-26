@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class ReplaceEnumToStringWithNameOfUnitTests
+public sealed class ReplaceEnumToStringWithNameOfUnitTests
 {
     private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
         ReplaceEnumToStringWithNameOfAnalyzer,
@@ -24,8 +24,7 @@ public class ReplaceEnumToStringWithNameOfUnitTests
                 Console.WriteLine([|MyEnum.D.ToString(format: null)|]);
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public static class Program
         {
@@ -53,8 +52,7 @@ public class ReplaceEnumToStringWithNameOfUnitTests
                 Console.WriteLine(MyEnum.C.ToString("N"));
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public static class Program
         {
@@ -82,8 +80,7 @@ public class ReplaceEnumToStringWithNameOfUnitTests
                 Console.WriteLine($"{MyEnum.D:N}");
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         public static class Program
         {
