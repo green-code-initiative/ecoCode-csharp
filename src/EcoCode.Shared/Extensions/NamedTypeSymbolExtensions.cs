@@ -54,11 +54,11 @@ public static class NamedTypeSymbolExtensions
         return false;
     }
 
-    /// <summary>Finds the main declaration of a partial class, using a heuristic.</summary>
+    /// <summary>Finds the main declaration of a partial class or record, using a heuristic.</summary>
     /// <param name="symbol">The class symbol.</param>
     /// <param name="context">The compilation context.</param>
-    /// <returns>The main class decalration syntax.</returns>
-    public static ClassDeclarationSyntax GetPartialClassMainDeclaration(this INamedTypeSymbol symbol, CompilationAnalysisContext context)
+    /// <returns>The main class or record declaration syntax.</returns>
+    public static TypeDeclarationSyntax GetPartialTypeMainDeclaration(this INamedTypeSymbol symbol, CompilationAnalysisContext context)
     {
         var bestAnalysis = default(SyntaxReferenceAnalysis);
         foreach (var syntaxRef in symbol.DeclaringSyntaxReferences)
@@ -66,13 +66,13 @@ public static class NamedTypeSymbolExtensions
             var curAnalysis = SyntaxReferenceAnalysis.AnalyzeSyntaxReference(syntaxRef, context);
             if (curAnalysis.BetterThan(bestAnalysis)) bestAnalysis = curAnalysis;
         }
-        return bestAnalysis.ClassDecl;
+        return bestAnalysis.Decl;
     }
 
     private readonly struct SyntaxReferenceAnalysis(
-        ClassDeclarationSyntax classDecl, bool hasVisibility, int baseTypes, int modifiers, int constructors, int memberCount)
+        TypeDeclarationSyntax decl, bool hasVisibility, int baseTypes, int modifiers, int constructors, int memberCount)
     {
-        public ClassDeclarationSyntax ClassDecl { get; } = classDecl;
+        public TypeDeclarationSyntax Decl { get; } = decl;
         public bool HasVisibility { get; } = hasVisibility;
         public int BaseTypes { get; } = baseTypes;
         public int Modifiers { get; } = modifiers;
@@ -81,11 +81,12 @@ public static class NamedTypeSymbolExtensions
 
         public static SyntaxReferenceAnalysis AnalyzeSyntaxReference(SyntaxReference syntaxRef, CompilationAnalysisContext context)
         {
-            if (syntaxRef.GetSyntax(context.CancellationToken) is not ClassDeclarationSyntax classDecl)
+            var decl = syntaxRef.GetSyntax(context.CancellationToken) as TypeDeclarationSyntax;
+            if (decl is not ClassDeclarationSyntax and not RecordDeclarationSyntax)
                 return default;
 
             bool hasVisibility = false;
-            foreach (var modifier in classDecl.Modifiers)
+            foreach (var modifier in decl.Modifiers)
             {
                 if (modifier.IsAccessibilityKind())
                 {
@@ -94,19 +95,19 @@ public static class NamedTypeSymbolExtensions
                 }
             }
 
-            int baseTypes = classDecl.BaseList?.Types.Count ?? 0;
-            int modifierCount = classDecl.Modifiers.Count;
+            int baseTypes = decl.BaseList?.Types.Count ?? 0;
+            int modifierCount = decl.Modifiers.Count;
             int constructorCount = 0;
             int memberCount = 0;
 
-            foreach (var member in classDecl.Members)
+            foreach (var member in decl.Members)
             {
                 if (member is ConstructorDeclarationSyntax)
                     constructorCount++;
                 else if (member is MethodDeclarationSyntax or PropertyDeclarationSyntax)
                     memberCount++;
             }
-            return new SyntaxReferenceAnalysis(classDecl, hasVisibility, baseTypes, modifierCount, constructorCount, memberCount);
+            return new SyntaxReferenceAnalysis(decl, hasVisibility, baseTypes, modifierCount, constructorCount, memberCount);
         }
 
         public bool BetterThan(SyntaxReferenceAnalysis other) =>

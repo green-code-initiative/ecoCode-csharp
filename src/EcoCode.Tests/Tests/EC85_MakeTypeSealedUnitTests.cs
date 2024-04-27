@@ -339,4 +339,41 @@ public sealed class MakeTypeSealed
         public partial class Test4;
         sealed partial class Test4 { public void Method() { } }
         """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task Partial2Async() => await VerifyAsync("""
+        public partial class [|Test1|];
+        partial class Test1(int Value) { public int Method() => Value; }
+
+        partial record Test2
+        {
+            private readonly int Value;
+            public Test2(int value) => Value = value;
+            public int Method() => Value;
+        }
+        public partial record [|Test2|];
+
+        public partial class Test3;
+        partial class Test3 { public virtual void Method() { } }
+
+        public partial class Test4;
+        sealed partial class Test4(int Value) { public int Method() => Value; }
+        """, """
+        public sealed partial class Test1;
+        partial class Test1(int Value) { public int Method() => Value; }
+        
+        partial record Test2
+        {
+            private readonly int Value;
+            public Test2(int value) => Value = value;
+            public int Method() => Value;
+        }
+        public sealed partial record Test2;
+        
+        public partial class Test3;
+        partial class Test3 { public virtual void Method() { } }
+        
+        public partial class Test4;
+        sealed partial class Test4(int Value) { public int Method() => Value; }
+        """).ConfigureAwait(false);
 }

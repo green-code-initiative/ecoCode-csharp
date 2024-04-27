@@ -58,7 +58,7 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                     if (inheritedClasses.ContainsKey(cls)) continue;
                     compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, cls.Locations.Length == 1
                         ? cls.Locations[0]
-                        : cls.GetPartialClassMainDeclaration(compilationEndContext).Identifier.GetLocation()));
+                        : cls.GetPartialTypeMainDeclaration(compilationEndContext).Identifier.GetLocation()));
                 }
             });
         });
