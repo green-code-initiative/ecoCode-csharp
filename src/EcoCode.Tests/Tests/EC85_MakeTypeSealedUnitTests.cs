@@ -238,57 +238,57 @@ public sealed class MakeTypeSealed
         }
         """, """
         public class TestA1 { public virtual void Method() { } };
-        public sealed class TestA2 { internal void Method() { } };
+        public sealed class TestA2 { internal virtual void {|CS0549:Method|}() { } };
         public class TestA3 { protected virtual void Method() { } };
-        public sealed class TestA4 { internal void Method() { } };
-        public sealed class TestA5 { private void Method() { } };
+        public sealed class TestA4 { protected internal virtual void {|CS0549:Method|}() { } };
+        public sealed class TestA5 { private protected virtual void {|CS0549:Method|}() { } };
 
-        internal sealed class TestB1 { public void Method() { } };
-        internal sealed class TestB2 { internal void Method() { } };
-        internal sealed class TestB3 { private void Method() { } };
-        internal sealed class TestB4 { internal void Method() { } };
-        internal sealed class TestB5 { private void Method() { } };
+        internal sealed class TestB1 { public virtual void {|CS0549:Method|}() { } };
+        internal sealed class TestB2 { internal virtual void {|CS0549:Method|}() { } };
+        internal sealed class TestB3 { protected virtual void {|CS0549:Method|}() { } };
+        internal sealed class TestB4 { protected internal virtual void {|CS0549:Method|}() { } };
+        internal sealed class TestB5 { private protected virtual void {|CS0549:Method|}() { } };
 
         public static class Test0
         {
             public class TestA1 { public virtual void Method() { } };
-            public sealed class TestA2 { internal void Method() { } };
+            public sealed class TestA2 { internal virtual void {|CS0549:Method|}() { } };
             public class TestA3 { protected virtual void Method() { } };
-            public sealed class TestA4 { internal void Method() { } };
-            public sealed class TestA5 { private void Method() { } };
+            public sealed class TestA4 { protected internal virtual void {|CS0549:Method|}() { } };
+            public sealed class TestA5 { private protected virtual void {|CS0549:Method|}() { } };
         
-            internal sealed class TestB1 { public void Method() { } };
-            internal sealed class TestB2 { internal void Method() { } };
-            internal sealed class TestB3 { private void Method() { } };
-            internal sealed class TestB4 { internal void Method() { } };
-            internal sealed class TestB5 { private void Method() { } };
+            internal sealed class TestB1 { public virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB2 { internal virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB3 { protected virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB4 { protected internal virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB5 { private protected virtual void {|CS0549:Method|}() { } };
 
-            private sealed class TestC1 { public void Method() { } };
-            private sealed class TestC2 { internal void Method() { } };
-            private sealed class TestC3 { private void Method() { } };
-            private sealed class TestC4 { internal void Method() { } };
-            private sealed class TestC5 { private void Method() { } };
+            private sealed class TestC1 { public virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC2 { internal virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC3 { protected virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC4 { protected internal virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC5 { private protected virtual void {|CS0549:Method|}() { } };
         }
 
         internal static class Test1
         {
-            public sealed class TestA1 { public void Method() { } };
-            public sealed class TestA2 { internal void Method() { } };
-            public sealed class TestA3 { private void Method() { } };
-            public sealed class TestA4 { internal void Method() { } };
-            public sealed class TestA5 { private void Method() { } };
+            public sealed class TestA1 { public virtual void {|CS0549:Method|}() { } };
+            public sealed class TestA2 { internal virtual void {|CS0549:Method|}() { } };
+            public sealed class TestA3 { protected virtual void {|CS0549:Method|}() { } };
+            public sealed class TestA4 { protected internal virtual void {|CS0549:Method|}() { } };
+            public sealed class TestA5 { private protected virtual void {|CS0549:Method|}() { } };
         
-            internal sealed class TestB1 { public void Method() { } };
-            internal sealed class TestB2 { internal void Method() { } };
-            internal sealed class TestB3 { private void Method() { } };
-            internal sealed class TestB4 { internal void Method() { } };
-            internal sealed class TestB5 { private void Method() { } };
+            internal sealed class TestB1 { public virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB2 { internal virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB3 { protected virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB4 { protected internal virtual void {|CS0549:Method|}() { } };
+            internal sealed class TestB5 { private protected virtual void {|CS0549:Method|}() { } };
         
-            private sealed class TestC1 { public void Method() { } };
-            private sealed class TestC2 { internal void Method() { } };
-            private sealed class TestC3 { private void Method() { } };
-            private sealed class TestC4 { internal void Method() { } };
-            private sealed class TestC5 { private void Method() { } };
+            private sealed class TestC1 { public virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC2 { internal virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC3 { protected virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC4 { protected internal virtual void {|CS0549:Method|}() { } };
+            private sealed class TestC5 { private protected virtual void {|CS0549:Method|}() { } };
         }
         """).ConfigureAwait(false);
 
@@ -308,7 +308,7 @@ public sealed class MakeTypeSealed
         public sealed class Test4 : Test3;
         public class Test5 : Test3;
         public class Test6 : Test3 { public override void Overridable() { } }
-        public sealed class Test7 : Test3 { public override void Overridable() { } }
+        public sealed class Test7 : Test3 { public sealed override void Overridable() { } }
         public class Test8 : Test3 { public sealed override void Overridable() { } }
         public sealed class Test9 : Test8;
         """).ConfigureAwait(false);
@@ -318,8 +318,8 @@ public sealed class MakeTypeSealed
         public partial class [|Test1|];
         partial class Test1 { public void Method() { } }
 
-        partial class Test2 { public void Method() { } }
-        public partial class [|Test2|];
+        partial class [|Test2|] { public void Method() { } }
+        public partial class Test2;
 
         public partial class Test3;
         partial class Test3 { public virtual void Method() { } }
@@ -330,8 +330,8 @@ public sealed class MakeTypeSealed
         public sealed partial class Test1;
         partial class Test1 { public void Method() { } }
 
-        partial class Test2 { public void Method() { } }
-        public sealed partial class Test2;
+        sealed partial class Test2 { public void Method() { } }
+        public partial class Test2;
 
         public partial class Test3;
         partial class Test3 { public virtual void Method() { } }
@@ -345,13 +345,13 @@ public sealed class MakeTypeSealed
         public partial class [|Test1|];
         partial class Test1(int Value) { public int Method() => Value; }
 
-        partial record Test2
+        partial record [|Test2|]
         {
             private readonly int Value;
             public Test2(int value) => Value = value;
             public int Method() => Value;
         }
-        public partial record [|Test2|];
+        public partial record Test2;
 
         public partial class Test3;
         partial class Test3 { public virtual void Method() { } }
@@ -362,13 +362,13 @@ public sealed class MakeTypeSealed
         public sealed partial class Test1;
         partial class Test1(int Value) { public int Method() => Value; }
         
-        partial record Test2
+        sealed partial record Test2
         {
             private readonly int Value;
             public Test2(int value) => Value = value;
             public int Method() => Value;
         }
-        public sealed partial record Test2;
+        public partial record Test2;
         
         public partial class Test3;
         partial class Test3 { public virtual void Method() { } }
