@@ -10,11 +10,11 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
     public static DiagnosticDescriptor Descriptor { get; } = new(
         Rule.Ids.EC85_MakeTypeSealed,
         title: "Make type sealed",
-        messageFormat: "Make type sealed",
+        messageFormat: "Type may be sealed, as it has no subtypes in its assembly and no user-declared overridable member",
         Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        description: null,
+        description: "When a type has no subtypes within its assembly and no user-declared overridable member, it may be sealed, which can improve performance.",
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC85_MakeTypeSealed));
 
     /// <inheritdoc/>
@@ -55,10 +55,8 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
             {
                 foreach (var cls in sealableClasses)
                 {
-                    if (inheritedClasses.ContainsKey(cls)) continue;
-                    compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, cls.Locations.Length == 1
-                        ? cls.Locations[0]
-                        : cls.GetPartialTypeMainDeclaration(compilationEndContext).Identifier.GetLocation()));
+                    if (!inheritedClasses.ContainsKey(cls))
+                        compilationEndContext.ReportDiagnostic(Diagnostic.Create(Descriptor, cls.Locations[0]));
                 }
             });
         });
