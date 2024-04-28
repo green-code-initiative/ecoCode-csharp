@@ -40,7 +40,7 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC82](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC82/csharp/EC82.asciidoc)|Variable can be made constant|ℹ️|✔️|✔️|
 |[EC83](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC83/csharp/EC83.asciidoc)|Replace Enum ToString() with nameof|⚠️|✔️|✔️|
 |[EC84](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC84/csharp/EC84.asciidoc)|Avoid async void methods|⚠️|✔️|✔️|
-|[EC85](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC85/csharp/EC85.asciidoc)|Make type sealed|⚠️|✔️|✔️|
+|[EC85](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC85/csharp/EC85.asciidoc)|Make type sealed|ℹ️|✔️|✔️|
 
 🤝 Contribution
 ---------------

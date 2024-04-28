@@ -10,11 +10,11 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
     public static DiagnosticDescriptor Descriptor { get; } = new(
         Rule.Ids.EC85_MakeTypeSealed,
         title: "Make type sealed",
-        messageFormat: "Type '{0}' should be considered for sealing, as it has no subtypes in its assembly and no user-declared overridable member",
+        messageFormat: "Type may be sealed, as it has no subtypes in its assembly and no user-declared overridable member",
         Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
+        DiagnosticSeverity.Info,
         isEnabledByDefault: true,
-        description: "When a type has no subtypes within its assembly and no user-declared overridable member, it may be considered for sealing, which can improve performance.",
+        description: "When a type has no subtypes within its assembly and no user-declared overridable member, it may be sealed, which can improve performance.",
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC85_MakeTypeSealed));
 
     /// <inheritdoc/>
