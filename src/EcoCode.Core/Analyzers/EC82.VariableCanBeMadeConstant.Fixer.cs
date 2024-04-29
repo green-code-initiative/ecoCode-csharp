@@ -2,13 +2,13 @@
 
 namespace EcoCode.Analyzers;
 
-/// <summary>The code fix provider for variable can be made constant.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(VariableCanBeMadeConstantCodeFixProvider)), Shared]
-public sealed class VariableCanBeMadeConstantCodeFixProvider : CodeFixProvider
+/// <summary>EC82 dixer: Variable can be made constant.</summary>
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(VariableCanBeMadeConstantFixer)), Shared]
+public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
 {
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
-    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [VariableCanBeMadeConstantAnalyzer.Descriptor.Id];
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [VariableCanBeMadeConstant.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

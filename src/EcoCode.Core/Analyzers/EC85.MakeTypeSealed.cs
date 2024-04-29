@@ -2,10 +2,12 @@
 
 namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for make type sealed.</summary>
+/// <summary>EC85: Make type sealed.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
+public sealed class MakeTypeSealed : DiagnosticAnalyzer
 {
+    private static readonly ImmutableArray<SymbolKind> SymbolKinds = [SymbolKind.NamedType];
+
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
         Rule.Ids.EC85_MakeTypeSealed,
@@ -49,7 +51,7 @@ public sealed class MakeTypeSealedAnalyzer : DiagnosticAnalyzer
                 // But in that case we'll let the user decide whether to seal it or not, and mute the warning if so
                 if (!symbol.IsExternallyPublic() || !symbol.HasAnyExternallyOverridableMember())
                     sealableClasses.Add(symbol);
-            }, SymbolKind.NamedType);
+            }, SymbolKinds);
 
             compilationStartContext.RegisterCompilationEndAction(compilationEndContext =>
             {

@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Models;
 
 internal static class Rule
 {

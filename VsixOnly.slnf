@@ -2,7 +2,7 @@
   "solution": {
     "path": "ecoCode-csharp.sln",
     "projects": [
-      "src\\EcoCode\\EcoCode.csproj",
+      "src\\EcoCode.Core\\EcoCode.Core.csproj",
       "src\\EcoCode.Vsix\\EcoCode.Vsix.csproj"
     ]
   }

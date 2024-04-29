@@ -28,7 +28,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EcoCode\EcoCode.csproj" />
+		<ProjectReference Include="..\EcoCode.Core\EcoCode.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -39,7 +39,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\EcoCode\bin\$(Configuration)\$(TargetFramework)\EcoCode.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="..\EcoCode.Core\bin\$(Configuration)\$(TargetFramework)\EcoCode.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
 	</ItemGroup>
 
 	<ItemGroup>

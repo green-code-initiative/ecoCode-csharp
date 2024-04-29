@@ -1,12 +1,12 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>The code fix provider for make type sealed.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeTypeSealedCodeFixProvider)), Shared]
-public sealed class MakeTypeSealedCodeFixProvider : CodeFixProvider
+/// <summary>EC85 fixer: Make type sealed.</summary>
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeTypeSealedFixer)), Shared]
+public sealed class MakeTypeSealedFixer : CodeFixProvider
 {
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
-    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [MakeTypeSealedAnalyzer.Descriptor.Id];
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [MakeTypeSealed.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

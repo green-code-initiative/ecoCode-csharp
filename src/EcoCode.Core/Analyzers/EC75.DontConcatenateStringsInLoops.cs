@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for don't concatenate strings in loops.</summary>
+/// <summary>EC75: Don't concatenate strings in loops.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontConcatenateStringsInLoopsAnalyzer : DiagnosticAnalyzer
+public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [
         SyntaxKind.ForStatement,

@@ -1,12 +1,12 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>The code fix provider for use struct layout.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpecifyStructLayoutCodeFixProvider)), Shared]
-public sealed class SpecifyStructLayoutCodeFixProvider : CodeFixProvider
+/// <summary>EC81 fixer: Use struct layout.</summary>
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpecifyStructLayoutFixer)), Shared]
+public sealed class SpecifyStructLayoutFixer : CodeFixProvider
 {
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
-    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [SpecifyStructLayoutAnalyzer.Descriptor.Id];
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [SpecifyStructLayout.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

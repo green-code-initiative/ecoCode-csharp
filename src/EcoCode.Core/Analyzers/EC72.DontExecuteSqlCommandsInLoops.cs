@@ -1,9 +1,11 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for don't execute SQL commands in loops.</summary>
+/// <summary>EC72: Don't execute SQL commands in loops.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontExecuteSqlCommandsInLoopsAnalyzer : DiagnosticAnalyzer
+public sealed class DontExecuteSqlCommandsInLoops : DiagnosticAnalyzer
 {
+    private static readonly ImmutableArray<SyntaxKind> Invocations = [SyntaxKind.InvocationExpression];
+
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
         Rule.Ids.EC72_DontExecuteSqlCommandsInLoops,
@@ -38,7 +40,7 @@ public sealed class DontExecuteSqlCommandsInLoopsAnalyzer : DiagnosticAnalyzer
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
                 }
-            }, SyntaxKind.InvocationExpression);
+            }, Invocations);
         });
     }
 }

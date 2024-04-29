@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Title>EcoCode</Title>
-		<Product>EcoCode</Product>
+		<Title>EcoCode.Core</Title>
+		<Product>EcoCode.Core</Product>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 	</PropertyGroup>
 

@@ -1,14 +1,12 @@
-﻿using Microsoft.CodeAnalysis.Operations;
+﻿namespace EcoCode.Analyzers;
 
-namespace EcoCode.Analyzers;
-
-/// <summary>The code fix provider for replace enum ToString with nameof.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReplaceEnumToStringWithNameOfCodeFixProvider)), Shared]
-public sealed class ReplaceEnumToStringWithNameOfCodeFixProvider : CodeFixProvider
+/// <summary>EC83 fixer: Replace enum ToString with nameof.</summary>
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReplaceEnumToStringWithNameOfFixer)), Shared]
+public sealed class ReplaceEnumToStringWithNameOfFixer : CodeFixProvider
 {
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
-    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [ReplaceEnumToStringWithNameOfAnalyzer.Descriptor.Id];
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [ReplaceEnumToStringWithNameOf.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;

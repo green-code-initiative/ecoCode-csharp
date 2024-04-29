@@ -1,10 +1,8 @@
-﻿using Microsoft.CodeAnalysis.Operations;
+﻿namespace EcoCode.Analyzers;
 
-namespace EcoCode.Analyzers;
-
-/// <summary>Analyzer for replace enum ToString with nameof.</summary>
+/// <summary>EC83: Replace enum ToString with nameof.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class ReplaceEnumToStringWithNameOfAnalyzer : DiagnosticAnalyzer
+public sealed class ReplaceEnumToStringWithNameOf : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<OperationKind> Invocation = [OperationKind.Invocation];
     private static readonly ImmutableArray<OperationKind> Interpolation = [OperationKind.Interpolation];

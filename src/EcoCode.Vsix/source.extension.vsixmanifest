@@ -19,12 +19,8 @@
 		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.7.2,)" />
 	</Dependencies>
 	<Assets>
-		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="EcoCode.Analyzers" Path="|EcoCode.Analyzers|"/>
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="EcoCode.Analyzers" Path="|EcoCode.Analyzers|"/>
-		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="EcoCode.CodeFixes" Path="|EcoCode.CodeFixes|"/>
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="EcoCode.CodeFixes" Path="|EcoCode.CodeFixes|"/>
-		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="EcoCode.Shared" Path="|EcoCode.Shared|" />
-		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="EcoCode.Shared" Path="|EcoCode.Shared|" />
+		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="EcoCode.Core" Path="|EcoCode.Core|"/>
+		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="EcoCode.Core" Path="|EcoCode.Core|"/>
 	</Assets>
 	<Prerequisites>
 		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />

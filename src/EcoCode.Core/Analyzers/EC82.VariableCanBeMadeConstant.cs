@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for variable can be made constant.</summary>
+/// <summary>EC82: Variable can be made constant.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class VariableCanBeMadeConstantAnalyzer : DiagnosticAnalyzer
+public sealed class VariableCanBeMadeConstant : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [SyntaxKind.LocalDeclarationStatement];
 

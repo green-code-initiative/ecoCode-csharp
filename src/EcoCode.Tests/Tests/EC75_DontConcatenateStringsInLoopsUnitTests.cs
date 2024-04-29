@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class DontConcatenateStringsInLoopsUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        DontConcatenateStringsInLoopsAnalyzer,
-        DontConcatenateStringsInLoopsCodeFixProvider>;
+    private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontConcatenateStringsInLoops>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

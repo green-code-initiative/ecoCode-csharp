@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class DontCallFunctionsInLoopConditionsUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        DontCallFunctionsInLoopConditionsAnalyzer,
-        DontCallFunctionsInLoopConditionsCodeFixProvider>;
+    private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontCallFunctionsInLoopConditions>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

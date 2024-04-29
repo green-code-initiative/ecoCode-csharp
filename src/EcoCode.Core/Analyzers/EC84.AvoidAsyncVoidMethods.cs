@@ -1,9 +1,11 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for avoid async void methods.</summary>
+/// <summary>EC84: Avoid async void methods.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class AvoidAsyncVoidMethodsAnalyzer : DiagnosticAnalyzer
+public sealed class AvoidAsyncVoidMethods : DiagnosticAnalyzer
 {
+    private static readonly ImmutableArray<SyntaxKind> Declarations = [SyntaxKind.MethodDeclaration];
+
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
         Rule.Ids.EC84_AvoidAsyncVoidMethods,
@@ -24,7 +26,7 @@ public sealed class AvoidAsyncVoidMethodsAnalyzer : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-        context.RegisterSyntaxNodeAction(static context => AnalyzeMethod(context), SyntaxKind.MethodDeclaration);
+        context.RegisterSyntaxNodeAction(static context => AnalyzeMethod(context), Declarations);
     }
 
     private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)

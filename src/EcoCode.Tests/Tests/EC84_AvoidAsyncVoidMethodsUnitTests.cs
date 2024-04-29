@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class AvoidAsyncVoidMethodsUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        AvoidAsyncVoidMethodsAnalyzer,
-        AvoidAsyncVoidMethodsCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<AvoidAsyncVoidMethods, AvoidAsyncVoidMethodsFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

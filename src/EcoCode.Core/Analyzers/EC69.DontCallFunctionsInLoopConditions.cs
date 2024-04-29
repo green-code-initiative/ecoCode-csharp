@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>Analyzer for don't call loop invariant functions in loop conditions.</summary>
+/// <summary>EC69: Don't call loop invariant functions in loop conditions.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DontCallFunctionsInLoopConditionsAnalyzer : DiagnosticAnalyzer
+public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [
         SyntaxKind.ForStatement,
