@@ -3,7 +3,7 @@
     "path": "ecoCode-csharp.sln",
     "projects": [
       "src\\EcoCode\\EcoCode.csproj",
-      "src\\EcoCode.Vsix\\EcoCode.Vsix.csproj"
+      "src\\EcoCode.Tests\\EcoCode.Tests.csproj"
     ]
   }
 }

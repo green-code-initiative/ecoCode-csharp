@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Operations;
 
-namespace EcoCode.CodeFixes;
+namespace EcoCode.Analyzers;
 
 /// <summary>The code fix provider for replace enum ToString with nameof.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReplaceEnumToStringWithNameOfCodeFixProvider)), Shared]

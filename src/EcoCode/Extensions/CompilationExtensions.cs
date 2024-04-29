@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Shared;
+﻿namespace EcoCode.Extensions;
 
 /// <summary>Extension methods for <see cref="Compilation"/>.</summary>
 public static class CompilationExtensions

@@ -3,38 +3,43 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Analyzers", "src\EcoCode.Analyzers\EcoCode.Analyzers.csproj", "{95076571-CC7F-44E9-B9AA-FFBD7AE5355E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.CodeFixes", "src\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj", "{F9F5157B-D5B5-4682-804C-1BD366BEC5B9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{95076571-CC7F-44E9-B9AA-FFBD7AE5355E} = {95076571-CC7F-44E9-B9AA-FFBD7AE5355E}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode", "src\EcoCode\EcoCode.csproj", "{95076571-CC7F-44E9-B9AA-FFBD7AE5355E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Package", "src\EcoCode.Package\EcoCode.Package.csproj", "{45D880DC-011C-415A-9266-EB69FF5D5A1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Tests", "src\EcoCode.Tests\EcoCode.Tests.csproj", "{09A6D27B-AF9E-49D7-92A9-3BB3A5E09D99}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Shared", "src\EcoCode.Shared\EcoCode.Shared.csproj", "{0C55B22C-8266-4B3B-9A66-E4A753A5282C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Vsix", "src\EcoCode.Vsix\EcoCode.Vsix.csproj", "{628DAC2E-06FE-49BA-8873-18C8034DD16B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{810939C8-2A48-4F56-84C3-E433CDB923EE}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
-		CONTRIBUTING.md = CONTRIBUTING.md
-		.github\workflows\create-manual-vsix-release.yml = .github\workflows\create-manual-vsix-release.yml
-		.github\workflows\create-tag-release.yml = .github\workflows\create-tag-release.yml
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json
-		icon.jpeg = icon.jpeg
-		LICENCE.md = LICENCE.md
-		NOTICE.md = NOTICE.md
 		NuGet.Config = NuGet.Config
-		NuGetOnly.slnf = NuGetOnly.slnf
-		README.md = README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{5FDA07DE-D474-40F1-8C21-2B56FDEBD236}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
+		.github\workflows\create-tag-release.yml = .github\workflows\create-tag-release.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D10E2FE2-04EB-4F54-90E6-2E0BBA562041}"
+	ProjectSection(SolutionItems) = preProject
+		assets\CONTRIBUTING.md = assets\CONTRIBUTING.md
+		assets\icon.jpeg = assets\icon.jpeg
+		assets\LICENCE.md = assets\LICENCE.md
+		assets\NOTICE.md = assets\NOTICE.md
+		assets\README.md = assets\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filters", "Filters", "{7230C2B8-8611-4946-A3BD-1BFD26C3833A}"
+	ProjectSection(SolutionItems) = preProject
+		NuGetOnly.slnf = NuGetOnly.slnf
+		TestsOnly.slnf = TestsOnly.slnf
 		VsixOnly.slnf = VsixOnly.slnf
 	EndProjectSection
 EndProject
@@ -48,10 +53,6 @@ Global
 		{95076571-CC7F-44E9-B9AA-FFBD7AE5355E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95076571-CC7F-44E9-B9AA-FFBD7AE5355E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95076571-CC7F-44E9-B9AA-FFBD7AE5355E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9F5157B-D5B5-4682-804C-1BD366BEC5B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F9F5157B-D5B5-4682-804C-1BD366BEC5B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9F5157B-D5B5-4682-804C-1BD366BEC5B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F9F5157B-D5B5-4682-804C-1BD366BEC5B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{45D880DC-011C-415A-9266-EB69FF5D5A1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{45D880DC-011C-415A-9266-EB69FF5D5A1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{45D880DC-011C-415A-9266-EB69FF5D5A1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -60,10 +61,6 @@ Global
 		{09A6D27B-AF9E-49D7-92A9-3BB3A5E09D99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09A6D27B-AF9E-49D7-92A9-3BB3A5E09D99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09A6D27B-AF9E-49D7-92A9-3BB3A5E09D99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C55B22C-8266-4B3B-9A66-E4A753A5282C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C55B22C-8266-4B3B-9A66-E4A753A5282C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C55B22C-8266-4B3B-9A66-E4A753A5282C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C55B22C-8266-4B3B-9A66-E4A753A5282C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{628DAC2E-06FE-49BA-8873-18C8034DD16B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{628DAC2E-06FE-49BA-8873-18C8034DD16B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{628DAC2E-06FE-49BA-8873-18C8034DD16B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,6 +68,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5FDA07DE-D474-40F1-8C21-2B56FDEBD236} = {810939C8-2A48-4F56-84C3-E433CDB923EE}
+		{D10E2FE2-04EB-4F54-90E6-2E0BBA562041} = {810939C8-2A48-4F56-84C3-E433CDB923EE}
+		{7230C2B8-8611-4946-A3BD-1BFD26C3833A} = {810939C8-2A48-4F56-84C3-E433CDB923EE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25BE75DE-AF1B-480D-B27C-6F411621E246}

@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Shared;
+﻿namespace EcoCode.Models;
 
 /// <summary>The visibility of a symbol. </summary>
 public enum SymbolVisibility

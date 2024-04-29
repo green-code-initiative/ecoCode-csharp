@@ -1,4 +1,4 @@
-﻿namespace EcoCode.CodeFixes;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>The code fix provider for make type sealed.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeTypeSealedCodeFixProvider)), Shared]

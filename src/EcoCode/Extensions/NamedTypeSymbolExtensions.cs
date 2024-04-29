@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Generic;
-
-namespace EcoCode.Shared;
+﻿namespace EcoCode.Extensions;
 
 /// <summary>Extensions methods for <see cref="INamedTypeSymbol"/>.</summary>
 public static class NamedTypeSymbolExtensions

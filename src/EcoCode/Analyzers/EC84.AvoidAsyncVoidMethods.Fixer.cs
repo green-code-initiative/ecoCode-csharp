@@ -1,4 +1,4 @@
-﻿namespace EcoCode.CodeFixes;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>The code fix provider for avoid async void methods.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidAsyncVoidMethodsCodeFixProvider)), Shared]

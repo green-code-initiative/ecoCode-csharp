@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Formatting;
 
-namespace EcoCode.CodeFixes;
+namespace EcoCode.Analyzers;
 
 /// <summary>The code fix provider for variable can be made constant.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(VariableCanBeMadeConstantCodeFixProvider)), Shared]

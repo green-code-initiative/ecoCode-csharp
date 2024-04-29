@@ -20,8 +20,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
-		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
+		<ProjectReference Include="..\EcoCode\EcoCode.csproj" />
 	</ItemGroup>
 
 </Project>

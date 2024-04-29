@@ -1,4 +1,4 @@
-﻿namespace EcoCode.CodeFixes;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>The code fix provider for use struct layout.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpecifyStructLayoutCodeFixProvider)), Shared]

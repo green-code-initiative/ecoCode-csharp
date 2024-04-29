@@ -2,11 +2,8 @@
   "solution": {
     "path": "ecoCode-csharp.sln",
     "projects": [
-      "src\\EcoCode.Analyzers\\EcoCode.Analyzers.csproj",
-      "src\\EcoCode.CodeFixes\\EcoCode.CodeFixes.csproj",
-      "src\\EcoCode.Package\\EcoCode.Package.csproj",
-      "src\\EcoCode.Shared\\EcoCode.Shared.csproj",
-      "src\\EcoCode.Tests\\EcoCode.Tests.csproj"
+      "src\\EcoCode\\EcoCode.csproj",
+      "src\\EcoCode.Package\\EcoCode.Package.csproj"
     ]
   }
 }

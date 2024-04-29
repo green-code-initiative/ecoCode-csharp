@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Shared;
+﻿namespace EcoCode.Extensions;
 
 /// <summary>Extensions methods for <see cref="SyntaxNode"/>.</summary>
 public static class SyntaxNodeExtensions

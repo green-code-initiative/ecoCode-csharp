@@ -28,21 +28,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
-		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
+		<ProjectReference Include="..\EcoCode\EcoCode.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="tools\*.ps1" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\assets\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\assets\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\assets\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\EcoCode.Analyzers\bin\$(Configuration)\$(TargetFramework)\EcoCode.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
-		<None Include="..\EcoCode.CodeFixes\bin\$(Configuration)\$(TargetFramework)\EcoCode.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
-		<None Include="..\EcoCode.Shared\bin\$(Configuration)\$(TargetFramework)\EcoCode.Shared.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="..\EcoCode\bin\$(Configuration)\$(TargetFramework)\EcoCode.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
 	</ItemGroup>
 
 	<ItemGroup>
