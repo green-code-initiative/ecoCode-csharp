@@ -14,11 +14,14 @@ public sealed class MakeTypeSealedFixer : CodeFixProvider
     /// <inheritdoc/>
     public override Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        context.RegisterCodeFix(CodeAction.Create(
-            title: "Make type sealed",
-            createChangedSolution: token => SealDeclaration(context, token),
-            equivalenceKey: "Make type sealed"),
-            context.Diagnostics);
+        if (context.Diagnostics.Length != 0)
+        {
+            context.RegisterCodeFix(CodeAction.Create(
+                title: "Make type sealed",
+                createChangedSolution: token => SealDeclaration(context, token),
+                equivalenceKey: "Make type sealed"),
+                context.Diagnostics);
+        }
         return Task.CompletedTask;
     }
 
