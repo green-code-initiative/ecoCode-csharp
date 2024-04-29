@@ -3,6 +3,12 @@
 /// <summary>Extension methods for <see cref="Compilation"/>.</summary>
 public static class CompilationExtensions
 {
+    /// <summary>Returns the LINQ Enumerable symbol.</summary>
+    /// <param name="compilation">The compilation.</param>
+    /// <returns>The LINQ Enumerable symbol, null if not found.</returns>
+    public static INamedTypeSymbol? GetLinqEnumerableSymbol(this Compilation compilation) =>
+        compilation.GetTypeByMetadataName(typeof(System.Linq.Enumerable).FullName);
+
     /// <summary>
     /// Gets a type by its metadata name to use for code analysis within a <see cref="Compilation"/>. This method
     /// attempts to find the "best" symbol to use for code analysis, which is the symbol matching the first of the
