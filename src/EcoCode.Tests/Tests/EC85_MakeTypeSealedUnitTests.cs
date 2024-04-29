@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class MakeTypeSealed
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        MakeTypeSealedAnalyzer,
-        MakeTypeSealedCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<Analyzers.MakeTypeSealed, MakeTypeSealedFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

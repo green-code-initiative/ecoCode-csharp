@@ -28,29 +28,24 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EcoCode.Analyzers\EcoCode.Analyzers.csproj" />
-		<ProjectReference Include="..\EcoCode.CodeFixes\EcoCode.CodeFixes.csproj" />
+		<ProjectReference Include="..\EcoCode.Core\EcoCode.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<None Update="tools\*.ps1" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\assets\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\assets\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\assets\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\EcoCode.Analyzers\bin\$(Configuration)\$(TargetFramework)\EcoCode.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
-		<None Include="..\EcoCode.CodeFixes\bin\$(Configuration)\$(TargetFramework)\EcoCode.CodeFixes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
-		<None Include="..\EcoCode.Shared\bin\$(Configuration)\$(TargetFramework)\EcoCode.Shared.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="..\EcoCode.Core\bin\$(Configuration)\$(TargetFramework)\EcoCode.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
 		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
-
-		<!--Make sure the user project benefits from the latest Roslyn rules-->
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" /> <!--Include latest Roslyn rules as transitive-->
 	</ItemGroup>
 
 </Project>

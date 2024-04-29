@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class VariableCanBeMadeConstantUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        VariableCanBeMadeConstantAnalyzer,
-        VariableCanBeMadeConstantCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<VariableCanBeMadeConstant, VariableCanBeMadeConstantFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

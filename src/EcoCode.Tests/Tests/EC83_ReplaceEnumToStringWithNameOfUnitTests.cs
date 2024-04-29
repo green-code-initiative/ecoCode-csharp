@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class ReplaceEnumToStringWithNameOfUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        ReplaceEnumToStringWithNameOfAnalyzer,
-        ReplaceEnumToStringWithNameOfCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<ReplaceEnumToStringWithNameOf, ReplaceEnumToStringWithNameOfFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

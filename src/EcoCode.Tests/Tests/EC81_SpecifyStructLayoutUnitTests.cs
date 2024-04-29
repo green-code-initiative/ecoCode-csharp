@@ -3,9 +3,7 @@
 [TestClass]
 public sealed class SpecifyStructLayoutUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        SpecifyStructLayoutAnalyzer,
-        SpecifyStructLayoutCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<SpecifyStructLayout, SpecifyStructLayoutFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
