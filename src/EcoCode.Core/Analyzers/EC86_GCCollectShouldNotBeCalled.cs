@@ -2,7 +2,7 @@
 
 /// <summary>Analyzer for avoid async void methods.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GCCollectShouldNotBeCalledAnalyzer : DiagnosticAnalyzer
+public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
 {
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
