@@ -1,11 +1,9 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class DontExecuteSqlCommandsInLoopsUnitTests
+public sealed class DontExecuteSqlCommandsInLoopsUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        DontExecuteSqlCommandsInLoopsAnalyzer,
-        DontExecuteSqlCommandsInLoopsCodeFixProvider>;
+    private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontExecuteSqlCommandsInLoops>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

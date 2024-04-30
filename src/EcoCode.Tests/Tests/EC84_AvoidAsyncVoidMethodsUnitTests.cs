@@ -1,11 +1,9 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class AvoidAsyncVoidMethodsUnitTests
+public sealed class AvoidAsyncVoidMethodsUnitTests
 {
-    private static readonly VerifyDlg VerifyAsync = CodeFixVerifier.VerifyAsync<
-        AvoidAsyncVoidMethodsAnalyzer,
-        AvoidAsyncVoidMethodsCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<AvoidAsyncVoidMethods, AvoidAsyncVoidMethodsFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
@@ -22,8 +20,7 @@ public class AvoidAsyncVoidMethodsUnitTests
                 Console.WriteLine();
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         using System.Threading.Tasks;
         public static class Program
@@ -48,8 +45,7 @@ public class AvoidAsyncVoidMethodsUnitTests
                 _ = await httpClient.GetAsync(new Uri("URL")).ConfigureAwait(false);
             }
         }
-        """,
-        fixedSource: """
+        """, """
         using System;
         using System.Net.Http;
         public static class Program
