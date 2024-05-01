@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class ReplaceEnumToStringWithNameOfUnitTests
+public sealed class ReplaceEnumToStringWithNameOfTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<ReplaceEnumToStringWithNameOf, ReplaceEnumToStringWithNameOfFixer>;
 

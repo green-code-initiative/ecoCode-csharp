@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class DontExecuteSqlCommandsInLoopsUnitTests
+public sealed class DontExecuteSqlCommandsInLoopsTests
 {
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontExecuteSqlCommandsInLoops>;
 

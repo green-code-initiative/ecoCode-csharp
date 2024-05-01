@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class SpecifyStructLayoutUnitTests
+public sealed class SpecifyStructLayoutTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<SpecifyStructLayout, SpecifyStructLayoutFixer>;
 

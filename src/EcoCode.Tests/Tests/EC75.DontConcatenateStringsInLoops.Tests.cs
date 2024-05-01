@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class DontConcatenateStringsInLoopsUnitTests
+public sealed class DontConcatenateStringsInLoopsTests
 {
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontConcatenateStringsInLoops>;
 

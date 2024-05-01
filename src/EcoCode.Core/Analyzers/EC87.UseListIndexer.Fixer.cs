@@ -1,14 +1,15 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 
 namespace EcoCode.Analyzers;
 
-/// <summary>EC87 fixer: Use collection indexer.</summary>
-[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseCollectionIndexerFixer)), Shared]
-public sealed class UseCollectionIndexerFixer : CodeFixProvider
+/// <summary>EC87 fixer: Use list indexer.</summary>
+[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseListIndexerFixer)), Shared]
+public sealed class UseListIndexerFixer : CodeFixProvider
 {
     /// <inheritdoc/>
     public override ImmutableArray<string> FixableDiagnosticIds => _fixableDiagnosticIds;
-    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [UseCollectionIndexer.Descriptor.Id];
+    private static readonly ImmutableArray<string> _fixableDiagnosticIds = [UseListIndexer.Descriptor.Id];
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
@@ -31,12 +32,12 @@ public sealed class UseCollectionIndexerFixer : CodeFixProvider
 
                 var refactorFunc = memberAccess.Name.Identifier.ValueText switch
                 {
-                    nameof(System.Linq.Enumerable.First) => RefactorFirstAsync,
-                    nameof(System.Linq.Enumerable.Last) =>
+                    nameof(Enumerable.First) => RefactorFirstAsync,
+                    nameof(Enumerable.Last) =>
                         context.Document.GetLanguageVersion() >= LanguageVersion.CSharp8
-                        ? RefactorLastWithIndexerAsync
+                        ? RefactorLastWithIndexAsync
                         : RefactorLastWithCountOrLengthAsync,
-                    nameof(System.Linq.Enumerable.ElementAt) => RefactorElementAtAsync,
+                    nameof(Enumerable.ElementAt) => RefactorElementAtAsync,
                     _ => default(Func<Document, InvocationExpressionSyntax, CancellationToken, Task<Document>>),
                 };
 
@@ -69,7 +70,7 @@ public sealed class UseCollectionIndexerFixer : CodeFixProvider
     private static Task<Document> RefactorFirstAsync(Document document, InvocationExpressionSyntax invocationExpr, CancellationToken token) =>
         UpdateDocument(document, invocationExpr, SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0)), token);
 
-    private static Task<Document> RefactorLastWithIndexerAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token) =>
+    private static Task<Document> RefactorLastWithIndexAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token) =>
         UpdateDocument(document, invocation,
             SyntaxFactory.PrefixUnaryExpression(SyntaxKind.IndexExpression,
                 SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(1))),
@@ -77,28 +78,46 @@ public sealed class UseCollectionIndexerFixer : CodeFixProvider
 
     private static async Task<Document> RefactorLastWithCountOrLengthAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token)
     {
-        if (await document.GetSemanticModelAsync(token).ConfigureAwait(false) is not SemanticModel semanticModel)
+        if (await document.GetSemanticModelAsync(token).ConfigureAwait(false) is not { } semanticModel)
             return document;
 
         var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
-        if (semanticModel.GetTypeInfo(memberAccess.Expression, token).Type?.GetCountOrLength(invocation.SpanStart, semanticModel) is not { } countOrLength)
+        if (semanticModel.GetTypeInfo(memberAccess.Expression, token).Type is not { } memberType ||
+            GetCountOrLength(memberType, invocation.SpanStart, semanticModel) is not { } countOrLength)
+        {
             return document;
+        }
 
-        var propertyAccess = SyntaxFactory.MemberAccessExpression(
+        var property = SyntaxFactory.MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
             memberAccess.Expression,
             SyntaxFactory.IdentifierName(countOrLength.Name));
 
-        var minusOneLiteral = SyntaxFactory.LiteralExpression(
-            SyntaxKind.NumericLiteralExpression,
-            SyntaxFactory.Literal(1));
+        var oneLiteral = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(1));
 
-        var indexExpression = SyntaxFactory.BinaryExpression(
-            SyntaxKind.SubtractExpression,
-            propertyAccess,
-            minusOneLiteral);
+        var indexExpression = SyntaxFactory.BinaryExpression(SyntaxKind.SubtractExpression, property, oneLiteral);
 
         return await UpdateDocument(document, invocation, indexExpression, token);
+
+        static ISymbol? GetCountOrLength(ITypeSymbol type, int position, SemanticModel semanticModel)
+        {
+            do
+            {
+                foreach (var member in type.GetMembers())
+                {
+                    if (member.Name is nameof(IReadOnlyList<int>.Count) or nameof(Array.Length) &&
+                        member is IPropertySymbol prop &&
+                        prop.Type.IsPrimitiveNumber() &&
+                        semanticModel.IsAccessible(position, prop))
+                    {
+                        return prop;
+                    }
+                }
+                type = type.BaseType!;
+            } while (type is not null);
+
+            return null;
+        }
     }
 
     private static Task<Document> RefactorElementAtAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token) =>
