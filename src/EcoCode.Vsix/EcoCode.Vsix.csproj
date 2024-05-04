@@ -22,10 +22,10 @@
 
 	<ItemGroup>
 		<Content Include="publishManifest.json" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\assets\icon.jpeg" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
-		<Content Include="..\..\assets\LICENCE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
-		<Content Include="..\..\assets\NOTICE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
-		<Content Include="..\..\assets\README.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\icon.jpeg" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\LICENCE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\NOTICE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\README.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
 	</ItemGroup>
 
 	<ItemGroup>

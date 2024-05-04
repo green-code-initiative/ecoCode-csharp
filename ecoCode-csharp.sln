@@ -29,11 +29,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Workflows", "Workflows", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D10E2FE2-04EB-4F54-90E6-2E0BBA562041}"
 	ProjectSection(SolutionItems) = preProject
-		assets\CONTRIBUTING.md = assets\CONTRIBUTING.md
-		assets\icon.jpeg = assets\icon.jpeg
-		assets\LICENCE.md = assets\LICENCE.md
-		assets\NOTICE.md = assets\NOTICE.md
-		assets\README.md = assets\README.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+		icon.jpeg = icon.jpeg
+		LICENCE.md = LICENCE.md
+		NOTICE.md = NOTICE.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filters", "Filters", "{7230C2B8-8611-4946-A3BD-1BFD26C3833A}"
