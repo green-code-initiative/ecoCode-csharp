@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "ecoCode-csharp.sln",
+    "projects": [
+      "src\\EcoCode.Core\\EcoCode.Core.csproj",
+      "src\\EcoCode.Tool\\EcoCode.Tool.csproj"
+    ]
+  }
+}
