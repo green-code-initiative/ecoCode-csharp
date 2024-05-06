@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Linq;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>Analyzer for avoid async void methods.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
@@ -39,12 +41,21 @@ public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
             return;
         }
 
-        //If there is no arguments or the first argument (assuming it is generation) is a 0 int, raise report
+        //If there is no arguments or the "generation" argument is not 0, raise report
         bool report = !invocationExpression.ArgumentList.Arguments.Any();
         if (!report)
         {
-            var firstArgument = invocationExpression.ArgumentList.Arguments[0].Expression;
-            var constantValue = context.SemanticModel.GetConstantValue(firstArgument);
+            var firstArgument = invocationExpression.ArgumentList.Arguments[0];
+            if (firstArgument.NameColon is not null) // Named argument, may not be the one we want
+            {
+                string firstParameterName = methodSymbol.Parameters[0].Name; // Parameter name from the method signature
+                if (firstArgument.NameColon.Name.Identifier.Text != firstParameterName)
+                {
+                    firstArgument = invocationExpression.ArgumentList.Arguments
+                        .First(arg => arg.NameColon?.Name.Identifier.Text == firstParameterName);
+                }
+            }
+            var constantValue = context.SemanticModel.GetConstantValue(firstArgument.Expression);
             if (constantValue.Value is not int intValue || intValue != 0)
                 report = true;
         }

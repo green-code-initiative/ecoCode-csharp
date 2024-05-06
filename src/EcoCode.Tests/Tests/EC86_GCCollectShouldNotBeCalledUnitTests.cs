@@ -34,17 +34,17 @@ public class GCCollectShouldNotBeCalledUnitTests
         }
         """).ConfigureAwait(false);
 
-    //[TestMethod]
-    //public async Task GCCollectShouldNotBeCalledNamedArgumentsAsync() => await VerifyAsync("""
-    //    using System;
-    //    public static class Program
-    //    {
-    //        public static async void Main()
-    //        {
-    //            [|GC.Collect(mode: GCCollectionMode.Optimized, generation: 1);|];
-    //        }
-    //    }
-    //    """).ConfigureAwait(false);
+    [TestMethod]
+    public async Task GCCollectShouldNotBeCalledNamedArgumentsAsync() => await VerifyAsync("""
+        using System;
+        public static class Program
+        {
+            public static async void Main()
+            {
+                [|GC.Collect(mode: GCCollectionMode.Optimized, generation: 1)|];
+            }
+        }
+        """).ConfigureAwait(false);
 
     [TestMethod]
     public async Task GCCollectShouldNotBeCalledMultipleCodeAsync() => await VerifyAsync("""
