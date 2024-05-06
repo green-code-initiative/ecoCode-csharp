@@ -41,6 +41,7 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC83](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC83/csharp/EC83.asciidoc)|Replace Enum ToString() with nameof|⚠️|✔️|✔️|
 |[EC84](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC84/csharp/EC84.asciidoc)|Avoid async void methods|⚠️|✔️|✔️|
 |[EC85](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC85/csharp/EC85.asciidoc)|Make type sealed|ℹ️|✔️|✔️|
+|[EC86](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC86/csharp/EC86.asciidoc)|`GC.Collect` should not be called|⚠️|✔️|❌|
 |[EC87](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC87/csharp/EC87.asciidoc)|Use collection indexer|⚠️|✔️|✔️|
 
 🤝 Contribution
