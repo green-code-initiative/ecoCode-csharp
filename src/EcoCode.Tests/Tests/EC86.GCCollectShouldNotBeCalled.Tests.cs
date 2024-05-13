@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public class GCCollectShouldNotBeCalledUnitTests
+public class GCCollectShouldNotBeCalledTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<
         GCCollectShouldNotBeCalled,
@@ -117,5 +117,4 @@ public class GCCollectShouldNotBeCalledUnitTests
             }
         }
         """).ConfigureAwait(false);
-
 }
