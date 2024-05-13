@@ -1,11 +1,11 @@
-﻿using System.Linq;
+﻿namespace EcoCode.Analyzers;
 
-namespace EcoCode.Analyzers;
-
-/// <summary>Analyzer for avoid async void methods.</summary>
+/// <summary>EC86 : GC Collect should not be called.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
 {
+    private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [SyntaxKind.InvocationExpression];
+
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
         Rule.Ids.EC86_GCCollectShouldNotBeCalled,
@@ -18,30 +18,30 @@ public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
         helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC86_GCCollectShouldNotBeCalled));
 
     /// <inheritdoc/>
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
+    private static readonly ImmutableArray<DiagnosticDescriptor> _supportedDiagnostics = [Descriptor];
 
     /// <inheritdoc/>
     public override void Initialize(AnalysisContext context)
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-        context.RegisterSyntaxNodeAction(static context => AnalyzeMethod(context), SyntaxKind.InvocationExpression);
+        context.RegisterSyntaxNodeAction(static context => AnalyzeMethod(context), SyntaxKinds);
     }
 
     private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
     {
         var invocationExpression = (InvocationExpressionSyntax)context.Node;
 
-        //if the expression is not a method or method name is not GC.Collect or Containing type is not System.GC, return
-        if (context.SemanticModel.GetSymbolInfo(invocationExpression).Symbol is not IMethodSymbol methodSymbol
-            || methodSymbol.Name != nameof(GC.Collect)
-            || !SymbolEqualityComparer.Default.Equals(methodSymbol.ContainingType,
-        context.SemanticModel.Compilation.GetTypeByMetadataName("System.GC")))
+        if (context.SemanticModel.GetSymbolInfo(invocationExpression).Symbol is not IMethodSymbol methodSymbol ||
+            methodSymbol.Name != nameof(GC.Collect) ||
+            !SymbolEqualityComparer.Default.Equals(methodSymbol.ContainingType,
+                context.SemanticModel.Compilation.GetTypeByMetadataName(typeof(GC).FullName)))
         {
             return;
         }
 
-        //If there is no arguments or the "generation" argument is not 0, raise report
+        // If there is no arguments or the "generation" argument is not 0, report
         bool report = !invocationExpression.ArgumentList.Arguments.Any();
         if (!report)
         {
@@ -51,13 +51,19 @@ public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
                 string firstParameterName = methodSymbol.Parameters[0].Name; // Parameter name from the method signature
                 if (firstArgument.NameColon.Name.Identifier.Text != firstParameterName)
                 {
-                    firstArgument = invocationExpression.ArgumentList.Arguments
-                        .First(arg => arg.NameColon?.Name.Identifier.Text == firstParameterName);
+                    foreach (var argument in invocationExpression.ArgumentList.Arguments)
+                    {
+                        if (argument.NameColon?.Name.Identifier.Text == firstParameterName)
+                        {
+                            firstArgument = argument; // Should always be hit in this case
+                            break;
+                        }
+                    }
                 }
             }
+
             var constantValue = context.SemanticModel.GetConstantValue(firstArgument.Expression);
-            if (constantValue.Value is not int intValue || intValue != 0)
-                report = true;
+            report = constantValue.Value is not int intValue || intValue != 0;
         }
 
         if(report)

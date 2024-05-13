@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class AvoidAsyncVoidMethodsUnitTests
+public sealed class AvoidAsyncVoidMethodsTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<AvoidAsyncVoidMethods, AvoidAsyncVoidMethodsFixer>;
 

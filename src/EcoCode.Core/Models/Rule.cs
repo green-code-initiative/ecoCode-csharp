@@ -23,5 +23,6 @@ internal static class Rule
         public const string EC84_AvoidAsyncVoidMethods = "EC84";
         public const string EC85_MakeTypeSealed = "EC85";
         public const string EC86_GCCollectShouldNotBeCalled = "EC86";
+        public const string EC87_UseCollectionIndexer = "EC87";
     }
 }

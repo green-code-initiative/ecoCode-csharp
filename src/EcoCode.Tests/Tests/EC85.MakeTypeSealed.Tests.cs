@@ -1,7 +1,7 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class MakeTypeSealed
+public sealed class MakeTypeSealedTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<Analyzers.MakeTypeSealed, MakeTypeSealedFixer>;
 
