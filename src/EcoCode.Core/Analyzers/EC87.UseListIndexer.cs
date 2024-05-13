@@ -38,9 +38,8 @@ public sealed class UseListIndexer : DiagnosticAnalyzer
     private static void AnalyzeInvocationExpression(SyntaxNodeAnalysisContext context)
     {
         var invocationExpr = (InvocationExpressionSyntax)context.Node;
-        var memberAccess = (MemberAccessExpressionSyntax)invocationExpr.Expression;
-
-        if (context.SemanticModel.GetSymbolInfo(invocationExpr).Symbol is not IMethodSymbol method ||
+        if (invocationExpr.Expression is not MemberAccessExpressionSyntax memberAccess ||
+            context.SemanticModel.GetSymbolInfo(invocationExpr).Symbol is not IMethodSymbol method ||
             !method.IsExtensionMethod ||
             !SymbolEqualityComparer.Default.Equals(method.ContainingType, context.Compilation.GetTypeByMetadataName(typeof(Enumerable).FullName)))
         {
