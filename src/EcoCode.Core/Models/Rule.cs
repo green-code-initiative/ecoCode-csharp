@@ -24,5 +24,6 @@ internal static class Rule
         public const string EC85_MakeTypeSealed = "EC85";
         public const string EC86_GCCollectShouldNotBeCalled = "EC86";
         public const string EC87_UseCollectionIndexer = "EC87";
+        public const string EC88_DisposeAsynchronously = "EC88";
     }
 }
