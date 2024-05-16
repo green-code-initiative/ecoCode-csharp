@@ -1,9 +1,9 @@
 ﻿namespace EcoCode.Tests;
 
 [TestClass]
-public sealed class DisposeAsynchronouslyTests
+public sealed class DisposeResourceAsynchronouslyTests
 {
-    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<DisposeAsynchronously, DisposeAsynchronouslyFixer>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<DisposeResourceAsynchronously, DisposeResourceAsynchronouslyFixer>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
@@ -62,6 +62,23 @@ public sealed class DisposeAsynchronouslyTests
                     Console.WriteLine(d1);
 
                 [|using|] var d2 = new AsyncDisposableClass();
+                Console.WriteLine(d2);
+            }
+        }
+        """, """
+        using System;
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            private class DisposableClass : IDisposable { public void Dispose() { } }
+            private sealed class AsyncDisposableClass : DisposableClass, IAsyncDisposable { public ValueTask DisposeAsync() => default; }
+
+            public static async Task Run()
+            {
+                await using (var d1 = new AsyncDisposableClass())
+                    Console.WriteLine(d1);
+
+                await using var d2 = new AsyncDisposableClass();
                 Console.WriteLine(d2);
             }
         }

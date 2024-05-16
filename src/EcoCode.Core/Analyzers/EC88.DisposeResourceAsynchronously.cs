@@ -1,22 +1,22 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>EC88: Dispose asynchronously.</summary>
+/// <summary>EC88: Dispose resource asynchronously.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class DisposeAsynchronously : DiagnosticAnalyzer
+public sealed class DisposeResourceAsynchronously : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> UsingStatementKinds = [SyntaxKind.UsingStatement];
     private static readonly ImmutableArray<SyntaxKind> UsingDeclarationKinds = [SyntaxKind.LocalDeclarationStatement];
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC88_DisposeAsynchronously,
-        title: "Dispose asynchronously",
+        Rule.Ids.EC88_DisposeResourceAsynchronously,
+        title: "Dispose resource asynchronously",
         messageFormat: "A resource can be disposed asynchronously",
         Rule.Categories.Usage,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Resources that implement IAsyncDisposable should be disposed asynchronously within asynchronous methods.",
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC88_DisposeAsynchronously));
+        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC88_DisposeResourceAsynchronously));
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
