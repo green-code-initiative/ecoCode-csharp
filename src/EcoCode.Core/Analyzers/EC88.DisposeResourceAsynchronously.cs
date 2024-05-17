@@ -68,13 +68,13 @@ public sealed class DisposeResourceAsynchronously : DiagnosticAnalyzer
             switch (node)
             {
                 case MemberDeclarationSyntax:
-                    return node is MethodDeclarationSyntax methodDeclaration && methodDeclaration.Modifiers.Contains(SyntaxKind.AsyncKeyword);
+                    return node is MethodDeclarationSyntax methodDeclaration && methodDeclaration.Modifiers.IndexOf(SyntaxKind.AsyncKeyword) != 1;
                 case LocalFunctionStatementSyntax localFunction:
-                    return localFunction.Modifiers.Contains(SyntaxKind.AsyncKeyword);
+                    return localFunction.Modifiers.IndexOf(SyntaxKind.AsyncKeyword) != 1;
                 case LambdaExpressionSyntax lambdaExpression:
-                    return lambdaExpression.Modifiers.Contains(SyntaxKind.AsyncKeyword);
+                    return lambdaExpression.Modifiers.IndexOf(SyntaxKind.AsyncKeyword) != 1;
                 case AnonymousMethodExpressionSyntax anonymousMethod:
-                    return anonymousMethod.Modifiers.Contains(SyntaxKind.AsyncKeyword);
+                    return anonymousMethod.Modifiers.IndexOf(SyntaxKind.AsyncKeyword) != 1;
                 case LockStatementSyntax:
                     return false;
             }
