@@ -12,7 +12,7 @@ public sealed class UseListIndexerTests
 
     #region First
 
-    [TestMethod, TestCategory("First")]
+    [TestMethod]
     public Task RefactorFirstAsync() => VerifyAsync("""
         using System;
         using System.Collections.Generic;
