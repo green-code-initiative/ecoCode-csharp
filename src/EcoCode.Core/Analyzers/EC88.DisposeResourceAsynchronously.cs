@@ -58,7 +58,7 @@ public sealed class DisposeResourceAsynchronously : DiagnosticAnalyzer
     private static bool CanBeDisposedAsynchronously(SyntaxNodeAnalysisContext context, SeparatedSyntaxList<VariableDeclaratorSyntax> variables) =>
         variables.Count == 1 && variables[0].Initializer?.Value is { } expr && // Don't handle multiple variables declarations
         context.SemanticModel.GetTypeInfo(expr, context.CancellationToken).Type is INamedTypeSymbol namedTypeSymbol &&
-        context.Compilation.GetTypeByMetadataName(typeof(IAsyncDisposable).FullName) is { } asyncDisposableType &&
+        context.Compilation.GetTypeByMetadataName("System.IAsyncDisposable") is { } asyncDisposableType &&
         namedTypeSymbol.AllInterfaces.Contains(asyncDisposableType, SymbolEqualityComparer.Default);
 
     private static bool IsContainedInAsyncMethod(StatementSyntax statement)

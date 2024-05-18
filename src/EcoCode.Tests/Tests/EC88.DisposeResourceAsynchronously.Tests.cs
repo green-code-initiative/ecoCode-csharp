@@ -95,8 +95,8 @@ public sealed class DisposeResourceAsynchronouslyTests
 
             public static void Run()
             {
-                using var d1 = new AsyncDisposableClass();
-                Console.WriteLine(d1);
+                using (var d1 = new AsyncDisposableClass())
+                    Console.WriteLine(d1);
 
                 using var d2 = new AsyncDisposableClass();
                 Console.WriteLine(d2);
