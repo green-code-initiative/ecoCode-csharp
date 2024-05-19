@@ -58,10 +58,12 @@ public sealed class DisposeResourceAsynchronouslyTests
 
             public static async Task Run()
             {
-                [|using|] (var d1 = new AsyncDisposableClass())
+                // Leading trivia
+                [|using|] (var d1 = new AsyncDisposableClass()) // Trailing trivia
                     Console.WriteLine(d1);
 
-                [|using|] var d2 = new AsyncDisposableClass();
+                // Leading trivia
+                [|using|] var d2 = new AsyncDisposableClass(); // Trailing trivia
                 Console.WriteLine(d2);
             }
         }
@@ -75,10 +77,45 @@ public sealed class DisposeResourceAsynchronouslyTests
 
             public static async Task Run()
             {
-                await using (var d1 = new AsyncDisposableClass())
+                // Leading trivia
+                await using (var d1 = new AsyncDisposableClass()) // Trailing trivia
                     Console.WriteLine(d1);
 
-                await using var d2 = new AsyncDisposableClass();
+                // Leading trivia
+                await using var d2 = new AsyncDisposableClass(); // Trailing trivia
+                Console.WriteLine(d2);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnAsyncableUsingsInAsyncMethod2Async() => VerifyAsync("""
+        using System;
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            private class DisposableClass : IDisposable { public void Dispose() { } }
+            private sealed class AsyncDisposableClass : DisposableClass, IAsyncDisposable { public ValueTask DisposeAsync() => default; }
+
+            public static async Task Run()
+            {
+                // Leading trivia
+                [|using|] var d2 = new AsyncDisposableClass(); // Trailing trivia
+                Console.WriteLine(d2);
+            }
+        }
+        """, """
+        using System;
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            private class DisposableClass : IDisposable { public void Dispose() { } }
+            private sealed class AsyncDisposableClass : DisposableClass, IAsyncDisposable { public ValueTask DisposeAsync() => default; }
+
+            public static async Task Run()
+            {
+                // Leading trivia
+                await using var d2 = new AsyncDisposableClass(); // Trailing trivia
                 Console.WriteLine(d2);
             }
         }

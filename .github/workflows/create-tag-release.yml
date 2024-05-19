@@ -69,7 +69,6 @@ jobs:
     needs: versioning
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/setup-dotnet@v4
     - name: Restore versioned sources
       uses: actions/cache/restore@v4
       with:
@@ -78,6 +77,7 @@ jobs:
           **/*
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+    - uses: actions/setup-dotnet@v4
     - run: dotnet restore NuGetOnly.slnf
     - run: dotnet build NuGetOnly.slnf -c Release --no-restore
     - run: dotnet pack NuGetOnly.slnf -c Release --no-build -o ./nupkg -p:Version=${{ needs.versioning.outputs.tag }}
@@ -91,7 +91,6 @@ jobs:
     needs: versioning
     runs-on: windows-latest
     steps:
-    - uses: actions/setup-dotnet@v4
     - name: Restore versioned sources
       uses: actions/cache/restore@v4
       with:
@@ -100,6 +99,7 @@ jobs:
           **/*
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+    - uses: actions/setup-dotnet@v4
     - run: dotnet restore VsixOnly.slnf
     - uses: microsoft/setup-msbuild@v2
     - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
