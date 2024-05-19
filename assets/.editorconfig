@@ -1,0 +1,7 @@
+# EcoCode published .editorconfig file to include and customize existing Roslyn rules
+
+root = true
+
+[*.cs]
+dotnet_diagnostic.CA1813.severity = warning
+dotnet_diagnostic.CA1860.severity = warning

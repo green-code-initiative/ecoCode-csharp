@@ -21,6 +21,7 @@
 	<Assets>
 		<Asset Type="Microsoft.VisualStudio.Analyzer" d:Source="Project" d:ProjectName="EcoCode.Core" Path="|EcoCode.Core|"/>
 		<Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="EcoCode.Core" Path="|EcoCode.Core|"/>
+		<Asset Type="Microsoft.VisualStudio.EditorConfig" d:Source="File" Path="content/Rules/.editorconfig" />
 	</Assets>
 	<Prerequisites>
 		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />

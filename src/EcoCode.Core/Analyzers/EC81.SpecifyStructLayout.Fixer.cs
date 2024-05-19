@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Runtime.InteropServices;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>EC81 fixer: Use struct layout.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SpecifyStructLayoutFixer)), Shared]

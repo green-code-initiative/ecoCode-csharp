@@ -37,20 +37,4 @@ public static class SyntaxNodeExtensions
             _ => default,
         };
     }
-
-    /// <summary>Returns the node with a given leading trivia, or the node directly if the trivia is the same.</summary>
-    /// <param name="node">The node.</param>
-    /// <param name="trivia">The trivia.</param>
-    /// <returns>The node with the leading trivia.</returns>
-    public static TSyntaxNode WithLeadingTriviaIfDifferent<TSyntaxNode>(this TSyntaxNode node, SyntaxTriviaList trivia)
-        where TSyntaxNode : SyntaxNode =>
-        node.GetLeadingTrivia() == trivia ? node : node.WithLeadingTrivia(trivia);
-
-    /// <summary>Returns the node with a given trailing trivia, or the node directly if the trivia is the same.</summary>
-    /// <param name="node">The node.</param>
-    /// <param name="trivia">The trivia.</param>
-    /// <returns>The node with the trailing trivia.</returns>
-    public static TSyntaxNode WithTrailingTriviaIfDifferent<TSyntaxNode>(this TSyntaxNode node, SyntaxTriviaList trivia)
-        where TSyntaxNode : SyntaxNode =>
-        node.GetTrailingTrivia() == trivia ? node : node.WithTrailingTrivia(trivia);
 }

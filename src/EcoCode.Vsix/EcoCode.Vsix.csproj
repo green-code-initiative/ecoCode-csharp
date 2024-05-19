@@ -26,6 +26,7 @@
 		<Content Include="..\..\LICENCE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
 		<Content Include="..\..\NOTICE.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
 		<Content Include="..\..\README.md" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" />
+		<Content Include="..\..\assets\.editorconfig" CopyToOutputDirectory="PreserveNewest" IncludeInVSIX="true" Link="content\Rules\.editorconfig" />
 	</ItemGroup>
 
 	<ItemGroup>
