@@ -43,6 +43,7 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC85](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC85/csharp/EC85.asciidoc)|Make type sealed|ℹ️|✔️|✔️|
 |[EC86](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC86/csharp/EC86.asciidoc)|`GC.Collect` should not be called|⚠️|✔️|❌|
 |[EC87](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC87/csharp/EC87.asciidoc)|Use collection indexer|⚠️|✔️|✔️|
+|[EC88](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC88/csharp/EC88.asciidoc)|Dispose resource asynchronously|⚠️|✔️|✔️|
 
 🤝 Contribution
 ---------------
