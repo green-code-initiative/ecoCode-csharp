@@ -30,13 +30,13 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
                         CodeAction.Create(
                             title: "Dispose resource asynchronously",
                             createChangedDocument: async token =>
-                                await context.Document.GetSyntaxRootAsync(token) is { } root
+                                await context.Document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
                                 ? context.Document.WithSyntaxRoot(root.ReplaceNode(usingStatement, usingStatement
                                     .WithoutLeadingTrivia() // Needs to be removed then re-added to keep everything ordered
                                     .WithoutTrailingTrivia() // Needs to be removed then re-added to keep everything ordered
                                     .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
-                                    .WithLeadingTriviaIfDifferent(usingStatement.GetLeadingTrivia())
-                                    .WithTrailingTriviaIfDifferent(usingStatement.GetTrailingTrivia())))
+                                    .WithLeadingTrivia(usingStatement.GetLeadingTrivia())
+                                    .WithTrailingTrivia(usingStatement.GetTrailingTrivia())))
                                 : context.Document,
                             equivalenceKey: "Dispose resource asynchronously"),
                         diagnostic);
@@ -53,8 +53,8 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
                                     .WithoutLeadingTrivia() // Needs to be removed then re-added to keep everything ordered
                                     .WithoutTrailingTrivia() // Needs to be removed then re-added to keep everything ordered
                                     .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
-                                    .WithLeadingTriviaIfDifferent(usingDeclaration.GetLeadingTrivia())
-                                    .WithTrailingTriviaIfDifferent(usingDeclaration.GetTrailingTrivia())))
+                                    .WithLeadingTrivia(usingDeclaration.GetLeadingTrivia())
+                                    .WithTrailingTrivia(usingDeclaration.GetTrailingTrivia())))
                                 : context.Document,
                             equivalenceKey: "Dispose resource asynchronously"),
                         diagnostic);
