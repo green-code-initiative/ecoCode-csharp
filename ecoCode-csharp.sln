@@ -34,7 +34,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{D10E2F
 		icon.jpeg = icon.jpeg
 		LICENCE.md = LICENCE.md
 		NOTICE.md = NOTICE.md
-		published.editorconfig = published.editorconfig
 		README.md = README.md
 	EndProjectSection
 EndProject
