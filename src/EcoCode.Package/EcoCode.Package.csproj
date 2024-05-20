@@ -10,7 +10,6 @@
 		<DevelopmentDependency>true</DevelopmentDependency>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
-		<NoDefaultExcludes>true</NoDefaultExcludes> <!-- Required to include .editorconfig in the package -->
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -37,7 +36,6 @@
 		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<Content Include="..\..\assets\.editorconfig" Pack="true" PackagePath="content/Rules/.editorconfig" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -45,8 +43,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" />
-		<PackageReference Include="DotNet.ReproducibleBuilds.Isolated" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" /> <!--Include latest Roslyn rules as transitive-->
 	</ItemGroup>
 

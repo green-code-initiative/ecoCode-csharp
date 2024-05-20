@@ -28,7 +28,7 @@ There are several ways you can use the ecoCode analyzers in your .Net projects:
 
 Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 2.0 and can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported .Net Frameworks in .Net Standard 2.0.
 
-🌿 _ecoCode__ Rules
+🌿 Rules
 -------------------
 
 |Id|Description|Severity|Enabled|Code fix|
@@ -44,16 +44,6 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC86](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC86/csharp/EC86.asciidoc)|`GC.Collect` should not be called|⚠️|✔️|❌|
 |[EC87](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC87/csharp/EC87.asciidoc)|Use collection indexer|⚠️|✔️|✔️|
 |[EC88](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC88/csharp/EC88.asciidoc)|Dispose resource asynchronously|⚠️|✔️|✔️|
-
-🌿 Roslyn rules
--------------------
-
-Those are existing Roslyn rules that are customized by the _ecoCode_ analyzer.
-
-|Id|Description|Severity|Enabled|Code fix|
-|--|-----------|:------:|:--------:|:------:|
-|[CA1813](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1813)|Avoid unsealed attributes|⚠️|✔️|✔️|
-|[CA1860](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1860)|Avoid using 'Enumerable.Any()' extension method|⚠️|✔️|✔️|
 
 🤝 Contribution
 ---------------
