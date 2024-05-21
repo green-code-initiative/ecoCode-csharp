@@ -10,15 +10,13 @@ public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
         SyntaxKind.DoStatement];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC69_DontCallFunctionsInLoopConditions,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC69_DontCallFunctionsInLoopConditions,
         title: "Don't call loop invariant functions in loop conditions",
-        messageFormat: "Don't call loop invariant functions in loop conditions",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC69_DontCallFunctionsInLoopConditions));
+        message: "A loop invariant function is called in a loop condition",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "Loop invariant functions should be resolved before loops to avoid rerunning them for every iteration.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

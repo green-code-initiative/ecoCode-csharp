@@ -7,15 +7,13 @@ public sealed class DontExecuteSqlCommandsInLoops : DiagnosticAnalyzer
     private static readonly ImmutableArray<SyntaxKind> Invocations = [SyntaxKind.InvocationExpression];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC72_DontExecuteSqlCommandsInLoops,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC72_DontExecuteSqlCommandsInLoops,
         title: "Don't execute SQL commands in loops",
-        messageFormat: "Don't execute SQL commands in loops",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC72_DontExecuteSqlCommandsInLoops));
+        message: "A SQL command is executed in a loop",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "SQL commands should not be executed in loops, refactor them if possible.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

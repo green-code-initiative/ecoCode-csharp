@@ -9,15 +9,13 @@ public sealed class MakeTypeSealed : DiagnosticAnalyzer
     private static readonly ImmutableArray<SymbolKind> SymbolKinds = [SymbolKind.NamedType];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC85_MakeTypeSealed,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC85_MakeTypeSealed,
         title: "Make type sealed",
-        messageFormat: "Type may be sealed, as it has no subtypes in its assembly and no user-declared overridable member",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Info,
-        isEnabledByDefault: true,
-        description: "When a type has no subtypes within its assembly and no user-declared overridable member, it may be sealed, which can improve performance.",
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC85_MakeTypeSealed));
+        message: "Type may be sealed, as it has no subtypes in its assembly and no user-declared overridable member",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Info,
+        description: "When a type has no subtypes within its assembly and no user-declared overridable member, it may be sealed, which can improve performance.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

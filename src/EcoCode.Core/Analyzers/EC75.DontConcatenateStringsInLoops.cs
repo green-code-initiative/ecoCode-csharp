@@ -11,15 +11,13 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
         SyntaxKind.DoStatement];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC75_DontConcatenateStringsInLoops,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC75_DontConcatenateStringsInLoops,
         title: "Don't concatenate strings in loops",
-        messageFormat: "Don't concatenate strings in loops",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC75_DontConcatenateStringsInLoops));
+        message: "A string is concatenated in a loop",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "Strings should not be concatenated in loops, use a more optimized way, such as a StringBuilder.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

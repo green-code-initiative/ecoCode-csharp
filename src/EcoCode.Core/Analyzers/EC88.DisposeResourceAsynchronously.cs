@@ -8,15 +8,13 @@ public sealed class DisposeResourceAsynchronously : DiagnosticAnalyzer
     private static readonly ImmutableArray<SyntaxKind> UsingDeclarationKinds = [SyntaxKind.LocalDeclarationStatement];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC88_DisposeResourceAsynchronously,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC88_DisposeResourceAsynchronously,
         title: "Dispose resource asynchronously",
-        messageFormat: "A resource can be disposed asynchronously",
-        Rule.Categories.Usage,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: "Resources that implement IAsyncDisposable should be disposed asynchronously within asynchronous methods.",
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC88_DisposeResourceAsynchronously));
+        message: "A resource can be disposed asynchronously",
+        category: Rule.Categories.Usage,
+        severity: DiagnosticSeverity.Warning,
+        description: "Resources that implement IAsyncDisposable should be disposed asynchronously within asynchronous methods.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

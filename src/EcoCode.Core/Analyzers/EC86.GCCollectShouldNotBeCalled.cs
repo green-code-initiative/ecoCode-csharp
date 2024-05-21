@@ -7,15 +7,13 @@ public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [SyntaxKind.InvocationExpression];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC86_GCCollectShouldNotBeCalled,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC86_GCCollectShouldNotBeCalled,
         title: "Avoid calling GC.Collect() method",
-        messageFormat: "Avoid calling GC.Collect() method",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC86_GCCollectShouldNotBeCalled));
+        message: "Avoid calling GC.Collect() method",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "Avoid calling GC.Collect() method, as the cost often largely outweighs the benefits.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

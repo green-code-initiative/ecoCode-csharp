@@ -10,15 +10,13 @@ public sealed class UseListIndexer : DiagnosticAnalyzer
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [SyntaxKind.InvocationExpression];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC87_UseCollectionIndexer,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC87_UseCollectionIndexer,
         title: "Use list indexer",
-        messageFormat: "A list indexer should be used instead of a Linq method",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: "Collections that implement IList, IList<T> or IReadOnlyList<T>, should use their indexers instead of Linq methods for improved performance.",
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC87_UseCollectionIndexer));
+        message: "A list indexer should be used instead of a Linq method",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "Collections that implement IList, IList<T> or IReadOnlyList<T>, should use their indexers instead of Linq methods for improved performance.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
@@ -41,7 +39,7 @@ public sealed class UseListIndexer : DiagnosticAnalyzer
         if (invocationExpr.Expression is not MemberAccessExpressionSyntax memberAccess ||
             context.SemanticModel.GetSymbolInfo(invocationExpr).Symbol is not IMethodSymbol method ||
             !method.IsExtensionMethod ||
-            !SymbolEqualityComparer.Default.Equals(method.ContainingType, context.Compilation.GetTypeByMetadataName(typeof(Enumerable).FullName)))
+            !SymbolEqualityComparer.Default.Equals(method.ContainingType, context.Compilation.GetTypeByMetadataName("System.Linq.Enumerable")))
         {
             return;
         }
