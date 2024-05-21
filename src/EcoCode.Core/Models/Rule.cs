@@ -2,9 +2,6 @@
 
 internal static class Rule
 {
-    public static string GetHelpUri(string id) =>
-        $"https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/{id}/csharp/{id}.asciidoc";
-
     public static class Categories
     {
         public const string Design = "Design";
@@ -25,5 +22,18 @@ internal static class Rule
         public const string EC86_GCCollectShouldNotBeCalled = "EC86";
         public const string EC87_UseCollectionIndexer = "EC87";
         public const string EC88_DisposeResourceAsynchronously = "EC88";
+        public const string EC89_DoNotPassMutableStructAsRefReadonly = "EC89";
     }
+
+    /// <summary>Creates a diagnostic descriptor.</summary>
+    /// <param name="id">The rule id.</param>
+    /// <param name="title">The rule title.</param>
+    /// <param name="message">The rule message.</param>
+    /// <param name="category">The rule category.</param>
+    /// <param name="severity">The rule severity.</param>
+    /// <param name="description">The rule description.</param>
+    /// <returns>The diagnostic descriptor.</returns>
+    public static DiagnosticDescriptor CreateDescriptor(string id, string title, string message, string category, DiagnosticSeverity severity, string description) =>
+        new(id, title, message, category, severity, isEnabledByDefault: true, description, helpLinkUri:
+            $"https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/{id}/csharp/{id}.asciidoc");
 }

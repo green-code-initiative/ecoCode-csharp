@@ -9,11 +9,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DiffPlex" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
 		<PackageReference Include="MSTest.TestAdapter" PrivateAssets="all" />
 		<PackageReference Include="MSTest.TestFramework" PrivateAssets="all" />
+		<PackageReference Include="NuGet.Resolver" />
+		<PackageReference Include="System.Net.Http" />
 	</ItemGroup>
 
 	<ItemGroup>

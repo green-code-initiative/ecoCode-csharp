@@ -8,15 +8,13 @@ public sealed class ReplaceEnumToStringWithNameOf : DiagnosticAnalyzer
     private static readonly ImmutableArray<OperationKind> Interpolation = [OperationKind.Interpolation];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC83_ReplaceEnumToStringWithNameOf,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC83_ReplaceEnumToStringWithNameOf,
         title: "Replace enum ToString with nameof",
-        messageFormat: "Replace enum ToString with nameof",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC83_ReplaceEnumToStringWithNameOf));
+        message: "Enum.ToString() can be replaced with nameof()",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "Replace enum ToString with nameof to resolve the call at compile time instead of runtime.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

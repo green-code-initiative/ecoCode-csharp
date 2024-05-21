@@ -7,15 +7,13 @@ public sealed class SpecifyStructLayout : DiagnosticAnalyzer
     private static readonly ImmutableArray<SymbolKind> SymbolKinds = [SymbolKind.NamedType];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC81_UseStructLayout,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC81_UseStructLayout,
         title: "Use struct layout",
-        messageFormat: "Use struct layout",
-        Rule.Categories.Performance,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC81_UseStructLayout));
+        message: "Use struct layout",
+        category: Rule.Categories.Performance,
+        severity: DiagnosticSeverity.Warning,
+        description: "Struct layouts should be explicitly declared, to avoid any unnecessary overhead.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

@@ -7,15 +7,13 @@ public sealed class VariableCanBeMadeConstant : DiagnosticAnalyzer
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [SyntaxKind.LocalDeclarationStatement];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC82_VariableCanBeMadeConstant,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC82_VariableCanBeMadeConstant,
         title: "Variable can be made constant",
-        messageFormat: "Variable can be made constant",
-        Rule.Categories.Usage,
-        DiagnosticSeverity.Info,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC82_VariableCanBeMadeConstant));
+        message: "A variable can be made constant",
+        category: Rule.Categories.Usage,
+        severity: DiagnosticSeverity.Info,
+        description: "Variables that can be made constant should be, to resolve them at compile time instead of runtime.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;

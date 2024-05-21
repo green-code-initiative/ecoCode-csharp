@@ -7,15 +7,13 @@ public sealed class AvoidAsyncVoidMethods : DiagnosticAnalyzer
     private static readonly ImmutableArray<SyntaxKind> Declarations = [SyntaxKind.MethodDeclaration];
 
     /// <summary>The diagnostic descriptor.</summary>
-    public static DiagnosticDescriptor Descriptor { get; } = new(
-        Rule.Ids.EC84_AvoidAsyncVoidMethods,
+    public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
+        id: Rule.Ids.EC84_AvoidAsyncVoidMethods,
         title: "Avoid async void methods",
-        messageFormat: "Avoid async void methods",
-        Rule.Categories.Design,
-        DiagnosticSeverity.Warning,
-        isEnabledByDefault: true,
-        description: null,
-        helpLinkUri: Rule.GetHelpUri(Rule.Ids.EC84_AvoidAsyncVoidMethods));
+        message: "Avoid async void methods",
+        category: Rule.Categories.Design,
+        severity: DiagnosticSeverity.Warning,
+        description: "Avoid async void methods, return a Task instead.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
