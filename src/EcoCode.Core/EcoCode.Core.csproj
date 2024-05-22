@@ -9,6 +9,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" IncludeAssets="compile" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" IncludeAssets="compile" />
+		<PackageReference Include="Microsoft.NETCore.Platforms" />
 		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

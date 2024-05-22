@@ -30,6 +30,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" /> <!--Include latest Roslyn rules as transitive-->
+		<PackageReference Include="Microsoft.NETCore.Platforms" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers" PrivateAssets="all">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
 
 		<ProjectReference Include="..\EcoCode.Core\EcoCode.Core.csproj" />
