@@ -133,7 +133,7 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
     {
         SyntaxNode? parent = ifStatement.Parent;
         if (parent == null)
-            return false;
+            return false; 
         
         if (parent?.Kind() is SyntaxKind.Block)
                 return true;
