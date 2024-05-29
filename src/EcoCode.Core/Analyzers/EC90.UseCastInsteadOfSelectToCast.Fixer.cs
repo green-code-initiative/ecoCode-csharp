@@ -5,15 +5,9 @@
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseCastInsteadOfSelectToCastFixer)), Shared]
     public sealed class UseCastInsteadOfSelectToCastFixer : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds
-        {
-            get { return ImmutableArray.Create(Rule.Ids.EC90_UseCastInsteadOfSelectToCast); }
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Rule.Ids.EC90_UseCastInsteadOfSelectToCast);
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
