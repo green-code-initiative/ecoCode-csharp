@@ -13,7 +13,6 @@ From [Roslynator](https://github.com/dotnet/roslynator):
 + Do not pass non-read-only struct by read-only reference : [RCS1242](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1242/)
 
 From [Meziantou Analyzer](https://github.com/meziantou/Meziantou.Analyzer):
-+ Use Array.Empty<T>(): [MA0005](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0005.md)
 + Use EventArgs.Empty: [MA0019](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0019.md)
 + Use direct methods instead of LINQ methods: [MA0020](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0020.md)
 + Optimize StringBuilder usage: [MA0028](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0028.md)
