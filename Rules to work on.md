@@ -3,7 +3,6 @@ They seem to be good candidates but need reviewing first.
 
 From [Roslynator](https://github.com/dotnet/roslynator):
 + Optimize LINQ method call: [RCS1077](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1077/)
-+ Mark local variable as const: [RCS1118](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1118/)
 + Use string.Length instead of comparison with empty string: [RCS1156](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1156/)
 + Use 'is' operator instead of 'as' operator: [RCS1172](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1172/)
 + Unnecessary assignment: [RCS1179](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1179/)
