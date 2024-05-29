@@ -12,11 +12,22 @@
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
+            var diagnostic = context.Diagnostics.FirstOrDefault();
+            // If diagnostic is null, return
+            if (diagnostic == null)
+            {
+                return;
+            }
 
+            var diagnosticSpan = diagnostic.Location.SourceSpan;
             // Find the Select invocation node identified by the diagnostic.
-            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+
+            // If selectInvocation is null, return the original document
+            if (selectInvocation == null)
+            {
+                return;
+            }
 
             // Register a code action that will invoke the fix.
             context.RegisterCodeFix(
