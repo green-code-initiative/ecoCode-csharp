@@ -30,16 +30,11 @@
             if (memberAccess?.Name.Identifier.Text != "Select") return;
 
             // Check if the argument to 'Select' is a cast operation
-            var argument = invocation.ArgumentList.Arguments.FirstOrDefault();
-            var lambda = argument?.Expression as SimpleLambdaExpressionSyntax;
-            var cast = lambda?.Body as CastExpressionSyntax;
-
-            if (cast != null)
+            if ((invocation.ArgumentList.Arguments.FirstOrDefault()?.Expression as SimpleLambdaExpressionSyntax)?.Body is CastExpressionSyntax)
             {
-                // Report a diagnostic if 'Select' is used for casting
-                var diagnostic = Diagnostic.Create(Descriptor, invocation.GetLocation());
-                context.ReportDiagnostic(diagnostic);
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, invocation.GetLocation()));
             }
+
         }
 
     }
