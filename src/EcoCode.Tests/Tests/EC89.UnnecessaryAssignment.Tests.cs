@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Tests.Tests;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+
+namespace EcoCode.Tests.Tests;
 
 [TestClass]
 public sealed class UnnecessaryAssignmentTests
@@ -7,7 +9,7 @@ public sealed class UnnecessaryAssignmentTests
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
-    
+
     [TestMethod]
     public Task DoNotWarmOnSimpleIfStatement() => VerifyAsync("""
         public class Test
@@ -69,5 +71,108 @@ public sealed class UnnecessaryAssignmentTests
                 return x;
             }
         }
-        """);
+        """
+    );
+
+
+    [TestMethod]
+    public Task TestIfStatement() => VerifyAsync("""
+            class C
+            {
+                int M()
+                {
+                    bool f = false;
+                    int x = 1; // x
+                    [|if (f)
+                    {
+                        x = 2;
+                    }
+                    else if (f)
+                    {
+                        x = 3;
+                    }|]
+
+                    return x;
+                }
+            }
+            """);
+
+    [TestMethod]
+    public Task TestIfStatement2() => VerifyAsync("""
+            class C
+            {
+                int M()
+                {
+                    bool f = false;
+
+                    // x
+                    int x = 1; 
+                    [|if (f)
+                    {
+                        x = 2;
+                    }
+                    else if (f)
+                    {
+                        x = 3;
+                    }|]
+
+                    return x; // 1
+                }
+            }
+            """);
+
+    [TestMethod]
+    public Task TestIfStatementThrow() => VerifyAsync("""
+                using System;
+                
+                class C
+                {
+                    int M()
+                    {
+                        bool f = false;
+                
+                        int x = 1;
+                        [|if (f)
+                        {
+                            x = 2;
+                        }
+                        else if (f)
+                        {
+                            x = 3;
+                        }
+                        else
+                        {
+                            throw new Exception();
+                        }|]
+                
+                        return x;
+                    }
+                }
+                """);
+
+    [TestMethod]
+    public Task TestNoDiagnosticForPolymorphicIf() => VerifyAsync("""
+            class A {}
+            class B {}
+            class C
+            {
+                void M()
+                {
+                    var fun = (bool flag) =>
+                    {
+                        object x;
+                        if (flag)
+                        {
+                            x = new A();
+                        }
+                        else
+                        {
+                            x = new B();
+                        }
+
+                        return x;
+                    };
+                }
+            }
+            """);
 }

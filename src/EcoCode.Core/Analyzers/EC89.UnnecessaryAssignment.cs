@@ -40,27 +40,97 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
         if (!IsFirstElementOfStatement(ifStatement))
             return;
 
-       
         BlockSyntax? blockSyntax = ifStatement.Parent as BlockSyntax;
         if (blockSyntax == null)
             return;
-        
-        var returnStatement = FindReturnStatementBelow(blockSyntax.Statements, ifStatement);
 
+        ReturnStatementSyntax? returnStatement = FindReturnStatementBelow(blockSyntax.Statements, ifStatement);
+        ExpressionSyntax? expression = returnStatement?.Expression;
 
-        // Track the start and end of the entire if-else if-else chain
+        if (expression is null)
+            return;
+
+        //if (ifStatement.SpanOrTrailingTriviaContainsDirectives())
+        //    return;
+
+        //if (returnStatement.SpanOrLeadingTriviaContainsDirectives())
+        //    return;
+
+        SemanticModel semanticModel = context.SemanticModel;
+        CancellationToken cancellationToken = context.CancellationToken;
+
+        ISymbol? symbol = GetSymbol(semanticModel, expression, cancellationToken);
+
+        //if (symbol is null)
+        //    return;
+
+        //if (!IsLocalDeclaredInScopeOrNonRefOrOutParameterOfEnclosingSymbol(symbol, statementsInfo.Parent, semanticModel, cancellationToken))
+        //    return;
+
+        //ITypeSymbol returnTypeSymbol = semanticModel.GetTypeSymbol(expression, cancellationToken);
+
+        //foreach (IfStatementOrElseClause ifOrElse in ifStatement.AsCascade())
+        //{
+        //    StatementSyntax statement = ifOrElse.Statement;
+
+        //    if (statement.IsKind(SyntaxKind.Block))
+        //        statement = ((BlockSyntax)statement).Statements.LastOrDefault();
+
+        //    if (!statement.IsKind(SyntaxKind.ThrowStatement)
+        //        && !IsSymbolAssignedInStatementWithCorrectType(symbol, statement, semanticModel, returnTypeSymbol, cancellationToken))
+        //    {
+        //        return;
+        //    }
+        //}
+
+        //DiagnosticHelpers.ReportDiagnostic(context, DiagnosticRules.UnnecessaryAssignment, ifStatement);
+        //var returnStatement = FindReturnStatementBelow(blockSyntax.Statements, ifStatement);
+
+        //ExpressionSyntax? expression = returnStatement?.Expression;
+        //if (expression is null)
+        //    return;
+
+        //SemanticModel semanticModel = context.SemanticModel;
+        //CancellationToken cancellationToken = context.CancellationToken;
+
+        //ISymbol symbol = semanticModel.GetSymbol(expression, cancellationToken);
+
+        //if (symbol is null)
+        //    return;
+
+        //if (!IsLocalDeclaredInScopeOrNonRefOrOutParameterOfEnclosingSymbol(symbol, statementsInfo.Parent, semanticModel, cancellationToken))
+        //    return;
+
+        //ITypeSymbol returnTypeSymbol = semanticModel.GetTypeSymbol(expression, cancellationToken);
+
+        //foreach (IfStatementOrElseClause ifOrElse in ifStatement.AsCascade())
+        //{
+        //    StatementSyntax statement = ifOrElse.Statement;
+
+        //    if (statement.IsKind(SyntaxKind.Block))
+        //        statement = ((BlockSyntax)statement).Statements.LastOrDefault();
+
+        //    if (!statement.IsKind(SyntaxKind.ThrowStatement)
+        //        && !IsSymbolAssignedInStatementWithCorrectType(symbol, statement, semanticModel, returnTypeSymbol, cancellationToken))
+        //    {
+        //        return;
+        //    }
+        //}
+
+        //DiagnosticHelpers.ReportDiagnostic(context, DiagnosticRules.UnnecessaryAssignment, ifStatement);
+
+        //// Track the start and end of the entire if-else if-else chain
         var startSpan = ifStatement.Span.Start;
         var endSpan = ifStatement.Span.End;
 
-        // Check the assignments in all branches
+        //// Check the assignments in all branches
         var assignments = GetAllAssignments(ifStatement, ref endSpan);
 
-        // Find common assignments across all branches
+        //// Find common assignments across all branches
         var commonAssignments = assignments.First().Keys.Intersect(assignments.Last().Keys).ToList();
 
         if (commonAssignments.Any())
         {
-            // Create a span covering the entire if-else if-else chain
             var span = TextSpan.FromBounds(startSpan, endSpan);
             var location = Location.Create(ifStatement.SyntaxTree, span);
 
@@ -128,15 +198,15 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
 
         return assignments;
     }
-    
+
     internal static bool IsFirstElementOfStatement(IfStatementSyntax ifStatement)
     {
         SyntaxNode? parent = ifStatement.Parent;
         if (parent == null)
             return false;
-        
+
         if (parent?.Kind() is SyntaxKind.Block)
-                return true;
+            return true;
         else
             return false;
     }
@@ -156,4 +226,8 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
 
         return null;
     }
+    internal static ISymbol? GetSymbol(SemanticModel semanticModel, ExpressionSyntax expression, CancellationToken cancellationToken = default) =>
+        Microsoft.CodeAnalysis.CSharp.CSharpExtensions
+        .GetSymbolInfo(semanticModel, expression, cancellationToken)
+        .Symbol;
 }
