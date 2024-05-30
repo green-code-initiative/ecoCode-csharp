@@ -1,15 +1,13 @@
-﻿using Microsoft.CodeAnalysis.Testing;
-using Microsoft.CodeAnalysis;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public sealed class UseStringEmptyLengthTests
 {
-    private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<UseStringEmptyLength>;
-    
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseStringEmptyLength, UseStringLengthCodeFixProvider>;
+
+    #region Analyzer
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() =>  VerifyAsync("");
 
     [TestMethod]
     public Task DontUseStringEmptyLengthWithEqualsExpressionAsync() => VerifyAsync("""
@@ -58,4 +56,73 @@ public sealed class UseStringEmptyLengthTests
             }
         }
         """);
+    #endregion
+
+    #region CodeFixer
+
+    [TestMethod]
+    public Task FixDontUseStringEmptyLengthWithEqualsExpressionAsync() => VerifyAsync("""
+        class TestClass
+        {
+            void TestMethod()
+            {
+                string test = "test";
+                if ([|test == ""|]) { }
+            }
+        }
+        """, """
+        class TestClass
+        {
+            void TestMethod()
+            {
+                string test = "test";
+                if (test.Length == 0) { }
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task FixDontUseStringEmptyLengthReverseWithEqualsExpressionAsync() => VerifyAsync("""
+        class TestClass
+        {
+            void TestMethod()
+            {
+                string test = "test";
+                if ([|"" == test|]) { }
+            }
+        }
+        """, """
+        class TestClass
+        {
+            void TestMethod()
+            {
+                string test = "test";
+                if (test.Length == 0) { }
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task FixDontUseStringEmptyLengthWithNotEqualsExpressionAsync() => VerifyAsync("""
+        class TestClass
+        {
+            void TestMethod()
+            {
+                string test = "test";
+                if ([|test != ""|]) { }
+            }
+        }
+        """, """
+        class TestClass
+        {
+            void TestMethod()
+            {
+                string test = "test";
+                if (test.Length != 0) { }
+            }
+        }
+        """);
+
+    #endregion
+
 }

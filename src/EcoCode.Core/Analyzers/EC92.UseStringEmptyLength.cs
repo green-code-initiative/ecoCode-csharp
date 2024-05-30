@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC92: Use string.Length instead of comparison with empty string</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]

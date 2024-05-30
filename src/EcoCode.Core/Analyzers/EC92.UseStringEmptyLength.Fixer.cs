@@ -12,14 +12,15 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-
+    
+    /// <inheritdoc/>
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
         var diagnostic = context.Diagnostics[0];
         var diagnosticSpan = diagnostic.Location.SourceSpan;
 
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
+        if (root is null) return;
         // Find the node at the diagnostic location.
         var node = root.FindNode(diagnosticSpan);
 
@@ -35,13 +36,14 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
     private async Task<Document> ReplaceWithLengthCheckAsync(Document document, SyntaxNode node, CancellationToken cancellationToken)
     {
         var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+        if(semanticModel is null)
+            return document;
 
         if (node is BinaryExpressionSyntax binaryExpression)
         {
             var newExpression = CreateLengthCheckExpression(binaryExpression, semanticModel);
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var newRoot = root.ReplaceNode(binaryExpression, newExpression);
-            return document.WithSyntaxRoot(newRoot);
+            return root is null ? document : document.WithSyntaxRoot(root.ReplaceNode(binaryExpression, newExpression));
         }
 
         return document;
@@ -52,7 +54,7 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
         var left = binaryExpression.Left;
         var right = binaryExpression.Right;
 
-        ExpressionSyntax stringExpression = null;
+        ExpressionSyntax? stringExpression = null;
 
         // Determine which side is the string literal and which is the string variable.
         if (IsEmptyString(left))
@@ -64,7 +66,7 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
             stringExpression = left;
         }
 
-        if (stringExpression == null)
+        if (stringExpression is null )
         {
             return binaryExpression; // Return the original expression if we can't determine the string expression.
         }
