@@ -11,6 +11,41 @@ public sealed class UseCastInsteadOfSelectToCastTests
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
+    public async Task SelectMethodUsedForStringArrayAsync() => await VerifyAsync("""
+    using System.Linq;
+    using System.Collections.Generic;
+    public class Program
+    {
+        public static void Main()
+        {
+            var strings = GetStrings();
+            var stringsAsObjects = [|strings.Select(s => (object)s)|].ToList();
+        }
+
+        private static IEnumerable<string> GetStrings()
+        {
+            return new List<string> { "Hello", "World" };
+        }
+    }
+    """, """
+    using System.Linq;
+    using System.Collections.Generic;
+    public class Program
+    {
+        public static void Main()
+        {
+            var strings = GetStrings();
+            var stringsAsObjects = strings.Cast<object>().ToList();
+        }
+
+        private static IEnumerable<string> GetStrings()
+        {
+            return new List<string> { "Hello", "World" };
+        }
+    }
+    """).ConfigureAwait(false);
+
+    [TestMethod]
     public async Task CastMethodUsedForNumberArrayAsync() => await VerifyAsync("""
         using System.Linq;
         public class Test

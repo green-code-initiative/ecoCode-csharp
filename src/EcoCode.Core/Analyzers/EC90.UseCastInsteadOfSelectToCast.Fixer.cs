@@ -1,41 +1,43 @@
 ﻿namespace EcoCode.Core.Analyzers
 {
     using System.Linq;
+    using System.Xml.Linq;
 
+    /// <summary>
+    /// Provides a code fix for the UseCastInsteadOfSelectToCast analyzer.
+    /// </summary>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseCastInsteadOfSelectToCastFixer)), Shared]
     public sealed class UseCastInsteadOfSelectToCastFixer : CodeFixProvider
     {
+        /// <summary>
+        /// Gets the diagnostic IDs that this provider can fix.
+        /// </summary>
         public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Rule.Ids.EC90_UseCastInsteadOfSelectToCast);
 
+        /// <summary>
+        /// Gets the provider that can fix all occurrences of diagnostics.
+        /// </summary>
         public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        /// <summary>
+        /// Registers the code fixes provided by this provider.
+        /// </summary>
+
+        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var diagnostic = context.Diagnostics.FirstOrDefault();
-            // If diagnostic is null, return
-            if (diagnostic == null)
-            {
-                return;
-            }
+            if (context.Diagnostics.Length == 0) return;
 
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-            // Find the Select invocation node identified by the diagnostic.
-            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
+            var document = context.Document;
+            var root = await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            if (root is null) return;
 
-            // If selectInvocation is null, return the original document
-            if (selectInvocation == null)
-            {
-                return;
-            }
-
-            // Register a code action that will invoke the fix.
+            var nodeToFix = root.FindNode(context.Span, getInnermostNodeForTie: true);
             context.RegisterCodeFix(
                 CodeAction.Create(
-                    title: "Use Cast instead of Select to cast",
-                    createChangedDocument: c => RefactorAsync(context.Document, diagnostic, c),
-                    equivalenceKey: "UseCastInsteadOfSelectToCast"),
-                diagnostic);
+                    title: "Use nameof",
+                    createChangedDocument: token => RefactorAsync(document, context.Diagnostics.First(), token),
+                    equivalenceKey: "Use nameof"),
+                context.Diagnostics);
         }
 
         private async Task<Document> RefactorAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
@@ -44,21 +46,51 @@
 
             // Find the Select invocation node
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+
+            if (selectInvocation is null)
+            {
+                return document;
+            }
+
+            // Get the lambda expression from the Select method call
+            var selectArgument = selectInvocation.ArgumentList.Arguments[0];
+            var lambdaExpression = selectArgument.Expression as SimpleLambdaExpressionSyntax;
+
+            if (lambdaExpression is null)
+            {
+                return document;
+            }
+
+            // Get the type from the cast expression within the lambda expression
+            var castExpression = lambdaExpression.Body as CastExpressionSyntax;
+
+            if (castExpression is null)
+            {
+                return document;
+            }
+
+            var castType = castExpression.Type;
 
             // Create a new Cast invocation node
             var memberAccess = selectInvocation.Expression as MemberAccessExpressionSyntax;
             var castInvocation = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    memberAccess.Expression,
-                    SyntaxFactory.IdentifierName("Cast")));
+                    memberAccess?.Expression,
+                    SyntaxFactory.GenericName(
+                        SyntaxFactory.Identifier("Cast"),
+                        SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(castType))
+                    )
+                )
+            );
 
-            // Replace the old Select invocation with the new Cast invocation
+            // Replace only the Select invocation with the new Cast invocation
             var newRoot = root.ReplaceNode(selectInvocation, castInvocation);
 
             // Return the new document
             return document.WithSyntaxRoot(newRoot);
         }
+
     }
 }
