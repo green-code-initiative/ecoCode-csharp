@@ -10,11 +10,11 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
        id: Rule.Ids.EC89_UnnecessaryAssignment,
-       title: "Unused variable assignment",
-       message: "Variable '{0}' is assigned unnecessarily.",
+       title: "Unnecessary assignment",
+       message: "Variable is assigned unnecessarily. Return it instead",
        category: Rule.Categories.Usage,
        severity: DiagnosticSeverity.Warning,
-       description: "Detects variables assigned in both branches of an if-else statement and used immediately after.");
+       description: "Detects variables assigned in both branches of an if-else statement and returned immediately after.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
