@@ -30,7 +30,6 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
         context.RegisterSyntaxNodeAction(AnalyzeQueryExpression, SyntaxKind.QueryExpression);
-       // context.RegisterSyntaxNodeAction(AnalyzeMethodChain, SyntaxKind.QueryBody);
     }
 
     private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
@@ -45,38 +44,27 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
         if (methodName != "Where" )
             return;
 
-        var methodChain = new List<string>();
         var currentExpr = invocationExpr;
+        bool orderByFound = false;
 
-        // Extract all method names in the chain
         while (currentExpr != null)
         {
             var currentMemberAccess = currentExpr.Expression as MemberAccessExpressionSyntax;
             if (currentMemberAccess == null)
                 break;
 
-            methodChain.Add(currentMemberAccess.Name.Identifier.Text);
-            currentExpr = currentMemberAccess.Expression as InvocationExpressionSyntax;
-        }
-
-        // Reverse the list to reflect the order of method calls
-        methodChain.Reverse();
-
-        // Check the order of methods
-        bool orderByFound = false;
-        for (int i = 0; i < methodChain.Count; i++)
-        {
-            if (methodChain[i] == "OrderBy" || methodChain[i] == "OrderByDescending")
-            {
-                orderByFound = true;
-            }
-            else if (methodChain[i] == "Where" && orderByFound)
+            if (orderByFound&&(currentMemberAccess.Name.Identifier.Text == "OrderBy" || currentMemberAccess.Name.Identifier.Text == "OrderByDescending"))
             {
                 var diagnostic = Diagnostic.Create(Descriptor, memberAccessExpr.Name.GetLocation());
                 context.ReportDiagnostic(diagnostic);
                 return;
             }
-        }
+            else if (currentMemberAccess.Name.Identifier.Text == "Where" )
+            {
+                orderByFound = true;
+            }
+            currentExpr = currentMemberAccess.Expression as InvocationExpressionSyntax;
+        }   
     }
 
     private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context)
@@ -97,25 +85,6 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
                 context.ReportDiagnostic(diagnostic);
             }
         }
-    }
-
-    private static void AnalyzeMethodChain(SyntaxNodeAnalysisContext context)
-    {
-       /* var invocationExpression = (InvocationExpressionSyntax)context.Node;
-
-        if (invocationExpression.Expression is MemberAccessExpressionSyntax memberAccess)
-        {
-            var methodChain = GetMethodChain(memberAccess).ToList();
-
-            var whereIndex = methodChain.FindIndex(m => m.Identifier.Text == "Where");
-            var orderByIndex = methodChain.FindIndex(m => m.Identifier.Text == "OrderBy");
-
-            if (whereIndex > orderByIndex && orderByIndex != -1 && whereIndex != -1)
-            {
-                var diagnostic = Diagnostic.Create(Descriptor, memberAccess.GetLocation());
-                context.ReportDiagnostic(diagnostic);
-            }
-        }*/
     }
 
     private static IEnumerable<SimpleNameSyntax> GetMethodChain(MemberAccessExpressionSyntax memberAccess)
