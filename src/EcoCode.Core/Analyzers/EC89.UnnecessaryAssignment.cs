@@ -94,8 +94,7 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
                     .Where(symbol => symbol != null)
                     .ToList();
 
-                SymbolEqualityComparer comparer = SymbolEqualityComparer.Default;
-                var commonVariables = assignedVariables?.Intersect(elseAssignedVariables, comparer);
+                var commonVariables = assignedVariables?.Intersect(elseAssignedVariables, SymbolEqualityComparer.Default);
                 if (commonVariables.Any())
                 {
                     return true;
