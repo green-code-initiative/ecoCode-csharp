@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 
 namespace EcoCode.Analyzers;
@@ -12,6 +13,7 @@ public sealed class UseListIndexerFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [UseListIndexer.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage] 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

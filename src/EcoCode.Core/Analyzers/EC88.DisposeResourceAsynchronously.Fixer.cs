@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>EC88 fixer: Dispose resource asynchronously.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DisposeResourceAsynchronouslyFixer)), Shared]
@@ -9,6 +11,7 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [DisposeResourceAsynchronously.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage] 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>
