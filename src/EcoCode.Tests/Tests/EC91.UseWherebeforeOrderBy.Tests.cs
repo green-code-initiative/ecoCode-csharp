@@ -2,9 +2,7 @@
 
 namespace EcoCode.Tests;
 
-// TODO: test comment inside code 
-// TODO: test with two or more where.
-
+[TestClass]
 public sealed class UseWhereBeforeOrderByTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseWhereBeforeOrderBy, UseWhereBeforeOrderByFixer>;
