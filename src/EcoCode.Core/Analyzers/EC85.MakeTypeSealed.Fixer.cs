@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>EC85 fixer: Make type sealed.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeTypeSealedFixer)), Shared]
@@ -9,6 +11,7 @@ public sealed class MakeTypeSealedFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [MakeTypeSealed.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage] 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

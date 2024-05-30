@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>EC83 fixer: Replace enum ToString with nameof.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReplaceEnumToStringWithNameOfFixer)), Shared]
@@ -9,6 +11,7 @@ public sealed class ReplaceEnumToStringWithNameOfFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [ReplaceEnumToStringWithNameOf.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage] 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>
