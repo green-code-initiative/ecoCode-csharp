@@ -12,7 +12,10 @@ namespace EcoCode.ToolNetFramework;
 
 internal class Program
 {
-    private const string SolutionPath = @"C:\Users\vlajoumard\source\ConsoleApp1\ConsoleApp1.sln";
+    // private const string SolutionPath = @"C:\Users\vlajoumard\source\ConsoleApp1\ConsoleApp1.sln";
+    private const string SolutionPath = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project\ecoCode-csharp-test-project.sln";
+
+    // private readonly Type TestType = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
 
     public static async Task Main(string[] args)
     {
