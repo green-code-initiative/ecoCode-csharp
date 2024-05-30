@@ -30,26 +30,18 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
     private static void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
     {
         var ifStatement = (IfStatementSyntax)context.Node;
-        var blockSyntax = ifStatement.Parent as BlockSyntax;
 
-        if (blockSyntax == null) return;
+        if (ifStatement.Parent is not BlockSyntax blockSyntax) return;
         if (blockSyntax.Kind() is not SyntaxKind.ElseClause && ifStatement.Else is null) return;
         if (blockSyntax.Kind() is not SyntaxKind.Block) return;
 
-        if (ContainsPolymorphism(blockSyntax)) return;
+        if (ContainsPolymorphism(blockSyntax, context.SemanticModel)) return;
         
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
     }
 
-    internal static bool ContainsPolymorphism(BlockSyntax block)
+    internal static bool ContainsPolymorphism(BlockSyntax block, SemanticModel model)
     {
-        var tree = block.SyntaxTree;
-        var compilation = CSharpCompilation.Create("PolymorphismDetection")
-            .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
-            .AddSyntaxTrees(tree);
-
-        var model = compilation.GetSemanticModel(tree);
-
         var assignments = block.DescendantNodes().OfType<AssignmentExpressionSyntax>()
             .Where(a => a.Kind() == SyntaxKind.SimpleAssignmentExpression)
             .ToList();
@@ -60,7 +52,6 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
             if (leftSymbol != null)
             {
                 var rightType = model.GetTypeInfo(assignment.Right).Type;
-
                 if (rightType != null)
                 {
                     var baseType = rightType.BaseType;

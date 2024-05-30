@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-
-namespace EcoCode.Tests.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public sealed class UnnecessaryAssignmentTests
