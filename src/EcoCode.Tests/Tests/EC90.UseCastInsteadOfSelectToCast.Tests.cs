@@ -27,7 +27,7 @@ public sealed class UseCastInsteadOfSelectToCastTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task CastMethodUsedForStringArrayAsync() => await VerifyAsync(@"
+    public async Task CastMethodUsedForStringArrayAsync() => await VerifyAsync("""
     using System.Linq;
     using System.Collections.Generic;
     public class Test
@@ -40,10 +40,11 @@ public sealed class UseCastInsteadOfSelectToCastTests
 
         private IEnumerable<string> GetStrings()
         {
-            return new List<string> { ""Hello"", ""World"" };
+            return new List<string> { "Hello", "World" };
         }
     }
-    ").ConfigureAwait(false);
+    """).ConfigureAwait(false);
+
 
     [TestMethod]
     public async Task CastMethodUsedForEmptyArrayAsync() => await VerifyAsync("""
@@ -59,17 +60,17 @@ public sealed class UseCastInsteadOfSelectToCastTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task CastMethodUsedForArrayWithNullValuesAsync() => await VerifyAsync(@"
+    public async Task CastMethodUsedForArrayWithNullValuesAsync() => await VerifyAsync("""
     using System.Linq;
     public class Test
     {
         public void Run()
         {
-            var strings = new string[] { ""Hello"", null, ""World"" };
+            var strings = new string[] { "Hello", null, "World" };
             var castedStrings = strings.Cast<object>().ToList();
         }
     }
-    ").ConfigureAwait(false);
+    """).ConfigureAwait(false);
 
 
     [TestMethod]
