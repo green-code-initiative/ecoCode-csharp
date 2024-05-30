@@ -9,7 +9,7 @@ public sealed class UnnecessaryAssignmentTests
     public async Task DoNotWarnWhenEmptyCode() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
-    public Task DoNotWarnnOnSimpleIfStatement() => VerifyAsync("""
+    public Task DoNotWarnOnSimpleIfStatement() => VerifyAsync("""
         public class Test
         {
             int Number()
@@ -26,7 +26,7 @@ public sealed class UnnecessaryAssignmentTests
         """);
 
     [TestMethod]
-    public Task DonotWarnWhenAssignInIfElseStatementVariableHavePolymorphic() => VerifyAsync("""
+    public Task DoNotWarnWhenAssignInIfElseStatementVariableHavePolymorphic() => VerifyAsync("""
             class A {}
             class B {}
             class C
