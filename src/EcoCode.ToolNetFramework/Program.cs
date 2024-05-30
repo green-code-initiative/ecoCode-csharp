@@ -12,10 +12,7 @@ namespace EcoCode.ToolNetFramework;
 
 internal class Program
 {
-    // private const string SolutionPath = @"C:\Users\vlajoumard\source\ConsoleApp1\ConsoleApp1.sln";
     private const string SolutionPath = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project\ecoCode-csharp-test-project.sln";
-
-    // private readonly Type TestType = typeof(Microsoft.CodeAnalysis.CSharp.Formatting.CSharpFormattingOptions);
 
     public static async Task Main(string[] args)
     {
@@ -27,11 +24,12 @@ internal class Program
             return;
         }
 
-        // Register MSBuild instance
-        var visualStudioInstances = MSBuildLocator.QueryVisualStudioInstances().ToArray();
-        var instance = visualStudioInstances.Length == 1
-            ? visualStudioInstances[0]
-            : SelectVisualStudioInstance(visualStudioInstances);
+        var instance = MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault();
+        if (instance is null)
+        {
+            Console.WriteLine($"No MSBuild instance was found, exiting.");
+            return;
+        }
 
         Console.WriteLine($"Using MSBuild at '{instance.MSBuildPath}' to load projects.");
         MSBuildLocator.RegisterInstance(instance);
@@ -39,31 +37,30 @@ internal class Program
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Console.WriteLine(e.Diagnostic.Message);
 
-        Project? project = null;
-        Solution? solution = null;
-
         if (Path.GetExtension(path) == ".sln")
         {
-            solution = await workspace.OpenSolutionAsync(path);
+            var solution = await workspace.OpenSolutionAsync(path);
+            if (solution is null)
+            {
+                Console.WriteLine("Cannot load the provided solution.");
+            }
+            else
+            {
+                foreach (var project in solution.Projects)
+                    await AnalyzeProject(project);
+            }
         }
         else if (Path.GetExtension(path) == ".csproj")
         {
-            project = await workspace.OpenProjectAsync(path);
+            var project = await workspace.OpenProjectAsync(path);
+            if (project is null)
+                Console.WriteLine("Cannot load the provided project");
+            else
+                await AnalyzeProject(project);
         }
         else
         {
             Console.WriteLine("Please provide a valid .sln or .csproj file.");
-            return;
-        }
-
-        if (solution != null)
-        {
-            foreach (var proj in solution.Projects)
-                await AnalyzeProject(proj);
-        }
-        else if (project != null)
-        {
-            await AnalyzeProject(project);
         }
 
         Console.WriteLine("Press a key to exit..");
@@ -97,29 +94,5 @@ internal class Program
         );
 
         return analyzers;
-    }
-
-    private static VisualStudioInstance SelectVisualStudioInstance(VisualStudioInstance[] visualStudioInstances)
-    {
-        Console.WriteLine("Multiple installs of MSBuild detected, please select one:");
-        for (int i = 0; i < visualStudioInstances.Length; i++)
-        {
-            Console.WriteLine($"Instance {i + 1}");
-            Console.WriteLine($"    Name: {visualStudioInstances[i].Name}");
-            Console.WriteLine($"    Version: {visualStudioInstances[i].Version}");
-            Console.WriteLine($"    MSBuild Path: {visualStudioInstances[i].MSBuildPath}");
-        }
-
-        while (true)
-        {
-            string userResponse = Console.ReadLine();
-            if (int.TryParse(userResponse, out int instanceNumber) &&
-                instanceNumber > 0 &&
-                instanceNumber <= visualStudioInstances.Length)
-            {
-                return visualStudioInstances[instanceNumber - 1];
-            }
-            Console.WriteLine("Input not accepted, try again.");
-        }
     }
 }
