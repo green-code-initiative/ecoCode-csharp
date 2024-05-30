@@ -21,7 +21,7 @@ jobs:
     - uses: actions/setup-dotnet@v4
     - run: dotnet restore TestsOnly.slnf
     - run: dotnet build TestsOnly.slnf -c Release --no-restore
-    - run: dotnet test TestsOnly.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx"
+    - run: dotnet test TestsOnly.slnf -c Release --no-build --logger "trx;LogFileName=test_results.trx" -p:CollectCoverage=true -p:Threshold=80
     - uses: actions/upload-artifact@v4
       if: always() # Ensure this step runs even if the test step fails
       with:
