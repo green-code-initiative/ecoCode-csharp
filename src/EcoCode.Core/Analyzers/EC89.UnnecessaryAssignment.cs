@@ -55,14 +55,15 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
             var leftSymbol = model.GetSymbolInfo(assignment.Left).Symbol as ILocalSymbol;
             if (leftSymbol != null)
             {
+                SymbolEqualityComparer comparer = SymbolEqualityComparer.Default;
                 var rightType = model.GetTypeInfo(assignment.Right).Type;
                 if (rightType != null)
                 {
                     var baseType = rightType.BaseType;
                     var typesAssigned = assignments
                         .Select(a => model.GetTypeInfo(a.Right).Type)
-                        .Where(t => t != null && t.BaseType != null && t.BaseType.Equals(baseType))
-                        .Distinct();
+                        .Where(t => t != null && t.BaseType != null && SymbolEqualityComparer.Default.Equals(t.BaseType, baseType))
+                        .Distinct(SymbolEqualityComparer.Default);
 
                     if (typesAssigned.Count() > 1)
                     {
@@ -93,7 +94,8 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
                     .Where(symbol => symbol != null)
                     .ToList();
 
-                var commonVariables = assignedVariables.Intersect(elseAssignedVariables);
+                SymbolEqualityComparer comparer = SymbolEqualityComparer.Default;
+                var commonVariables = assignedVariables?.Intersect(elseAssignedVariables, comparer);
                 if (commonVariables.Any())
                 {
                     return true;
