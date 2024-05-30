@@ -1,11 +1,20 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using System.Linq;
+
 namespace EcoCode.Analyzers;
 
-/// <summary>RCS1179 : Unnecessary assignment.</summary>
+/// <summary>EC89 : Unnecessary assignment.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
 {
@@ -32,23 +41,18 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
 
     private static void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
     {
+        var cancellationToken = context.CancellationToken;
+
         var ifStatement = (IfStatementSyntax)context.Node;
+        var blockSyntax = ifStatement.Parent as BlockSyntax;
 
-        if (IsSimpleIf(ifStatement))
-            return;
+        if (blockSyntax == null) return;
+        if (blockSyntax.Kind() is not SyntaxKind.ElseClause && ifStatement.Else is null) return;
+        if (blockSyntax.Kind() is not SyntaxKind.Block) return;
 
-        if (!IsFirstElementOfStatement(ifStatement))
-            return;
-
-        BlockSyntax? blockSyntax = ifStatement.Parent as BlockSyntax;
-        if (blockSyntax == null)
-            return;
-
-        ReturnStatementSyntax? returnStatement = FindReturnStatementBelow(blockSyntax.Statements, ifStatement);
-        ExpressionSyntax? expression = returnStatement?.Expression;
-
-        if (expression is null)
-            return;
+        var returnStatement = FindReturnStatementBelow(blockSyntax.Statements, ifStatement);
+        var expression = returnStatement?.Expression;
+        if (expression is null) return;
 
         //if (ifStatement.SpanOrTrailingTriviaContainsDirectives())
         //    return;
@@ -56,162 +60,38 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
         //if (returnStatement.SpanOrLeadingTriviaContainsDirectives())
         //    return;
 
-        SemanticModel semanticModel = context.SemanticModel;
-        CancellationToken cancellationToken = context.CancellationToken;
+        var semanticModel = context.SemanticModel;
+        var symbol = Microsoft.CodeAnalysis.CSharp.CSharpExtensions.GetSymbolInfo(semanticModel, expression, cancellationToken).Symbol;
+        if (symbol is null) return;
 
-        ISymbol? symbol = GetSymbol(semanticModel, expression, cancellationToken);
-
-        //if (symbol is null)
-        //    return;
-
-        //if (!IsLocalDeclaredInScopeOrNonRefOrOutParameterOfEnclosingSymbol(symbol, statementsInfo.Parent, semanticModel, cancellationToken))
-        //    return;
-
-        //ITypeSymbol returnTypeSymbol = semanticModel.GetTypeSymbol(expression, cancellationToken);
-
-        //foreach (IfStatementOrElseClause ifOrElse in ifStatement.AsCascade())
-        //{
-        //    StatementSyntax statement = ifOrElse.Statement;
-
-        //    if (statement.IsKind(SyntaxKind.Block))
-        //        statement = ((BlockSyntax)statement).Statements.LastOrDefault();
-
-        //    if (!statement.IsKind(SyntaxKind.ThrowStatement)
-        //        && !IsSymbolAssignedInStatementWithCorrectType(symbol, statement, semanticModel, returnTypeSymbol, cancellationToken))
-        //    {
-        //        return;
-        //    }
-        //}
-
-        //DiagnosticHelpers.ReportDiagnostic(context, DiagnosticRules.UnnecessaryAssignment, ifStatement);
-        //var returnStatement = FindReturnStatementBelow(blockSyntax.Statements, ifStatement);
-
-        //ExpressionSyntax? expression = returnStatement?.Expression;
-        //if (expression is null)
-        //    return;
-
-        //SemanticModel semanticModel = context.SemanticModel;
-        //CancellationToken cancellationToken = context.CancellationToken;
-
-        //ISymbol symbol = semanticModel.GetSymbol(expression, cancellationToken);
-
-        //if (symbol is null)
-        //    return;
-
-        //if (!IsLocalDeclaredInScopeOrNonRefOrOutParameterOfEnclosingSymbol(symbol, statementsInfo.Parent, semanticModel, cancellationToken))
-        //    return;
-
-        //ITypeSymbol returnTypeSymbol = semanticModel.GetTypeSymbol(expression, cancellationToken);
-
-        //foreach (IfStatementOrElseClause ifOrElse in ifStatement.AsCascade())
-        //{
-        //    StatementSyntax statement = ifOrElse.Statement;
-
-        //    if (statement.IsKind(SyntaxKind.Block))
-        //        statement = ((BlockSyntax)statement).Statements.LastOrDefault();
-
-        //    if (!statement.IsKind(SyntaxKind.ThrowStatement)
-        //        && !IsSymbolAssignedInStatementWithCorrectType(symbol, statement, semanticModel, returnTypeSymbol, cancellationToken))
-        //    {
-        //        return;
-        //    }
-        //}
-
-        //DiagnosticHelpers.ReportDiagnostic(context, DiagnosticRules.UnnecessaryAssignment, ifStatement);
-
-        //// Track the start and end of the entire if-else if-else chain
-        var startSpan = ifStatement.Span.Start;
-        var endSpan = ifStatement.Span.End;
-
-        //// Check the assignments in all branches
-        var assignments = GetAllAssignments(ifStatement, ref endSpan);
-
-        //// Find common assignments across all branches
-        var commonAssignments = assignments.First().Keys.Intersect(assignments.Last().Keys).ToList();
-
-        if (commonAssignments.Any())
+        if (symbol.Kind is SymbolKind.Local)
         {
-            var span = TextSpan.FromBounds(startSpan, endSpan);
-            var location = Location.Create(ifStatement.SyntaxTree, span);
+            var localSymbol = (ILocalSymbol)symbol;
 
-            foreach (var variable in commonAssignments)
-            {
-                var diagnostic = Diagnostic.Create(Descriptor, location, variable);
-                context.ReportDiagnostic(diagnostic);
-            }
+            var localDeclarationStatement = symbol.DeclaringSyntaxReferences[0]?.GetSyntax(cancellationToken).Parent?.Parent as LocalDeclarationStatementSyntax;
+
+            if (localDeclarationStatement?.Parent == blockSyntax.Parent) return;
+            
         }
-    }
-    private static List<Dictionary<string, AssignmentExpressionSyntax>> GetAllAssignments(IfStatementSyntax ifStatement, ref int endSpan)
-    {
-        var assignments = new List<Dictionary<string, AssignmentExpressionSyntax>>();
+        var returnTypeSymbol = Microsoft.CodeAnalysis.CSharp.CSharpExtensions.GetTypeInfo(semanticModel, expression, cancellationToken).Type;
 
-        while (ifStatement != null)
+        foreach (SyntaxNode ifOrElse in ifStatement.ChildNodes())
         {
-            assignments.Add(GetAssignments(ifStatement.Statement));
-            if (ifStatement.Else != null)
+            if (ifOrElse is StatementSyntax statement)
             {
-                if (ifStatement.Else.Statement is IfStatementSyntax elseIfStatement)
+                if (statement.IsKind(SyntaxKind.Block))
+                    statement = ((BlockSyntax)statement)?.Statements?.LastOrDefault();
+
+                if (!statement.IsKind(SyntaxKind.ThrowStatement) /*&& !IsSymbolAssignedInStatementWithCorrectType(symbol, statement, semanticModel, returnTypeSymbol, cancellationToken)*/)
                 {
-                    ifStatement = elseIfStatement;
+                    return;
                 }
-                else
-                {
-                    assignments.Add(GetAssignments(ifStatement.Else.Statement));
-                    endSpan = ifStatement.Else.Span.End;
-                    break;
-                }
-            }
-            else
-            {
-                break;
+
             }
         }
-
-        return assignments;
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
     }
-    private static Dictionary<string, AssignmentExpressionSyntax> GetAssignments(StatementSyntax statement)
-    {
-        var assignments = new Dictionary<string, AssignmentExpressionSyntax>();
-
-        if (statement is BlockSyntax block)
-        {
-            foreach (var stmt in block.Statements)
-            {
-                if (stmt is ExpressionStatementSyntax exprStmt && exprStmt.Expression is AssignmentExpressionSyntax assignment)
-                {
-                    var identifier = (assignment.Left as IdentifierNameSyntax)?.Identifier.ValueText;
-                    if (identifier != null)
-                    {
-                        assignments[identifier] = assignment;
-                    }
-                }
-            }
-        }
-        else if (statement is ExpressionStatementSyntax singleExprStmt && singleExprStmt.Expression is AssignmentExpressionSyntax singleAssignment)
-        {
-            var identifier = (singleAssignment.Left as IdentifierNameSyntax)?.Identifier.ValueText;
-            if (identifier != null)
-            {
-                assignments[identifier] = singleAssignment;
-            }
-        }
-
-        return assignments;
-    }
-
-    internal static bool IsFirstElementOfStatement(IfStatementSyntax ifStatement)
-    {
-        SyntaxNode? parent = ifStatement.Parent;
-        if (parent == null)
-            return false;
-
-        if (parent?.Kind() is SyntaxKind.Block)
-            return true;
-        else
-            return false;
-    }
-    internal static bool IsSimpleIf(IfStatementSyntax ifStatement) => ifStatement?.Parent.IsKind(SyntaxKind.ElseClause) == false
-            && ifStatement.Else is null;
+    
     internal static ReturnStatementSyntax? FindReturnStatementBelow(SyntaxList<StatementSyntax> statements, StatementSyntax statement)
     {
         int index = statements.IndexOf(statement);
@@ -226,8 +106,13 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
 
         return null;
     }
-    internal static ISymbol? GetSymbol(SemanticModel semanticModel, ExpressionSyntax expression, CancellationToken cancellationToken = default) =>
-        Microsoft.CodeAnalysis.CSharp.CSharpExtensions
-        .GetSymbolInfo(semanticModel, expression, cancellationToken)
-        .Symbol;
+
+    //private static bool IsSymbolAssignedInStatementWithCorrectType(ISymbol symbol, StatementSyntax statement, SemanticModel semanticModel, ITypeSymbol typeSymbol, CancellationToken cancellationToken)
+    //{
+    //    SimpleAssignmentStatementInfo assignmentInfo = SyntaxInfo.SimpleAssignmentStatementInfo(statement);
+
+    //    return assignmentInfo.Success
+    //        && SymbolEqualityComparer.Default.Equals(semanticModel.GetSymbol(assignmentInfo.Left, cancellationToken), symbol)
+    //        && SymbolEqualityComparer.Default.Equals(typeSymbol, semanticModel.GetTypeSymbol(assignmentInfo.Right, cancellationToken));
+    //}
 }

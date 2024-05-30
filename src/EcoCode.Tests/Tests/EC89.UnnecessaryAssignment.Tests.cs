@@ -74,7 +74,28 @@ public sealed class UnnecessaryAssignmentTests
         """
     );
 
+    [TestMethod]
+    public Task UnnecessaryAssignment() => VerifyAsync("""
+        public class Test
+        {
+            int Number()
+            {
+                int x = 1;
+                int y = 3;
+                if (x > 1)
+                {
+                    x = 2;
+                }
+                else
+                {
+                    y = 4;
+                }
 
+                return x;
+            }
+        }
+        """
+    );
     [TestMethod]
     public Task TestIfStatement() => VerifyAsync("""
             class C
