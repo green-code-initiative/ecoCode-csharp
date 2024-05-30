@@ -29,4 +29,8 @@
 	<ItemGroup>
 		<Compile Include="..\..\SharedAssemblyInfo.cs" Link="Properties\SharedAssemblyInfo.cs" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<GlobalAnalyzerConfigFiles Include="$(MSBuildThisFileDirectory)\src\EcoCode.Package\EcoCode.globalconfig" />
+	</ItemGroup>
 </Project>
