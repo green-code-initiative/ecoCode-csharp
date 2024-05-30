@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace EcoCode.Analyzers;
 
-/// <summary>EC88: Dispose resource asynchronously.</summary>
+/// <summary>EC91: With LINQ use Where before Order by.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
 {

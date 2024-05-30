@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace EcoCode.Analyzers;
 
-/// <summary>EC91 fixer: Where before Order By.</summary>
+/// <summary>EC91 With LINQ use Where before Order by.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseWhereBeforeOrderByFixer)), Shared]
 public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 {
@@ -99,13 +99,25 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 
         chain.Reverse();
 
-        var whereInvocation = chain.FirstOrDefault(inv => ((MemberAccessExpressionSyntax)inv.Expression).Name.Identifier.Text == "Where");
+        InvocationExpressionSyntax? whereInvocation = null;
+        InvocationExpressionSyntax? orderByInvocation = null;
 
-        var orderByInvocation = chain.FirstOrDefault(inv =>
+        foreach (var c in chain)
         {
-            var methodName = ((MemberAccessExpressionSyntax)inv.Expression).Name.Identifier.Text;
-            return methodName == "OrderBy" || methodName == "OrderByDescending";
-        });
+            var methodName = ((MemberAccessExpressionSyntax)c.Expression).Name.Identifier.Text;
+            if (methodName == "Where")
+            {
+                whereInvocation = c;
+            }
+            if (methodName == "OrderBy" || methodName == "OrderByDescending")
+            {
+                orderByInvocation = c;
+            }
+            if (whereInvocation == null && orderByInvocation == null)
+            {
+                break;
+            }
+        }
 
         var textModified = Regex.Replace(whereInvocation.GetText().ToString(), @".OrderBy\s*\(.*?\)", "", RegexOptions.IgnoreCase);
         textModified = Regex.Replace(textModified, @".OrderByDescending\s*\(.*?\)", "", RegexOptions.IgnoreCase);
