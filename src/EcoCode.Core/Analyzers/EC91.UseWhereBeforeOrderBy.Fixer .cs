@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using Microsoft.CodeAnalysis.Formatting;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace EcoCode.Analyzers;
 
@@ -35,12 +37,18 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                             createChangedDocument: c => MoveWhereBeforeOrderBy(context.Document, queryExpression, c),
                             equivalenceKey: nameof(MoveWhereBeforeOrderBy)),
                         diagnostic);
-                   // break; // Break out of the loop once the code fix is registered
                 }
-            }
-                   
 
-            
+                if (node is InvocationExpressionSyntax invocationExpr)
+                {
+                    context.RegisterCodeFix(
+                        CodeAction.Create(
+                            title: "With LINQ move 'Where' before 'OrderBy'",
+                            createChangedDocument: c => MoveWhereBeforeOrderByWithObject(context.Document, invocationExpr, c),
+                            equivalenceKey: nameof(MoveWhereBeforeOrderByWithObject)),
+                        diagnostic);
+                }
+            }            
         }
     }
 
@@ -73,6 +81,86 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                 }
             }
         }
+        return document;
+    }
+
+    private async Task<Document> MoveWhereBeforeOrderByWithObject(Document document, InvocationExpressionSyntax invocationExpr, CancellationToken cancellationToken)
+    {
+        var memberAccessExpr = (MemberAccessExpressionSyntax)invocationExpr.Expression;
+        var chain = new List<InvocationExpressionSyntax>();
+        var currentExpr = invocationExpr;
+
+        // Extract all method invocations in the chain
+        while (currentExpr != null)
+        {           
+            chain.Add(currentExpr);
+            var currentMemberAccess = currentExpr.Expression as MemberAccessExpressionSyntax;
+            currentExpr = currentMemberAccess?.Expression as InvocationExpressionSyntax;
+        }
+
+        chain.Reverse();
+
+        // Find the positions of 'Where' and 'OrderBy'
+        var whereInvocation = chain.FirstOrDefault(inv => ((MemberAccessExpressionSyntax)inv.Expression).Name.Identifier.Text == "Where");
+
+        var orderByInvocation = chain.FirstOrDefault(inv =>
+        {
+            var methodName = ((MemberAccessExpressionSyntax)inv.Expression).Name.Identifier.Text;
+            return methodName == "OrderBy" || methodName == "OrderByDescending";
+        });
+
+        var textModified = Regex.Replace(whereInvocation.GetText().ToString(), @".OrderBy\s*\(.*?\)", "", RegexOptions.IgnoreCase);
+        textModified = Regex.Replace(textModified, @".OrderByDescending\s*\(.*?\)", "", RegexOptions.IgnoreCase);
+        var whereInvocationOnlyWhere = (InvocationExpressionSyntax)SyntaxFactory.ParseExpression(textModified);
+
+
+        if (whereInvocation != null && orderByInvocation != null)
+        {
+            var whereIndex = chain.IndexOf(whereInvocation);
+            var orderByIndex = chain.IndexOf(orderByInvocation);
+
+            if (whereIndex > orderByIndex)
+            {
+                // Create a new list for the reordered chain
+                var newChain = new List<InvocationExpressionSyntax>();
+                bool orderByAdded = false;
+
+                foreach (var expr in chain)
+                {
+                    if (expr == orderByInvocation && !orderByAdded)
+                    {
+                        continue;
+                    }
+                    if (expr == whereInvocation && !orderByAdded)
+                    {
+                        newChain.Add(whereInvocationOnlyWhere);
+                        newChain.Add(orderByInvocation);
+                        orderByAdded = true;
+                    }
+                    else
+                    {
+                        newChain.Add(expr);
+                    }
+                }
+
+                var newInvocationExpr = newChain.First();
+                for (int i = 1; i < newChain.Count; i++)
+                {
+                    var memberAccess = (MemberAccessExpressionSyntax)newChain[i].Expression;
+                    newInvocationExpr = newChain[i].WithExpression(memberAccess.WithExpression(newInvocationExpr));
+                }
+
+                var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+                if (root != null)
+                {
+                    var newRoot = root.ReplaceNode(invocationExpr, newInvocationExpr)
+                        .WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation);
+
+                    return document.WithSyntaxRoot(newRoot);
+                }
+            }
+        }
+
         return document;
     }
 }
