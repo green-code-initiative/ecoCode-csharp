@@ -80,7 +80,7 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
             if (ifOrElse is StatementSyntax statement)
             {
                 if (statement.IsKind(SyntaxKind.Block))
-                    statement = ((BlockSyntax)statement)?.Statements?.LastOrDefault();
+                    statement = ((BlockSyntax)statement).Statements.LastOrDefault();
 
                 if (!statement.IsKind(SyntaxKind.ThrowStatement) /*&& !IsSymbolAssignedInStatementWithCorrectType(symbol, statement, semanticModel, returnTypeSymbol, cancellationToken)*/)
                 {
