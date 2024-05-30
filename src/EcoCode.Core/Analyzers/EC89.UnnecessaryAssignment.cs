@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using Microsoft.CodeAnalysis.Text;
+using System.Linq;
 
 namespace EcoCode.Analyzers;
 
@@ -36,8 +37,11 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
         if (blockSyntax.Kind() is not SyntaxKind.Block) return;
 
         if (ContainsPolymorphism(blockSyntax, context.SemanticModel)) return;
-        
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+
+        if (ContainsSameVariableAssignment(blockSyntax, context.SemanticModel))
+        {
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, context.Node.GetLocation()));
+        }        
     }
 
     internal static bool ContainsPolymorphism(BlockSyntax block, SemanticModel model)
@@ -64,6 +68,53 @@ public sealed class UnnecessaryAssignment : DiagnosticAnalyzer
                     {
                         return true;
                     }
+                }
+            }
+        }
+
+        return false;
+    }
+    internal static bool ContainsSameVariableAssignment(BlockSyntax block, SemanticModel model)
+    {
+        var ifStatements = block.DescendantNodes().OfType<IfStatementSyntax>();
+
+        foreach (var ifStatement in ifStatements)
+        {
+            var assignedVariables = ifStatement.Statement.DescendantNodes().OfType<AssignmentExpressionSyntax>()
+                .Select(a => model.GetSymbolInfo(a.Left).Symbol as ILocalSymbol)
+                .Where(symbol => symbol != null)
+                .ToList();
+
+            var elseClause = ifStatement.Else;
+            if (elseClause != null)
+            {
+                var elseAssignedVariables = elseClause.Statement.DescendantNodes().OfType<AssignmentExpressionSyntax>()
+                    .Select(a => model.GetSymbolInfo(a.Left).Symbol as ILocalSymbol)
+                    .Where(symbol => symbol != null)
+                    .ToList();
+
+                var commonVariables = assignedVariables.Intersect(elseAssignedVariables);
+                if (commonVariables.Any())
+                {
+                    return true;
+                }
+
+                // Check for nested if statements within else
+                if (elseClause.Statement is BlockSyntax elseBlock)
+                {
+                    if (ContainsSameVariableAssignment(elseBlock, model))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            // Check for nested if statements within if
+            if (ifStatement.Statement is BlockSyntax ifBlock)
+            {
+                if (ContainsSameVariableAssignment(ifBlock, model))
+                {
+                    return true;
                 }
             }
         }

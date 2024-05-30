@@ -130,7 +130,6 @@ public sealed class UnnecessaryAssignmentTests
                 }
                 """);
     
-    [Ignore("TODO : TO BE IMPLEMENTED")]
     [TestMethod]
     public Task UnnecessaryAssignment() => VerifyAsync("""
         public class Test
