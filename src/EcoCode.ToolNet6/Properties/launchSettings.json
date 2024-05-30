@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EcoCode.Tool": {
+      "commandName": "Project",
+      "commandLineArgs": "dotnet run \"C:\\Users\\jurai\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.csproj\""
+    }
+  }
+}
