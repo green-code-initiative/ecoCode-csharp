@@ -64,7 +64,7 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
                 orderByFound = true;
             }
             currentExpr = currentMemberAccess.Expression as InvocationExpressionSyntax;
-        }   
+        }
     }
 
     private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context)
@@ -107,4 +107,3 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
         }
     }
 }
-

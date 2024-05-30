@@ -38,8 +38,7 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                             equivalenceKey: nameof(MoveWhereBeforeOrderBy)),
                         diagnostic);
                 }
-
-                if (node is InvocationExpressionSyntax invocationExpr)
+                else if (node is InvocationExpressionSyntax invocationExpr)
                 {
                     context.RegisterCodeFix(
                         CodeAction.Create(
@@ -48,37 +47,38 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                             equivalenceKey: nameof(MoveWhereBeforeOrderByWithObject)),
                         diagnostic);
                 }
-            }            
+            }
         }
     }
 
     private async Task<Document> MoveWhereBeforeOrderBy(Document document, QueryExpressionSyntax queryExpression, CancellationToken cancellationToken)
     {
-        var whereClause = queryExpression.Body.Clauses.OfType<WhereClauseSyntax>().FirstOrDefault();
-        var orderByClause = queryExpression.Body.Clauses.OfType<OrderByClauseSyntax>().FirstOrDefault();
-
-        if (whereClause != null && orderByClause != null)
+        if (queryExpression.Body.Clauses.OfType<WhereClauseSyntax>().FirstOrDefault() is not { } whereClause ||
+        queryExpression.Body.Clauses.OfType<OrderByClauseSyntax>().FirstOrDefault() is not { } orderByClause)
         {
-            var whereIndex = queryExpression.Body.Clauses.IndexOf(whereClause);
-            var orderByIndex = queryExpression.Body.Clauses.IndexOf(orderByClause);
+            return document;
+        }
+        if (whereClause == null || orderByClause == null) return document;
 
-            if (orderByIndex < whereIndex)
+        var whereIndex = queryExpression.Body.Clauses.IndexOf(whereClause);
+        var orderByIndex = queryExpression.Body.Clauses.IndexOf(orderByClause);
+
+        if (orderByIndex < whereIndex)
+        {
+            var clauses = queryExpression.Body.Clauses.ToList();
+            clauses.RemoveAt(orderByIndex);
+            clauses.Insert(whereIndex, orderByClause);
+
+            var newClauses = SyntaxFactory.List(clauses);
+            var newQueryBody = queryExpression.Body.WithClauses(newClauses);
+            var newQueryExpression = queryExpression.WithBody(newQueryBody);
+
+            var root = await document.GetSyntaxRootAsync(cancellationToken);
+            if (root != null)
             {
-                var clauses = queryExpression.Body.Clauses.ToList();
-                clauses.RemoveAt(orderByIndex);
-                clauses.Insert(whereIndex, orderByClause);
+                var newRoot = root.ReplaceNode(queryExpression, newQueryExpression);
 
-                var newClauses = SyntaxFactory.List(clauses);
-                var newQueryBody = queryExpression.Body.WithClauses(newClauses);
-                var newQueryExpression = queryExpression.WithBody(newQueryBody);
-
-                var root = await document.GetSyntaxRootAsync(cancellationToken);
-                if (root != null)
-                {
-                    var newRoot = root.ReplaceNode(queryExpression, newQueryExpression);
-
-                    return document.WithSyntaxRoot(newRoot);
-                }
+                return document.WithSyntaxRoot(newRoot);
             }
         }
         return document;
@@ -113,19 +113,18 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
             {
                 orderByInvocation = c;
             }
-            if (whereInvocation == null && orderByInvocation == null)
+            if (whereInvocation != null && orderByInvocation != null)
             {
                 break;
             }
         }
 
-        var textModified = Regex.Replace(whereInvocation.GetText().ToString(), @".OrderBy\s*\(.*?\)", "", RegexOptions.IgnoreCase);
-        textModified = Regex.Replace(textModified, @".OrderByDescending\s*\(.*?\)", "", RegexOptions.IgnoreCase);
-        var whereInvocationOnlyWhere = (InvocationExpressionSyntax)SyntaxFactory.ParseExpression(textModified);
-
-
         if (whereInvocation != null && orderByInvocation != null)
         {
+            var textModified = Regex.Replace(whereInvocation.GetText().ToString(), @".OrderBy\s*\(.*?\)", "", RegexOptions.IgnoreCase);
+            textModified = Regex.Replace(textModified, @".OrderByDescending\s*\(.*?\)", "", RegexOptions.IgnoreCase);
+            var whereInvocationOnlyWhere = (InvocationExpressionSyntax)SyntaxFactory.ParseExpression(textModified);
+
             var whereIndex = chain.IndexOf(whereInvocation);
             var orderByIndex = chain.IndexOf(orderByInvocation);
 
@@ -140,7 +139,7 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                     {
                         continue;
                     }
-                    if (expr == whereInvocation && !orderByAdded)
+                    else if (expr == whereInvocation && !orderByAdded)
                     {
                         newChain.Add(whereInvocationOnlyWhere);
                         newChain.Add(orderByInvocation);
