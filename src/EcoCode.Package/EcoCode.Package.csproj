@@ -40,6 +40,8 @@
 
 	<ItemGroup>
 		<None Include="..\EcoCode.Core\bin\$(Configuration)\$(TargetFramework)\EcoCode.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="EcoCode.globalconfig" Pack="true" PackagePath="analyzers/config" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="EcoCode.props" Pack="true" PackagePath="build" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
