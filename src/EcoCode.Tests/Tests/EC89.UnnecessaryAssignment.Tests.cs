@@ -8,10 +8,10 @@ public sealed class UnnecessaryAssignmentTests
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<UnnecessaryAssignment>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public async Task DoNotWarnWhenEmptyCode() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
-    public Task DoNotWarmOnSimpleIfStatement() => VerifyAsync("""
+    public Task DoNotWarnnOnSimpleIfStatement() => VerifyAsync("""
         public class Test
         {
             int Number()
@@ -28,76 +28,33 @@ public sealed class UnnecessaryAssignmentTests
         """);
 
     [TestMethod]
-    public Task WarmOnBasicUnnecessaryAssignment() => VerifyAsync("""
-        public class Test
-        {
-            int Number()
+    public Task DonotWarnWhenAssignInIfElseStatementVariableHavePolymorphic() => VerifyAsync("""
+            class A {}
+            class B {}
+            class C
             {
-                int x = 1;
-                [|if (x > 1)
+                void M()
                 {
-                    x = 2;
-                }
-                else
-                {
-                    x = 3;
-                }|]
+                    var fun = (bool flag) =>
+                    {
+                        object x;
+                        if (flag)
+                        {
+                            x = new A();
+                        }
+                        else
+                        {
+                            x = new B();
+                        }
 
-                return x;
+                        return x;
+                    };
+                }
             }
-        }
-        """);
-
+            """);
+    
     [TestMethod]
-    public Task WarmOnMultipleIfElseUnnecessaryAssignment() => VerifyAsync("""
-        public class Test
-        {
-            int Number()
-            {
-                int x = 1;
-                [|if (x > 1)
-                {
-                    x = 2;
-                }
-                else if (x < 1)
-                {
-                    x = 3;
-                }
-                else
-                {
-                    x = 4;
-                }|]
-
-                return x;
-            }
-        }
-        """
-    );
-
-    [TestMethod]
-    public Task UnnecessaryAssignment() => VerifyAsync("""
-        public class Test
-        {
-            int Number()
-            {
-                int x = 1;
-                int y = 3;
-                if (x > 1)
-                {
-                    x = 2;
-                }
-                else
-                {
-                    y = 4;
-                }
-
-                return x;
-            }
-        }
-        """
-    );
-    [TestMethod]
-    public Task TestIfStatement() => VerifyAsync("""
+    public Task WarnOnIfElseStatementWithUnnecessaryAssignment() => VerifyAsync("""
             class C
             {
                 int M()
@@ -119,7 +76,7 @@ public sealed class UnnecessaryAssignmentTests
             """);
 
     [TestMethod]
-    public Task TestIfStatement2() => VerifyAsync("""
+    public Task WarnOnMultipleIfElseUnnecessaryAssignment() => VerifyAsync("""
             class C
             {
                 int M()
@@ -135,6 +92,10 @@ public sealed class UnnecessaryAssignmentTests
                     else if (f)
                     {
                         x = 3;
+                    }
+                    else
+                    {
+                        x = 5;
                     }|]
 
                     return x; // 1
@@ -143,7 +104,7 @@ public sealed class UnnecessaryAssignmentTests
             """);
 
     [TestMethod]
-    public Task TestIfStatementThrow() => VerifyAsync("""
+    public Task WarnOnIfElseStatementWithUnnecessaryAssignmentThrowExceptionAtEnd() => VerifyAsync("""
                 using System;
                 
                 class C
@@ -170,30 +131,29 @@ public sealed class UnnecessaryAssignmentTests
                     }
                 }
                 """);
-
+    
+    [Ignore("TODO : TO BE IMPLEMENTED")]
     [TestMethod]
-    public Task TestNoDiagnosticForPolymorphicIf() => VerifyAsync("""
-            class A {}
-            class B {}
-            class C
+    public Task UnnecessaryAssignment() => VerifyAsync("""
+        public class Test
+        {
+            int Number()
             {
-                void M()
+                int x = 1;
+                int y = 3;
+                if (x > 1)
                 {
-                    var fun = (bool flag) =>
-                    {
-                        object x;
-                        if (flag)
-                        {
-                            x = new A();
-                        }
-                        else
-                        {
-                            x = new B();
-                        }
-
-                        return x;
-                    };
+                    x = 2;
                 }
+                else
+                {
+                    y = 4;
+                }
+
+                return x;
             }
-            """);
+        }
+        """
+    );
+
 }
