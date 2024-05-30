@@ -90,7 +90,6 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
         var chain = new List<InvocationExpressionSyntax>();
         var currentExpr = invocationExpr;
 
-        // Extract all method invocations in the chain
         while (currentExpr != null)
         {           
             chain.Add(currentExpr);
@@ -100,7 +99,6 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 
         chain.Reverse();
 
-        // Find the positions of 'Where' and 'OrderBy'
         var whereInvocation = chain.FirstOrDefault(inv => ((MemberAccessExpressionSyntax)inv.Expression).Name.Identifier.Text == "Where");
 
         var orderByInvocation = chain.FirstOrDefault(inv =>
@@ -121,7 +119,6 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 
             if (whereIndex > orderByIndex)
             {
-                // Create a new list for the reordered chain
                 var newChain = new List<InvocationExpressionSyntax>();
                 bool orderByAdded = false;
 
