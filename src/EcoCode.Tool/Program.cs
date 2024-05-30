@@ -1,5 +1,5 @@
-﻿using Microsoft.CodeAnalysis.MSBuild;
-using Spectre.Console;
+﻿using EcoCode.Tool.Commands;
+using Spectre.Console.Cli;
 
 namespace EcoCode.Tool;
 
@@ -12,36 +12,17 @@ public static class Program
     /// EcoCode.tool Entry point
     /// </summary>
     /// <param name="args">CLI arguments</param>
-    public static async Task Main(string[] args)
+    public static int Main(string[] args)
     {
-        const string targetPath = @"C:\ecocode\ecoCode-csharp-test-project\ecoCode-csharp-test-project.sln";
+        var app = new CommandApp<AnalyzeCommand>();
 
-        AnsiConsole.Write(new Rule("[bold yellow]EcoCode.Tool[/]").Centered());
-
-        using (var workspace = MSBuildWorkspace.Create())
+        app.Configure(config =>
         {
-            var solution = await workspace.OpenSolutionAsync(targetPath).ConfigureAwait(false);
-            foreach (var project in solution.Projects)
-            {
-                foreach (var document in project.Documents)
-                {
-                    var semanticModel = await document.GetSemanticModelAsync().ConfigureAwait(false);
+            config.SetApplicationName("EcoCode.Tool");
+            config.SetApplicationVersion("1.0.0");
+            config.AddCommand<AnalyzeCommand>("analyze");
+        });
 
-                    if (semanticModel is null)
-                    {
-                        AnsiConsole.Write(new Markup($"[bold red]{document.FilePath}: SemanticModel cannot be generated.[/]"));
-                        continue;
-                    }
-                    var diagnostics = semanticModel.GetDiagnostics();
-
-                    foreach (var diagnostic in diagnostics)
-                    {
-                        AnsiConsole.Write(new Markup($"[blue]{document.FilePath}: {diagnostic}.[/]"));
-                    }
-                }
-            }
-        }
-
-        Console.ReadKey();
+        return app.Run(args);
     }
 }

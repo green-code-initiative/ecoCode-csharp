@@ -1,23 +1,41 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Build.Locator" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Features" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" />
-    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
-    <PackageReference Include="Spectre.Console" />
-    <PackageReference Include="Spectre.Console.Cli" />
-  </ItemGroup>
+        <PackageId>EcoCode.ToolNet6</PackageId>
+        <PackageVersion>1.0.0</PackageVersion>
+        <Copyright>Copyright 2024</Copyright>
+        <PackageOutputPath>.\nupkg</PackageOutputPath>
+        <PackageLicenseFile>LICENCE.md</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>icon.jpeg</PackageIcon>
+
+        <RepositoryUrl>https://github.com/green-code-initiative/ecoCode-csharp</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryBranch>main</RepositoryBranch>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Build.Locator" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Features" />
+        <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Features" />
+        <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+        <PackageReference Include="Spectre.Console" />
+        <PackageReference Include="Spectre.Console.Cli" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\EcoCode.Core\EcoCode.Core.csproj" />
+
+        <Content Include="..\..\LICENCE.md" Pack="true" PackagePath="" />
+        <Content Include="..\..\README.md" Pack="true" PackagePath="" />
+        <Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" />
+    </ItemGroup>
 
 </Project>

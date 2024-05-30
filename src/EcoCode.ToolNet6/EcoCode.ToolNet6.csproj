@@ -10,7 +10,7 @@
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>ecocode</ToolCommandName>
 
-        <PackageId>EcoCode.Tool</PackageId>
+        <PackageId>EcoCode.ToolNet6</PackageId>
         <PackageVersion>1.0.0</PackageVersion>
         <Copyright>Copyright 2024</Copyright>
         <PackageOutputPath>.\nupkg</PackageOutputPath>
@@ -27,7 +27,7 @@
         <ProjectReference Include="..\EcoCode.Core\EcoCode.Core.csproj" />
 
         <Content Include="..\..\LICENCE.md" Pack="true" PackagePath="" />
-        <Content Include="README.md" Pack="true" PackagePath="" />
+        <Content Include="..\..\README.md" Pack="true" PackagePath="" />
         <Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" />
     </ItemGroup>
 
