@@ -44,9 +44,14 @@
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
+            if (root == null)
+            {
+                return document;
+            }
+
             // Find the Select invocation node
             var diagnosticSpan = diagnostic.Location.SourceSpan;
-            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+            var selectInvocation = root.FindToken(diagnosticSpan.Start).Parent?.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().FirstOrDefault();
 
             if (selectInvocation is null)
             {
@@ -74,10 +79,15 @@
 
             // Create a new Cast invocation node
             var memberAccess = selectInvocation.Expression as MemberAccessExpressionSyntax;
+            if (memberAccess?.Expression == null)
+            {
+                return document;
+            }
+
             var castInvocation = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    memberAccess?.Expression,
+                    memberAccess.Expression,
                     SyntaxFactory.GenericName(
                         SyntaxFactory.Identifier("Cast"),
                         SyntaxFactory.TypeArgumentList(SyntaxFactory.SingletonSeparatedList(castType))
