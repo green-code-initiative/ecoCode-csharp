@@ -189,7 +189,7 @@ public sealed class UseWhereBeforeOrderByTests
     public async Task CodeFixForIncorrectOrderDescending() => await VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
-            
+
         public class TestClass
         {
             public void TestMethod()
@@ -204,7 +204,7 @@ public sealed class UseWhereBeforeOrderByTests
         """, """
         using System.Linq;
         using System.Collections.Generic;
-            
+
         public class TestClass
         {
             public void TestMethod()
@@ -222,7 +222,7 @@ public sealed class UseWhereBeforeOrderByTests
     public async Task CodeFixForIncorrectOrderWithObject() => await VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
-            
+
         public class TestClass
         {
             public void TestMethod()
@@ -237,7 +237,7 @@ public sealed class UseWhereBeforeOrderByTests
         """, """
         using System.Linq;
         using System.Collections.Generic;
-            
+
         public class TestClass
         {
             public void TestMethod()
@@ -253,10 +253,10 @@ public sealed class UseWhereBeforeOrderByTests
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task CodeFixForIncorrectOrderDesendingWithObject() => await VerifyAsync("""
+    public async Task CodeFixForIncorrectOrderDescendingWithObject() => await VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
-            
+
         public class TestClass
         {
             public void TestMethod()
@@ -271,14 +271,14 @@ public sealed class UseWhereBeforeOrderByTests
         """, """
         using System.Linq;
         using System.Collections.Generic;
-            
+
         public class TestClass
         {
             public void TestMethod()
             {
                 var items = new List<int>();
                 var query = items
-            
+
                     .Where(x => x > 10)
                     .OrderByDescending(x => x)
                     .Select(x => x);
