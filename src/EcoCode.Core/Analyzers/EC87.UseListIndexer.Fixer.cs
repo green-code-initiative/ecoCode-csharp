@@ -13,7 +13,7 @@ public sealed class UseListIndexerFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [UseListIndexer.Descriptor.Id];
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage] 
+    [ExcludeFromCodeCoverage]
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

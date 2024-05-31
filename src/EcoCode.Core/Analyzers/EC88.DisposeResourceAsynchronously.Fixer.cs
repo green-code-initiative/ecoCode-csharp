@@ -11,7 +11,7 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [DisposeResourceAsynchronously.Descriptor.Id];
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage] 
+    [ExcludeFromCodeCoverage]
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

@@ -40,8 +40,8 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
         if (memberAccessExpr == null)
             return;
 
-        var methodName = memberAccessExpr.Name.Identifier.Text;
-        if (methodName != "Where" )
+        string methodName = memberAccessExpr.Name.Identifier.Text;
+        if (methodName != "Where")
             return;
 
         var currentExpr = invocationExpr;
@@ -53,13 +53,13 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
             if (currentMemberAccess == null)
                 break;
 
-            if (orderByFound&&(currentMemberAccess.Name.Identifier.Text == "OrderBy" || currentMemberAccess.Name.Identifier.Text == "OrderByDescending"))
+            if (orderByFound && (currentMemberAccess.Name.Identifier.Text == "OrderBy" || currentMemberAccess.Name.Identifier.Text == "OrderByDescending"))
             {
                 var diagnostic = Diagnostic.Create(Descriptor, memberAccessExpr.Name.GetLocation());
                 context.ReportDiagnostic(diagnostic);
                 return;
             }
-            else if (currentMemberAccess.Name.Identifier.Text == "Where" )
+            else if (currentMemberAccess.Name.Identifier.Text == "Where")
             {
                 orderByFound = true;
             }
@@ -76,8 +76,8 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
 
         if (whereClause != null && orderByClause != null)
         {
-            var whereIndex = queryExpression.Body.Clauses.IndexOf(whereClause);
-            var orderByIndex = queryExpression.Body.Clauses.IndexOf(orderByClause);
+            int whereIndex = queryExpression.Body.Clauses.IndexOf(whereClause);
+            int orderByIndex = queryExpression.Body.Clauses.IndexOf(orderByClause);
 
             if (whereIndex > orderByIndex)
             {

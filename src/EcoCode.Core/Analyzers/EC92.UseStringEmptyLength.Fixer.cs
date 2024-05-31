@@ -12,7 +12,7 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
 
     /// <inheritdoc/>
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
-    
+
     /// <inheritdoc/>
     public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
@@ -36,7 +36,7 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
     private async Task<Document> ReplaceWithLengthCheckAsync(Document document, SyntaxNode node, CancellationToken cancellationToken)
     {
         var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-        if(semanticModel is null)
+        if (semanticModel is null)
             return document;
 
         if (node is BinaryExpressionSyntax binaryExpression)
@@ -66,7 +66,7 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
             stringExpression = left;
         }
 
-        if (stringExpression is null )
+        if (stringExpression is null)
         {
             return binaryExpression; // Return the original expression if we can't determine the string expression.
         }
@@ -92,4 +92,3 @@ public class UseStringLengthCodeFixProvider : CodeFixProvider
         return expression is LiteralExpressionSyntax literal && literal.Token.ValueText.Length == 0;
     }
 }
-

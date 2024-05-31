@@ -5,9 +5,8 @@ public sealed class UseStringEmptyLengthTests
 {
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseStringEmptyLength, UseStringLengthCodeFixProvider>;
 
-    #region Analyzer
     [TestMethod]
-    public Task EmptyCodeAsync() =>  VerifyAsync("");
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
     public Task DontUseStringEmptyLengthWithEqualsExpressionAsync() => VerifyAsync("""
@@ -56,9 +55,6 @@ public sealed class UseStringEmptyLengthTests
             }
         }
         """);
-    #endregion
-
-    #region CodeFixer
 
     [TestMethod]
     public Task FixDontUseStringEmptyLengthWithEqualsExpressionAsync() => VerifyAsync("""
@@ -122,7 +118,4 @@ public sealed class UseStringEmptyLengthTests
             }
         }
         """);
-
-    #endregion
-
 }
