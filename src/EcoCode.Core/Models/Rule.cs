@@ -24,6 +24,7 @@ internal static class Rule
         public const string EC88_DisposeResourceAsynchronously = "EC88";
         public const string EC89_DoNotPassMutableStructAsRefReadonly = "EC89";
         public const string EC90_UseCastInsteadOfSelectToCast = "EC90";
+        public const string EC91_UseWhereBeforeOrderBy = "EC91";
     }
 
     /// <summary>Creates a diagnostic descriptor.</summary>
