@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis.Formatting;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EcoCode.Analyzers;
 
@@ -11,6 +12,7 @@ public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [VariableCanBeMadeConstant.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage] 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

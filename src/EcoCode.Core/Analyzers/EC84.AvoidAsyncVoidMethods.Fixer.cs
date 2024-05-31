@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Analyzers;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace EcoCode.Analyzers;
 
 /// <summary>EC84 fixer: Avoid async void methods.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidAsyncVoidMethodsFixer)), Shared]
@@ -9,6 +11,7 @@ public sealed class AvoidAsyncVoidMethodsFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [AvoidAsyncVoidMethods.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage] 
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>
