@@ -2,7 +2,7 @@
 
 /// <summary>EC86 : GC Collect should not be called.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
+public sealed class GCCollectShouldNotBeCalled : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> SyntaxKinds = [SyntaxKind.InvocationExpression];
 
@@ -64,7 +64,7 @@ public sealed class GCCollectShouldNotBeCalled: DiagnosticAnalyzer
             report = constantValue.Value is not int intValue || intValue != 0;
         }
 
-        if(report)
+        if (report)
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, invocationExpression.GetLocation()));
     }
 }

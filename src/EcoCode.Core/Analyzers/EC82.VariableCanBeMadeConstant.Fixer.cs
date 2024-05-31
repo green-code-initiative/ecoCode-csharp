@@ -12,7 +12,7 @@ public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [VariableCanBeMadeConstant.Descriptor.Id];
 
     /// <inheritdoc/>
-    [ExcludeFromCodeCoverage] 
+    [ExcludeFromCodeCoverage]
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>
