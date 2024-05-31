@@ -33,13 +33,11 @@ public sealed class UseLengthToTestEmptyStrings : DiagnosticAnalyzer
     {
         var binaryExpression = (BinaryExpressionSyntax)context.Node;
         var (left, right) = (binaryExpression.Left, binaryExpression.Right);
-        if (IsStringLiteral(left, context.SemanticModel) && IsEmptyString(right) || IsStringLiteral(right, context.SemanticModel) && IsEmptyString(left))
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, binaryExpression.GetLocation()));
 
-        static bool IsStringLiteral(ExpressionSyntax expression, SemanticModel semanticModel) =>
-            semanticModel.GetTypeInfo(expression).Type?.SpecialType is SpecialType.System_String;
+        bool report = left.IsEmptyStringLiteral()
+            ? right.SpecialType(context.SemanticModel) is SpecialType.System_String
+            : right.IsEmptyStringLiteral() && left.SpecialType(context.SemanticModel) is SpecialType.System_String;
 
-        static bool IsEmptyString(ExpressionSyntax expression) =>
-            expression is LiteralExpressionSyntax { Token.ValueText.Length: 0 };
+        if (report) context.ReportDiagnostic(Diagnostic.Create(Descriptor, binaryExpression.GetLocation()));
     }
 }
