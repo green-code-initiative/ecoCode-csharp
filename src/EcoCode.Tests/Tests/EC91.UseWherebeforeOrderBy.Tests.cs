@@ -17,10 +17,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items = new List<int>();
-
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             where item > 10
                             orderby item
@@ -36,10 +35,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items = new List<int>();
-
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .OrderBy(x => x)
                     .[|Where|](x => x > 10)
@@ -55,10 +53,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items = new List<int>();
-
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .OrderByDescending(x => x)
                     .[|Where|](x => x > 10)
@@ -74,10 +71,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items = new List<int>();
-
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .Where(x => x > 10)
                     .OrderBy(x => x)
@@ -93,10 +89,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items = new List<int>();
-
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .OrderBy(x => x)
                     .Select(x => x);
@@ -111,10 +106,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items = new List<int>();
-
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .Where(x => x > 10)
                     .Select(x => x);
@@ -129,10 +123,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items =new List<int>();
-                
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             [|orderby item|]
                             where item > 10
@@ -148,10 +141,9 @@ public sealed class UseWhereBeforeOrderByTests
         
         public class TestClass
         {
-            var items =new List<int>();
-                
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             [|orderby item descending|]
                             where item > 10
@@ -167,10 +159,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items =new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             [|orderby item descending|]
                             where item > 10
@@ -183,10 +174,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items =new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             where item > 10
                             orderby item descending
@@ -202,10 +192,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items =new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             [|orderby item descending|]
                             where item > 10
@@ -218,10 +207,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items =new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = from item in items
                             where item > 10
                             orderby item descending
@@ -237,10 +225,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items = new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .OrderBy(x => x)
                     .[|Where|](x => x > 10)
@@ -253,10 +240,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items = new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
 
                     .Where(x => x > 10)
@@ -273,10 +259,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items = new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
                     .OrderByDescending(x => x)
                     .[|Where|](x => x > 10)
@@ -289,10 +274,9 @@ public sealed class UseWhereBeforeOrderByTests
             
         public class TestClass
         {
-            var items = new List<int>();
-            
             public void TestMethod()
             {
+                var items = new List<int>();
                 var query = items
             
                     .Where(x => x > 10)
