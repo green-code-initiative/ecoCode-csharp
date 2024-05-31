@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>EC92: Use string.Length instead of comparison with empty string.</summary>
+/// <summary>EC92: Use Length to test empty strings.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class UseStringEmptyLength : DiagnosticAnalyzer
+public sealed class UseLengthToTestEmptyStrings : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> EqualsExpression = [SyntaxKind.EqualsExpression];
     private static readonly ImmutableArray<SyntaxKind> NotEqualsExpression = [SyntaxKind.NotEqualsExpression];
@@ -10,7 +10,7 @@ public sealed class UseStringEmptyLength : DiagnosticAnalyzer
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
         id: Rule.Ids.EC92_UseStringEmptyLength,
-        title: "Use string.Length instead of comparison with empty string",
+        title: "Use Length to test empty strings",
         message: "Use string.Length instead of comparison with empty string",
         category: Rule.Categories.Usage,
         severity: DiagnosticSeverity.Warning,
