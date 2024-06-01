@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Formatting;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC92 fixer: Use Length to test empty strings.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseLengthToTestEmptyStringsFixer)), Shared]
