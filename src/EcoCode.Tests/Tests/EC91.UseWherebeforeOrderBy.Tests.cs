@@ -1,4 +1,7 @@
-﻿namespace EcoCode.Tests;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace EcoCode.Tests;
 
 [TestClass]
 public sealed class UseWhereBeforeOrderByTests

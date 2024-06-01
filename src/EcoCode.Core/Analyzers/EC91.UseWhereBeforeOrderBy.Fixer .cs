@@ -61,31 +61,12 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
         }
 
         var newWhereInvocation = whereInvocation
-            .WithExpression(whereMemberAccess.WithExpression(orderByInvocation.Expression))
-            .WithTriviaFrom(orderByInvocation);
+            .WithExpression(whereMemberAccess.WithExpression(orderByMemberAccess.Expression));
 
-        /*var newOrderByInvocation = orderByInvocation
-            .WithExpression(orderByMemberAccess.WithExpression(newWhereInvocation))
-            .WithTriviaFrom(whereInvocation);*/
+        var newOrderByInvocation = orderByInvocation.WithExpression(
+            orderByMemberAccess.WithExpression(newWhereInvocation));
 
-        var newRoot = root
-            .ReplaceNode(whereInvocation, newWhereInvocation);
-            // .ReplaceNode(orderByInvocation, newOrderByInvocation);
-
-        /*var newOrderByExpression = orderByMemberAccess.WithExpression(whereMemberAccess.Expression);
-        var newOrderByInvocation = orderByInvocation.WithExpression(newOrderByExpression);
-
-        var newWhereExpression = whereMemberAccess.WithExpression(orderByInvocation);
-        var newWhereInvocation = whereInvocation.WithExpression(newWhereExpression);*/
-
-        /*var newOrderByInvocation = orderByInvocation.WithTriviaFrom(whereInvocation);
-        var newWhereInvocation = whereInvocation.WithTriviaFrom(orderByInvocation);
-
-        var newRoot = root
-            .ReplaceNode(orderByInvocation, newWhereInvocation)
-            .ReplaceNode(whereInvocation, newOrderByInvocation);*/
-
-        return document.WithSyntaxRoot(newRoot);
+        return document.WithSyntaxRoot(root.ReplaceNode(whereInvocation, newOrderByInvocation));
     }
 
     private static async Task<Document> RefactorQuerySyntaxAsync(Document document, QueryExpressionSyntax query, CancellationToken token)

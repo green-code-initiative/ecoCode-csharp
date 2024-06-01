@@ -33,8 +33,13 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
     {
         var invocation = (InvocationExpressionSyntax)context.Node;
         if (invocation.Expression is MemberAccessExpressionSyntax { Name.Identifier.Text: "Where" } memberAccess &&
-            memberAccess.Expression is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax innerMemberAccess } &&
-            innerMemberAccess.Name.Identifier.Text is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending")
+            memberAccess.Expression is InvocationExpressionSyntax
+            {
+                Expression: MemberAccessExpressionSyntax
+                {
+                    Name.Identifier.Text: "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending"
+                }
+            })
         {
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, memberAccess.Name.GetLocation()));
         }
@@ -43,24 +48,10 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
     private static void AnalyzeQuerySyntax(SyntaxNodeAnalysisContext context)
     {
         var clauses = ((QueryExpressionSyntax)context.Node).Body.Clauses;
-        for (int i = 0; i < clauses.Count - 1; i++)
+        for (int i = 1; i < clauses.Count; i++) // Can never warn on the first clause
         {
-            if (clauses[i] is not OrderByClauseSyntax) continue;
-
-            for (int j = i + 1; j < clauses.Count; j++) // To handle multiple OrderBy followed by a Where
-            {
-                var nextClause = clauses[j];
-                if (nextClause is WhereClauseSyntax whereClause)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, whereClause.WhereKeyword.GetLocation()));
-                    return;
-                }
-                if (nextClause is not OrderByClauseSyntax)
-                {
-                    i = j; // Skip processed clauses
-                    break;
-                }
-            }
+            if (clauses[i] is WhereClauseSyntax whereClause && clauses[i - 1] is OrderByClauseSyntax)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, whereClause.WhereKeyword.GetLocation()));
         }
     }
 }
