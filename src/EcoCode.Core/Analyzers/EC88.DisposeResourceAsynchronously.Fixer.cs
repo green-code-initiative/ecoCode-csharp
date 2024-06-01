@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC88 fixer: Dispose resource asynchronously.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DisposeResourceAsynchronouslyFixer)), Shared]

@@ -1,10 +1,6 @@
-﻿using Microsoft.CodeAnalysis.Formatting;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿namespace EcoCode.Analyzers;
 
-namespace EcoCode.Analyzers;
-
-/// <summary>EC91 With LINQ use Where before Order by.</summary>
+/// <summary>EC91 fixer: Use Where before OrderBy.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseWhereBeforeOrderByFixer)), Shared]
 public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 {
@@ -18,8 +14,8 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        if (root is null) return;
+        if (await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
+            return;
 
         foreach (var diagnostic in context.Diagnostics)
         {
@@ -28,129 +24,83 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 
             foreach (var node in parent.AncestorsAndSelf())
             {
-                if (node is QueryExpressionSyntax queryExpression)
+                if (node is InvocationExpressionSyntax invocation)
                 {
                     context.RegisterCodeFix(
                         CodeAction.Create(
-                            title: "With LINQ move 'where' before 'orderby'",
-                            createChangedDocument: c => MoveWhereBeforeOrderByAsync(context.Document, queryExpression, c),
-                            equivalenceKey: "Use Where before Order by"),
+                            title: "Use Where before OrderBy",
+                            createChangedDocument: token => RefactorMethodSyntaxAsync(context.Document, invocation, token),
+                            equivalenceKey: "Use Where before OrderBy"),
                         diagnostic);
+                    break;
                 }
-                else if (node is InvocationExpressionSyntax invocationExpr)
+                if (node is QueryExpressionSyntax query)
                 {
                     context.RegisterCodeFix(
                         CodeAction.Create(
-                            title: "With LINQ move 'Where' before 'OrderBy'",
-                            createChangedDocument: c => MoveWhereBeforeOrderByWithObjectAsync(context.Document, invocationExpr, c),
-                            equivalenceKey: "Use Where before Order by"),
+                            title: "Use Where before OrderBy",
+                            createChangedDocument: token => RefactorQuerySyntaxAsync(context.Document, query, token),
+                            equivalenceKey: "Use Where before OrderBy"),
                         diagnostic);
+                    break;
                 }
             }
         }
     }
 
-    private static async Task<Document> MoveWhereBeforeOrderByAsync(Document document, QueryExpressionSyntax queryExpression, CancellationToken cancellationToken)
+    private static async Task<Document> RefactorMethodSyntaxAsync(Document document, InvocationExpressionSyntax whereInvocation, CancellationToken token)
     {
-        if (queryExpression.Body.Clauses.OfType<WhereClauseSyntax>().FirstOrDefault() is not { } whereClause ||
-            queryExpression.Body.Clauses.OfType<OrderByClauseSyntax>().FirstOrDefault() is not { } orderByClause)
+        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root ||
+            whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess)
         {
             return document;
         }
 
-        if (whereClause is null || orderByClause is null) return document;
-
-        int whereIndex = queryExpression.Body.Clauses.IndexOf(whereClause);
-        int orderByIndex = queryExpression.Body.Clauses.IndexOf(orderByClause);
-
-        if (orderByIndex < whereIndex && await document.GetSyntaxRootAsync(cancellationToken) is { } root)
+        var sortMethods = new List<InvocationExpressionSyntax>();
+        var currentInvocation = whereMemberAccess.Expression as InvocationExpressionSyntax;
+        while (currentInvocation?.Expression is MemberAccessExpressionSyntax memberAccess &&
+            memberAccess.Name.Identifier.Text is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending")
         {
-            var clauses = queryExpression.Body.Clauses.ToList();
-            clauses.RemoveAt(orderByIndex);
-            clauses.Insert(whereIndex, orderByClause);
-
-            var newClauses = SyntaxFactory.List(clauses);
-            var newQueryBody = queryExpression.Body.WithClauses(newClauses);
-            var newQueryExpression = queryExpression.WithBody(newQueryBody);
-
-            return document.WithSyntaxRoot(root.ReplaceNode(queryExpression, newQueryExpression));
+            sortMethods.Add(currentInvocation);
+            currentInvocation = memberAccess.Expression as InvocationExpressionSyntax;
         }
-        return document;
+        if (sortMethods.Count == 0) return document;
+
+        sortMethods.Reverse();
+
+        var newSortChain = whereInvocation.WithExpression(whereMemberAccess
+            .WithExpression(((MemberAccessExpressionSyntax)sortMethods[0].Expression).Expression));
+
+        foreach (var sortInvocation in sortMethods)
+            newSortChain = sortInvocation.WithExpression(((MemberAccessExpressionSyntax)sortInvocation.Expression).WithExpression(newSortChain));
+
+        return document.WithSyntaxRoot(root.ReplaceNode(whereInvocation, newSortChain));
     }
 
-    private static async Task<Document> MoveWhereBeforeOrderByWithObjectAsync(Document document, InvocationExpressionSyntax invocationExpr, CancellationToken cancellationToken)
+    private static async Task<Document> RefactorQuerySyntaxAsync(Document document, QueryExpressionSyntax query, CancellationToken token)
     {
-        var chain = new List<InvocationExpressionSyntax>();
-        var currentExpr = invocationExpr;
+        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root)
+            return document;
 
-        while (currentExpr != null)
+        var clauses = query.Body.Clauses;
+        for (int i = 0; i < clauses.Count - 1; i++)
         {
-            chain.Add(currentExpr);
-            var currentMemberAccess = currentExpr.Expression as MemberAccessExpressionSyntax;
-            currentExpr = currentMemberAccess?.Expression as InvocationExpressionSyntax;
-        }
+            if (clauses[i] is not OrderByClauseSyntax) continue;
 
-        chain.Reverse();
-
-        InvocationExpressionSyntax? whereInvocation = null;
-        InvocationExpressionSyntax? orderByInvocation = null;
-
-        foreach (var c in chain)
-        {
-            string methodName = ((MemberAccessExpressionSyntax)c.Expression).Name.Identifier.Text;
-            if (methodName is "Where")
-                whereInvocation = c;
-            else if (methodName is "OrderBy" or "OrderByDescending")
-                orderByInvocation = c;
-
-            if (whereInvocation is not null && orderByInvocation is not null)
-                break;
-        }
-
-        if (whereInvocation is not null && orderByInvocation is not null)
-        {
-            string textModified = Regex.Replace(whereInvocation.GetText().ToString(), @".OrderBy\s*\(.*?\)", "", RegexOptions.IgnoreCase);
-            textModified = Regex.Replace(textModified, @".OrderByDescending\s*\(.*?\)", "", RegexOptions.IgnoreCase);
-            var whereInvocationOnlyWhere = (InvocationExpressionSyntax)SyntaxFactory.ParseExpression(textModified);
-
-            int whereIndex = chain.IndexOf(whereInvocation);
-            int orderByIndex = chain.IndexOf(orderByInvocation);
-
-            if (whereIndex > orderByIndex)
+            for (int j = i + 1; j < clauses.Count; j++) // To handle multiple OrderBy followed by a Where
             {
-                var newChain = new List<InvocationExpressionSyntax>();
-                bool orderByAdded = false;
-
-                foreach (var expr in chain)
+                var nextClause = clauses[j];
+                if (nextClause is WhereClauseSyntax whereClause)
                 {
-                    if (expr == orderByInvocation && !orderByAdded)
-                        continue;
-
-                    if (expr == whereInvocation && !orderByAdded)
-                    {
-                        newChain.Add(whereInvocationOnlyWhere);
-                        newChain.Add(orderByInvocation);
-                        orderByAdded = true;
-                    }
-                    else
-                    {
-                        newChain.Add(expr);
-                    }
+                    var newClauses = clauses.ToList();
+                    newClauses.RemoveAt(j);
+                    newClauses.Insert(i, whereClause);
+                    return document.WithSyntaxRoot(root.ReplaceNode(query, query.WithBody(query.Body.WithClauses(SyntaxFactory.List(newClauses)))));
                 }
-
-                var newInvocationExpr = newChain[0];
-                for (int i = 1; i < newChain.Count; i++)
+                if (nextClause is not OrderByClauseSyntax)
                 {
-                    var memberAccess = (MemberAccessExpressionSyntax)newChain[i].Expression;
-                    newInvocationExpr = newChain[i].WithExpression(memberAccess.WithExpression(newInvocationExpr));
-                }
-
-                var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-                if (root is not null)
-                {
-                    return document.WithSyntaxRoot(root
-                        .ReplaceNode(invocationExpr, newInvocationExpr)
-                        .WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation));
+                    i = j; // Skip processed clauses
+                    break;
                 }
             }
         }

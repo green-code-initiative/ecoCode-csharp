@@ -1,7 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Formatting;
-using System.Diagnostics.CodeAnalysis;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC82 dixer: Variable can be made constant.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(VariableCanBeMadeConstantFixer)), Shared]

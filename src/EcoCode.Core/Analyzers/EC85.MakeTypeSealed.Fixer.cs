@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC85 fixer: Make type sealed.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MakeTypeSealedFixer)), Shared]

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC86 fixer : GC Collect should not be called.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(GCCollectShouldNotBeCalledFixer)), Shared]

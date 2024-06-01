@@ -1,23 +1,20 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿namespace EcoCode.Analyzers;
 
-namespace EcoCode.Analyzers;
-
-/// <summary>EC91: With LINQ use Where before Order by.</summary>
+/// <summary>EC91: Use Where before OrderBy.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
 {
-    private static readonly ImmutableArray<SyntaxKind> UsingStatementKinds = [SyntaxKind.UsingStatement];
-    private static readonly ImmutableArray<SyntaxKind> UsingDeclarationKinds = [SyntaxKind.LocalDeclarationStatement];
+    private static readonly ImmutableArray<SyntaxKind> InvocationExpressions = [SyntaxKind.InvocationExpression];
+    private static readonly ImmutableArray<SyntaxKind> QueryExpressions = [SyntaxKind.QueryExpression];
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
         id: Rule.Ids.EC91_UseWhereBeforeOrderBy,
-        title: "Use Where before Order by",
-        message: "With LINQ use Where before Order by",
+        title: "Use Where before OrderBy",
+        message: "Call OrderBy before Where in a LINQ method chain",
         category: Rule.Categories.Usage,
         severity: DiagnosticSeverity.Warning,
-        description: "Discrease the number of element to try.");
+        description: "Use the Where clause before the OrderBy clause to avoid sorting unnecessary elements.");
 
     /// <inheritdoc/>
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _supportedDiagnostics;
@@ -28,82 +25,33 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InvocationExpression);
-        context.RegisterSyntaxNodeAction(AnalyzeQueryExpression, SyntaxKind.QueryExpression);
+        context.RegisterSyntaxNodeAction(static context => AnalyzeMethodSyntax(context), InvocationExpressions);
+        context.RegisterSyntaxNodeAction(static context => AnalyzeQuerySyntax(context), QueryExpressions);
     }
 
-    private void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeMethodSyntax(SyntaxNodeAnalysisContext context)
     {
-        var invocationExpr = (InvocationExpressionSyntax)context.Node;
-        var memberAccessExpr = invocationExpr.Expression as MemberAccessExpressionSyntax;
-
-        if (memberAccessExpr == null)
-            return;
-
-        string methodName = memberAccessExpr.Name.Identifier.Text;
-        if (methodName != "Where")
-            return;
-
-        var currentExpr = invocationExpr;
-        bool orderByFound = false;
-
-        while (currentExpr != null)
+        var invocation = (InvocationExpressionSyntax)context.Node;
+        if (invocation.Expression is MemberAccessExpressionSyntax { Name.Identifier.Text: "Where" } memberAccess &&
+            memberAccess.Expression is InvocationExpressionSyntax
+            {
+                Expression: MemberAccessExpressionSyntax
+                {
+                    Name.Identifier.Text: "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending"
+                }
+            })
         {
-            var currentMemberAccess = currentExpr.Expression as MemberAccessExpressionSyntax;
-            if (currentMemberAccess == null)
-                break;
-
-            if (orderByFound && (currentMemberAccess.Name.Identifier.Text == "OrderBy" || currentMemberAccess.Name.Identifier.Text == "OrderByDescending"))
-            {
-                var diagnostic = Diagnostic.Create(Descriptor, memberAccessExpr.Name.GetLocation());
-                context.ReportDiagnostic(diagnostic);
-                return;
-            }
-            else if (currentMemberAccess.Name.Identifier.Text == "Where")
-            {
-                orderByFound = true;
-            }
-            currentExpr = currentMemberAccess.Expression as InvocationExpressionSyntax;
+            context.ReportDiagnostic(Diagnostic.Create(Descriptor, memberAccess.Name.GetLocation()));
         }
     }
 
-    private static void AnalyzeQueryExpression(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeQuerySyntax(SyntaxNodeAnalysisContext context)
     {
-        var queryExpression = (QueryExpressionSyntax)context.Node;
-
-        var whereClause = queryExpression.Body.Clauses.OfType<WhereClauseSyntax>().FirstOrDefault();
-        var orderByClause = queryExpression.Body.Clauses.OfType<OrderByClauseSyntax>().FirstOrDefault();
-
-        if (whereClause != null && orderByClause != null)
+        var clauses = ((QueryExpressionSyntax)context.Node).Body.Clauses;
+        for (int i = 1; i < clauses.Count; i++) // Can never warn on the first clause
         {
-            int whereIndex = queryExpression.Body.Clauses.IndexOf(whereClause);
-            int orderByIndex = queryExpression.Body.Clauses.IndexOf(orderByClause);
-
-            if (whereIndex > orderByIndex)
-            {
-                var diagnostic = Diagnostic.Create(Descriptor, orderByClause.GetLocation());
-                context.ReportDiagnostic(diagnostic);
-            }
-        }
-    }
-
-    private static IEnumerable<SimpleNameSyntax> GetMethodChain(MemberAccessExpressionSyntax memberAccess)
-    {
-        while (memberAccess != null)
-        {
-            if (memberAccess.Name is SimpleNameSyntax simpleName)
-            {
-                yield return simpleName;
-            }
-
-            if (memberAccess.Expression is MemberAccessExpressionSyntax innerMemberAccess)
-            {
-                memberAccess = innerMemberAccess;
-            }
-            else
-            {
-                yield break;
-            }
+            if (clauses[i] is WhereClauseSyntax whereClause && clauses[i - 1] is OrderByClauseSyntax)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, whereClause.WhereKeyword.GetLocation()));
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace EcoCode.Analyzers;
 
-/// <summary>EC92: Use string.Length instead of comparison with empty string.</summary>
+/// <summary>EC92: Use Length to test empty strings.</summary>
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class UseStringEmptyLength : DiagnosticAnalyzer
+public sealed class UseLengthToTestEmptyStrings : DiagnosticAnalyzer
 {
     private static readonly ImmutableArray<SyntaxKind> EqualsExpression = [SyntaxKind.EqualsExpression];
     private static readonly ImmutableArray<SyntaxKind> NotEqualsExpression = [SyntaxKind.NotEqualsExpression];
@@ -10,7 +10,7 @@ public sealed class UseStringEmptyLength : DiagnosticAnalyzer
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
         id: Rule.Ids.EC92_UseStringEmptyLength,
-        title: "Use string.Length instead of comparison with empty string",
+        title: "Use Length to test empty strings",
         message: "Use string.Length instead of comparison with empty string",
         category: Rule.Categories.Usage,
         severity: DiagnosticSeverity.Warning,
@@ -33,13 +33,11 @@ public sealed class UseStringEmptyLength : DiagnosticAnalyzer
     {
         var binaryExpression = (BinaryExpressionSyntax)context.Node;
         var (left, right) = (binaryExpression.Left, binaryExpression.Right);
-        if (IsStringLiteral(left, context.SemanticModel) && IsEmptyString(right) || IsStringLiteral(right, context.SemanticModel) && IsEmptyString(left))
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, binaryExpression.GetLocation()));
 
-        static bool IsStringLiteral(ExpressionSyntax expression, SemanticModel semanticModel) =>
-            semanticModel.GetTypeInfo(expression).Type?.SpecialType is SpecialType.System_String;
+        bool report = left.IsEmptyStringLiteral()
+            ? right.SpecialType(context.SemanticModel) is SpecialType.System_String
+            : right.IsEmptyStringLiteral() && left.SpecialType(context.SemanticModel) is SpecialType.System_String;
 
-        static bool IsEmptyString(ExpressionSyntax expression) =>
-            expression is LiteralExpressionSyntax { Token.ValueText.Length: 0 };
+        if (report) context.ReportDiagnostic(Diagnostic.Create(Descriptor, binaryExpression.GetLocation()));
     }
 }

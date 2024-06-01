@@ -3,7 +3,7 @@
 [TestClass]
 public sealed class UseStringEmptyLengthTests
 {
-    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseStringEmptyLength, UseStringLengthCodeFixProvider>;
+    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseLengthToTestEmptyStrings, UseLengthToTestEmptyStringsFixer>;
 
     [TestMethod]
     public Task EmptyCodeAsync() => VerifyAsync("");
