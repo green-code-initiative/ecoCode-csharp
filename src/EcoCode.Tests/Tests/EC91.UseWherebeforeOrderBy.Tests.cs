@@ -90,8 +90,8 @@ public sealed class UseWhereBeforeOrderByTests
             {
                 var items = new List<int>();
                 var query = items
-                    .[|OrderBy|](x => x)
-                    .Where(x => x > 10)
+                    .OrderBy(x => x)
+                    .[|Where|](x => x > 10)
                     .Select(x => x);
             }
         }
@@ -229,8 +229,8 @@ public sealed class UseWhereBeforeOrderByTests
             {
                 var items = new List<int>();
                 var query = from item in items
-                            [|orderby item|]
-                            where item > 10
+                            orderby item
+                            [|where|] item > 10
                             select item;
             }
         }
@@ -252,6 +252,61 @@ public sealed class UseWhereBeforeOrderByTests
         """).ConfigureAwait(false);
 
     [TestMethod]
+    public async Task WarnOnWrongMultipleOrderQueryAsync() => await VerifyAsync("""
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<(int A, int B)>();
+                var query = from item in items
+                            orderby item.A
+                            orderby item.B
+                            [|where|] item.A > 10
+                            select item;
+            }
+        }
+        """, """
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<(int A, int B)>();
+                var query = from item in items
+                            where item.A > 10
+                            orderby item.A
+                            orderby item.B
+                            select item;
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontWarnOnDisjointedOrderQueryAsync() => await VerifyAsync("""
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<int>();
+                var query = from item in items
+                            orderby item
+                            select item
+                            into item
+                            where item > 0
+                            select item;
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
     public async Task WarnOnWrongOrderDescendingQueryAsync() => await VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
@@ -262,8 +317,8 @@ public sealed class UseWhereBeforeOrderByTests
             {
                 var items = new List<int>();
                 var query = from item in items
-                            [|orderby item descending|]
-                            where item > 10
+                            orderby item descending
+                            [|where|] item > 10
                             select item;
             }
         }
@@ -279,6 +334,61 @@ public sealed class UseWhereBeforeOrderByTests
                 var query = from item in items
                             where item > 10
                             orderby item descending
+                            select item;
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontWarnOnDisjointedOrderDescendingQueryAsync() => await VerifyAsync("""
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<int>();
+                var query = from item in items
+                            orderby item descending
+                            select item
+                            into item
+                            where item > 0
+                            select item;
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task WarnOnWrongMultipleOrderDescendingQueryAsync() => await VerifyAsync("""
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<(int A, int B)>();
+                var query = from item in items
+                            orderby item.A descending
+                            orderby item.B descending
+                            [|where|] item.A > 10
+                            select item;
+            }
+        }
+        """, """
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<(int A, int B)>();
+                var query = from item in items
+                            where item.A > 10
+                            orderby item.A descending
+                            orderby item.B descending
                             select item;
             }
         }
