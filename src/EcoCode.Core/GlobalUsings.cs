@@ -12,5 +12,6 @@ global using Microsoft.CodeAnalysis.Simplification;
 global using System.Collections.Generic;
 global using System.Collections.Immutable;
 global using System.Composition;
+global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;

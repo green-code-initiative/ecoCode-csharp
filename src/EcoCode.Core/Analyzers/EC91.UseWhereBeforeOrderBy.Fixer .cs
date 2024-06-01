@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC91 fixer: Use Where before OrderBy.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(UseWhereBeforeOrderByFixer)), Shared]
@@ -53,20 +51,30 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
     private static async Task<Document> RefactorMethodSyntaxAsync(Document document, InvocationExpressionSyntax whereInvocation, CancellationToken token)
     {
         if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root ||
-            whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess ||
-            whereMemberAccess.Expression is not InvocationExpressionSyntax orderByInvocation ||
-            orderByInvocation.Expression is not MemberAccessExpressionSyntax orderByMemberAccess)
+            whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess)
         {
             return document;
         }
 
-        var newWhereInvocation = whereInvocation
-            .WithExpression(whereMemberAccess.WithExpression(orderByMemberAccess.Expression));
+        var sortMethods = new List<InvocationExpressionSyntax>();
+        var currentInvocation = whereMemberAccess.Expression as InvocationExpressionSyntax;
+        while (currentInvocation?.Expression is MemberAccessExpressionSyntax memberAccess &&
+            memberAccess.Name.Identifier.Text is "OrderBy" or "OrderByDescending" or "ThenBy" or "ThenByDescending")
+        {
+            sortMethods.Add(currentInvocation);
+            currentInvocation = memberAccess.Expression as InvocationExpressionSyntax;
+        }
+        if (sortMethods.Count == 0) return document;
 
-        var newOrderByInvocation = orderByInvocation.WithExpression(
-            orderByMemberAccess.WithExpression(newWhereInvocation));
+        sortMethods.Reverse();
 
-        return document.WithSyntaxRoot(root.ReplaceNode(whereInvocation, newOrderByInvocation));
+        var newSortChain = whereInvocation.WithExpression(whereMemberAccess
+            .WithExpression(((MemberAccessExpressionSyntax)sortMethods[0].Expression).Expression));
+
+        foreach (var sortInvocation in sortMethods)
+            newSortChain = sortInvocation.WithExpression(((MemberAccessExpressionSyntax)sortInvocation.Expression).WithExpression(newSortChain));
+
+        return document.WithSyntaxRoot(root.ReplaceNode(whereInvocation, newSortChain));
     }
 
     private static async Task<Document> RefactorQuerySyntaxAsync(Document document, QueryExpressionSyntax query, CancellationToken token)

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public sealed class UseWhereBeforeOrderByTests
@@ -92,7 +89,8 @@ public sealed class UseWhereBeforeOrderByTests
             public static void Run()
             {
                 var items = new List<int>();
-                var query = items
+                var query1 = items.OrderBy(x => x).[|Where|](x => x > 10).Select(x => x);
+                var query2 = items
                     .OrderBy(x => x)
                     .[|Where|](x => x > 10)
                     .Select(x => x);
@@ -107,7 +105,8 @@ public sealed class UseWhereBeforeOrderByTests
             public static void Run()
             {
                 var items = new List<int>();
-                var query = items
+                var query1 = items.Where(x => x > 10).OrderBy(x => x).Select(x => x);
+                var query2 = items
                     .Where(x => x > 10)
                     .OrderBy(x => x)
                     .Select(x => x);
@@ -125,9 +124,10 @@ public sealed class UseWhereBeforeOrderByTests
             public static void Run()
             {
                 var items = new List<int>();
-                var query = items
-                    .[|OrderByDescending|](x => x)
-                    .Where(x => x > 10)
+                var query1 = items.OrderByDescending(x => x).[|Where|](x => x > 10).Select(x => x);
+                var query2 = items
+                    .OrderByDescending(x => x)
+                    .[|Where|](x => x > 10)
                     .Select(x => x);
             }
         }
@@ -135,14 +135,54 @@ public sealed class UseWhereBeforeOrderByTests
         using System.Linq;
         using System.Collections.Generic;
         
-        public class TestClass
+        public static class Test
         {
-            public void TestMethod()
+            public static void Run()
             {
                 var items = new List<int>();
-                var query = items
+                var query1 = items.Where(x => x > 10).OrderByDescending(x => x).Select(x => x);
+                var query2 = items
                     .Where(x => x > 10)
                     .OrderByDescending(x => x)
+                    .Select(x => x);
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task WarnOnWrongMultipleOrderMethodAsync() => await VerifyAsync("""
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<int>();
+                var query1 = items.OrderBy(x => x).ThenByDescending(x => x).ThenBy(x => x).[|Where|](x => x > 10).Select(x => x);
+                var query2 = items
+                    .OrderBy(x => x)
+                    .ThenByDescending(x => x)
+                    .ThenBy(x => x)
+                    .[|Where|](x => x > 10)
+                    .Select(x => x);
+            }
+        }
+        """, """
+        using System.Linq;
+        using System.Collections.Generic;
+        
+        public static class Test
+        {
+            public static void Run()
+            {
+                var items = new List<int>();
+                var query1 = items.Where(x => x > 10).OrderBy(x => x).ThenByDescending(x => x).ThenBy(x => x).Select(x => x);
+                var query2 = items
+                    .Where(x => x > 10)
+                    .OrderBy(x => x)
+                    .ThenByDescending(x => x)
+                    .ThenBy(x => x)
                     .Select(x => x);
             }
         }
