@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Formatting;
-
-namespace EcoCode.Analyzers;
+﻿namespace EcoCode.Analyzers;
 
 /// <summary>EC82 dixer: Variable can be made constant.</summary>
 [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(VariableCanBeMadeConstantFixer)), Shared]
@@ -11,6 +9,7 @@ public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [VariableCanBeMadeConstant.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

@@ -3,6 +3,18 @@
 /// <summary>Extensions methods for <see cref="SyntaxNode"/>.</summary>
 public static class SyntaxNodeExtensions
 {
+    /// <summary>Returns the special type of a given node.</summary>
+    /// <param name="node">The node.</param>
+    /// <param name="semanticModel">The semantic model.</param>
+    /// <returns>The special type of the node, default if not applicable.</returns>
+    public static SpecialType SpecialType(this SyntaxNode node, SemanticModel semanticModel) =>
+        semanticModel.GetTypeInfo(node).Type?.SpecialType ?? default;
+
+    /// <summary>Returns whether the node is the empty string literal (ie. "").</summary>
+    /// <param name="node">The node.</param>
+    /// <returns>True if the node is the empty string literal, false otherwise.</returns>
+    public static bool IsEmptyStringLiteral(this SyntaxNode node) => node is LiteralExpressionSyntax { Token.ValueText.Length: 0 };
+
     /// <summary>Returns whether the node is inside a loop.</summary>
     /// <param name="node">The node.</param>
     /// <returns>True if the node is inside a loop, false otherwise.</returns>

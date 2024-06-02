@@ -9,6 +9,7 @@ public sealed class ReplaceEnumToStringWithNameOfFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [ReplaceEnumToStringWithNameOf.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>

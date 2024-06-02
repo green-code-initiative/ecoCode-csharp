@@ -9,6 +9,7 @@ public sealed class MakeTypeSealedFixer : CodeFixProvider
     private static readonly ImmutableArray<string> _fixableDiagnosticIds = [MakeTypeSealed.Descriptor.Id];
 
     /// <inheritdoc/>
+    [ExcludeFromCodeCoverage]
     public override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
     /// <inheritdoc/>
