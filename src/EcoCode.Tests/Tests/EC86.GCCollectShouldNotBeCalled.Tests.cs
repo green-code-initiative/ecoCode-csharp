@@ -3,9 +3,7 @@
 [TestClass]
 public class GCCollectShouldNotBeCalledTests
 {
-    private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<
-        GCCollectShouldNotBeCalled,
-        GCCollectShouldNotBeCalledFixer>;
+    private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<GCCollectShouldNotBeCalled>;
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);

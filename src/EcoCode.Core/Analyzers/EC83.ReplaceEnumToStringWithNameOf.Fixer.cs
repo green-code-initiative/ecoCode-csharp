@@ -17,15 +17,14 @@ public sealed class ReplaceEnumToStringWithNameOfFixer : CodeFixProvider
     {
         if (context.Diagnostics.Length == 0) return;
 
-        var document = context.Document;
-        var root = await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is null) return;
 
         var nodeToFix = root.FindNode(context.Span, getInnermostNodeForTie: true);
         context.RegisterCodeFix(
             CodeAction.Create(
                 title: "Use nameof",
-                createChangedDocument: token => RefactorAsync(document, nodeToFix, token),
+                createChangedDocument: token => RefactorAsync(context.Document, nodeToFix, token),
                 equivalenceKey: "Use nameof"),
             context.Diagnostics);
     }

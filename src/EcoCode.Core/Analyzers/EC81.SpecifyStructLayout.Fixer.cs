@@ -26,21 +26,21 @@ public sealed class SpecifyStructLayoutFixer : CodeFixProvider
         context.RegisterCodeFix(
             CodeAction.Create(
                 "Add Auto StructLayout attribute",
-                ct => RefactorAsync(context.Document, nodeToFix, LayoutKind.Auto, ct),
+                token => RefactorAsync(context.Document, nodeToFix, LayoutKind.Auto, token),
                 equivalenceKey: "Add Auto StructLayout attribute"),
             context.Diagnostics);
 
         context.RegisterCodeFix(
             CodeAction.Create(
                 "Add Sequential StructLayout attribute",
-                ct => RefactorAsync(context.Document, nodeToFix, LayoutKind.Sequential, ct),
+                token => RefactorAsync(context.Document, nodeToFix, LayoutKind.Sequential, token),
                 equivalenceKey: "Add Sequential StructLayout attribute"),
             context.Diagnostics);
     }
 
-    private static async Task<Document> RefactorAsync(Document document, SyntaxNode nodeToFix, LayoutKind layoutKind, CancellationToken cancellationToken)
+    private static async Task<Document> RefactorAsync(Document document, SyntaxNode nodeToFix, LayoutKind layoutKind, CancellationToken token)
     {
-        var editor = await DocumentEditor.CreateAsync(document, cancellationToken).ConfigureAwait(false);
+        var editor = await DocumentEditor.CreateAsync(document, token).ConfigureAwait(false);
 
         var structLayoutAttributeType = editor.SemanticModel.Compilation.GetBestTypeByMetadataName("System.Runtime.InteropServices.StructLayoutAttribute");
         if (structLayoutAttributeType is null) return document;

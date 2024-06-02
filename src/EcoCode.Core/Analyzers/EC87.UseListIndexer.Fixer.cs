@@ -53,28 +53,20 @@ public sealed class UseListIndexerFixer : CodeFixProvider
         }
     }
 
-    private static async Task<Document> UpdateDocument(Document document, InvocationExpressionSyntax invocation, ExpressionSyntax indexExpr, CancellationToken token)
-    {
-        if (await document.GetSyntaxRootAsync(token) is not SyntaxNode root)
-            return document;
-
-        var elementAccess = SyntaxFactory.ElementAccessExpression(
+    private static Task<Document> UpdateDocument(Document document, InvocationExpressionSyntax invocation, ExpressionSyntax indexExpr) =>
+        document.WithUpdatedRoot(invocation, SyntaxFactory.ElementAccessExpression(
             ((MemberAccessExpressionSyntax)invocation.Expression).Expression,
             SyntaxFactory.BracketedArgumentList(
                 SyntaxFactory.SingletonSeparatedList(
-                    SyntaxFactory.Argument(indexExpr))));
-
-        return document.WithSyntaxRoot(root.ReplaceNode(invocation, elementAccess));
-    }
+                    SyntaxFactory.Argument(indexExpr)))));
 
     private static Task<Document> RefactorFirstAsync(Document document, InvocationExpressionSyntax invocationExpr, CancellationToken token) =>
-        UpdateDocument(document, invocationExpr, SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0)), token);
+        UpdateDocument(document, invocationExpr, SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0)));
 
     private static Task<Document> RefactorLastWithIndexAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token) =>
         UpdateDocument(document, invocation,
             SyntaxFactory.PrefixUnaryExpression(SyntaxKind.IndexExpression,
-                SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(1))),
-            token);
+                SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(1))));
 
     private static async Task<Document> RefactorLastWithCountOrLengthAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token)
     {
@@ -97,7 +89,7 @@ public sealed class UseListIndexerFixer : CodeFixProvider
 
         var indexExpression = SyntaxFactory.BinaryExpression(SyntaxKind.SubtractExpression, property, oneLiteral);
 
-        return await UpdateDocument(document, invocation, indexExpression, token);
+        return await UpdateDocument(document, invocation, indexExpression).ConfigureAwait(false);
 
         static ISymbol? GetCountOrLength(ITypeSymbol type, int position, SemanticModel semanticModel)
         {
@@ -121,5 +113,5 @@ public sealed class UseListIndexerFixer : CodeFixProvider
     }
 
     private static Task<Document> RefactorElementAtAsync(Document document, InvocationExpressionSyntax invocation, CancellationToken token) =>
-        UpdateDocument(document, invocation, invocation.ArgumentList.Arguments[0].Expression, token);
+        UpdateDocument(document, invocation, invocation.ArgumentList.Arguments[0].Expression);
 }

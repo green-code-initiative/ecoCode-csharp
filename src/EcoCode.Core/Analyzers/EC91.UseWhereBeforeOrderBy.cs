@@ -11,7 +11,7 @@ public sealed class UseWhereBeforeOrderBy : DiagnosticAnalyzer
     public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
         id: Rule.Ids.EC91_UseWhereBeforeOrderBy,
         title: "Use Where before OrderBy",
-        message: "Call OrderBy before Where in a LINQ method chain",
+        message: "Call Where before OrderBy in a LINQ method chain",
         category: Rule.Categories.Usage,
         severity: DiagnosticSeverity.Warning,
         description: "Use the Where clause before the OrderBy clause to avoid sorting unnecessary elements.");
