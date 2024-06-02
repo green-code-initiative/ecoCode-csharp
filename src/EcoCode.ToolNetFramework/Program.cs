@@ -12,7 +12,8 @@ namespace EcoCode.ToolNetFramework;
 
 internal class Program
 {
-    private const string SolutionPath = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project\ecoCode-csharp-test-project.sln";
+    private const string SolutionDir = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project";
+    private const string SolutionPath = @$"{SolutionDir}\ecoCode-csharp-test-project.sln";
 
     public static async Task Main(string[] args)
     {
@@ -78,8 +79,10 @@ internal class Program
             return;
         }
 
+        var report = new HtmlReport();
         foreach (var diagnostic in await compilation!.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync())
-            Console.WriteLine(diagnostic.ToString());
+            report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
+        report.Generate(Path.Combine(SolutionDir, "report.html"));
 
         Console.WriteLine($"Analysis complete for project {project.Name}");
     }
