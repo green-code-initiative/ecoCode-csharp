@@ -25,6 +25,7 @@ internal static class Rule
         public const string EC89_DoNotPassMutableStructAsRefReadonly = "EC89";
         public const string EC91_UseWhereBeforeOrderBy = "EC91";
         public const string EC92_UseStringEmptyLength = "EC92";
+        public const string EC93_ReturnTaskDirectly = "EC93";
     }
 
     /// <summary>Creates a diagnostic descriptor.</summary>
