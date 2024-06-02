@@ -15,13 +15,14 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        if (root is null) return;
+        var document = context.Document;
+        if (await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
+            return;
 
         foreach (var diagnostic in context.Diagnostics)
         {
-            var parent = root.FindToken(diagnostic.Location.SourceSpan.Start).Parent;
-            if (parent is null) continue;
+            if (root.FindToken(diagnostic.Location.SourceSpan.Start).Parent is not { } parent)
+                continue;
 
             foreach (var node in parent.AncestorsAndSelf())
             {
@@ -31,14 +32,12 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
                         CodeAction.Create(
                             title: "Dispose resource asynchronously",
                             createChangedDocument: async token =>
-                                await context.Document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
-                                ? context.Document.WithSyntaxRoot(root.ReplaceNode(usingStatement, usingStatement
-                                    .WithoutLeadingTrivia() // Needs to be removed then re-added to keep everything ordered
-                                    .WithoutTrailingTrivia() // Needs to be removed then re-added to keep everything ordered
+                                await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
+                                ? document.WithSyntaxRoot(root.ReplaceNode(usingStatement, usingStatement
+                                    .WithoutTrivia() // Needs to be removed then re-added to keep everything ordered
                                     .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
-                                    .WithLeadingTrivia(usingStatement.GetLeadingTrivia())
-                                    .WithTrailingTrivia(usingStatement.GetTrailingTrivia())))
-                                : context.Document,
+                                    .WithTriviaFrom(usingStatement)))
+                                : document,
                             equivalenceKey: "Dispose resource asynchronously"),
                         diagnostic);
                     break;
@@ -49,14 +48,12 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
                         CodeAction.Create(
                             title: "Dispose resource asynchronously",
                             createChangedDocument: async token =>
-                                await context.Document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
-                                ? context.Document.WithSyntaxRoot(root.ReplaceNode(usingDeclaration, usingDeclaration
-                                    .WithoutLeadingTrivia() // Needs to be removed then re-added to keep everything ordered
-                                    .WithoutTrailingTrivia() // Needs to be removed then re-added to keep everything ordered
+                                await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
+                                ? document.WithSyntaxRoot(root.ReplaceNode(usingDeclaration, usingDeclaration
+                                    .WithoutTrivia() // Needs to be removed then re-added to keep everything ordered
                                     .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
-                                    .WithLeadingTrivia(usingDeclaration.GetLeadingTrivia())
-                                    .WithTrailingTrivia(usingDeclaration.GetTrailingTrivia())))
-                                : context.Document,
+                                    .WithTriviaFrom(usingDeclaration)))
+                                : document,
                             equivalenceKey: "Dispose resource asynchronously"),
                         diagnostic);
                     break;

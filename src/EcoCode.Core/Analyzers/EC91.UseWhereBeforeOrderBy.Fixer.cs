@@ -50,8 +50,8 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
 
     private static async Task<Document> RefactorMethodSyntaxAsync(Document document, InvocationExpressionSyntax whereInvocation, CancellationToken token)
     {
-        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root ||
-            whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess)
+        if (whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess ||
+            await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root)
         {
             return document;
         }
@@ -104,7 +104,6 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                 }
             }
         }
-
         return document;
     }
 }
