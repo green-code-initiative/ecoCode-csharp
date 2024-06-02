@@ -14,8 +14,7 @@ public sealed class UseLengthToTestEmptyStringsFixer : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var document = context.Document;
-        if (await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
+        if (await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
             return;
 
         foreach (var diagnostic in context.Diagnostics)
@@ -26,21 +25,16 @@ public sealed class UseLengthToTestEmptyStringsFixer : CodeFixProvider
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: "Use string.Length instead of comparison with empty string",
-                    createChangedDocument: token => ReplaceWithLengthCheckAsync(document, binaryExpr, token),
+                    createChangedDocument: _ => ReplaceWithLengthCheckAsync(context.Document, binaryExpr),
                     equivalenceKey: "Use string.Length instead of comparison with empty string"),
                 diagnostic);
         }
     }
 
-    private static async Task<Document> ReplaceWithLengthCheckAsync(Document document, BinaryExpressionSyntax binaryExpr, CancellationToken token)
+    private static async Task<Document> ReplaceWithLengthCheckAsync(Document document, BinaryExpressionSyntax binaryExpr)
     {
-        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root)
-            return document;
-
         var (left, right) = (binaryExpr.Left, binaryExpr.Right);
         var stringExpr = left.IsEmptyStringLiteral() ? right : right.IsEmptyStringLiteral() ? left : null;
-        // return stringExpr is null ? document : document.WithSyntaxRoot(root.ReplaceNode(binaryExpr, UpdateBinaryExpression(binaryExpr, stringExpr)));
-
         return stringExpr is null ? document : await document.WithUpdatedRoot(binaryExpr, UpdateBinaryExpression(binaryExpr, stringExpr));
 
         static BinaryExpressionSyntax UpdateBinaryExpression(BinaryExpressionSyntax binaryExpr, ExpressionSyntax stringExpr) =>

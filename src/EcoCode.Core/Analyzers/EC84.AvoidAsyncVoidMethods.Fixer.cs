@@ -17,8 +17,7 @@ public sealed class AvoidAsyncVoidMethodsFixer : CodeFixProvider
     {
         if (context.Diagnostics.Length == 0) return;
 
-        var document = context.Document;
-        var root = await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is null) return;
 
         foreach (var diagnostic in context.Diagnostics)
@@ -32,7 +31,7 @@ public sealed class AvoidAsyncVoidMethodsFixer : CodeFixProvider
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         title: "Convert to async Task",
-                        createChangedDocument: token => RefactorAsync(document, declaration, token),
+                        createChangedDocument: _ => RefactorAsync(context.Document, declaration),
                         equivalenceKey: "Convert to async Task"),
                     diagnostic);
                 break;
@@ -40,19 +39,14 @@ public sealed class AvoidAsyncVoidMethodsFixer : CodeFixProvider
         }
     }
 
-    private static async Task<Document> RefactorAsync(Document document, MethodDeclarationSyntax methodDecl, CancellationToken token)
-    {
-        // Note : it may seem a good idea to add the System.Thread.Tasks using directive if it isn't present yet
-        // However it isn't properly doable because :
-        // - It could be added as a global using in a different file, but Roslyn doesn't give easy access to those
-        // - The user could have enabled the ImplicitUsings option, which makes the using directives both global and invisible to the analyzer
-        // So as a result, we simply don't handle it
-
-        var root = await document.GetSyntaxRootAsync(token).ConfigureAwait(false);
-        return root is null ? document : document.WithSyntaxRoot(
-            root.ReplaceNode(methodDecl, methodDecl.WithReturnType(
-                SyntaxFactory.IdentifierName("Task") // Change the return type of the method to Task
-                .WithLeadingTrivia(methodDecl.ReturnType.GetLeadingTrivia())
-                .WithTrailingTrivia(methodDecl.ReturnType.GetTrailingTrivia()))));
-    }
+    // Note : it may seem a good idea to add the System.Thread.Tasks using directive if it isn't present yet
+    // However it isn't properly doable because :
+    // - It could be added as a global using in a different file, but Roslyn doesn't give easy access to those
+    // - The user could have enabled the ImplicitUsings option, which makes the using directives both global and invisible to the analyzer
+    // So as a result, we simply don't handle it
+    private static Task<Document> RefactorAsync(Document document, MethodDeclarationSyntax methodDecl) =>
+        document.WithUpdatedRoot(methodDecl, methodDecl.WithReturnType(
+            SyntaxFactory.IdentifierName("Task") // Change the return type of the method to Task
+            .WithLeadingTrivia(methodDecl.ReturnType.GetLeadingTrivia())
+            .WithTrailingTrivia(methodDecl.ReturnType.GetTrailingTrivia())));
 }

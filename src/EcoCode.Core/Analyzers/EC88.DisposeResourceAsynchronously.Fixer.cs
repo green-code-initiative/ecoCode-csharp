@@ -15,8 +15,7 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var document = context.Document;
-        if (await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
+        if (await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
             return;
 
         foreach (var diagnostic in context.Diagnostics)
@@ -31,13 +30,10 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             title: "Dispose resource asynchronously",
-                            createChangedDocument: async token =>
-                                await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
-                                ? document.WithSyntaxRoot(root.ReplaceNode(usingStatement, usingStatement
-                                    .WithoutTrivia() // Needs to be removed then re-added to keep everything ordered
-                                    .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
-                                    .WithTriviaFrom(usingStatement)))
-                                : document,
+                            createChangedDocument: _ => context.Document.WithUpdatedRoot(usingStatement, usingStatement
+                                .WithoutTrivia() // Needs to be removed then re-added to keep everything ordered
+                                .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
+                                .WithTriviaFrom(usingStatement)),
                             equivalenceKey: "Dispose resource asynchronously"),
                         diagnostic);
                     break;
@@ -47,13 +43,10 @@ public sealed class DisposeResourceAsynchronouslyFixer : CodeFixProvider
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             title: "Dispose resource asynchronously",
-                            createChangedDocument: async token =>
-                                await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is { } root
-                                ? document.WithSyntaxRoot(root.ReplaceNode(usingDeclaration, usingDeclaration
-                                    .WithoutTrivia() // Needs to be removed then re-added to keep everything ordered
-                                    .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
-                                    .WithTriviaFrom(usingDeclaration)))
-                                : document,
+                            createChangedDocument: _ => context.Document.WithUpdatedRoot(usingDeclaration, usingDeclaration
+                                .WithoutTrivia() // Needs to be removed then re-added to keep everything ordered
+                                .WithAwaitKeyword(SyntaxFactory.Token(SyntaxKind.AwaitKeyword))
+                                .WithTriviaFrom(usingDeclaration)),
                             equivalenceKey: "Dispose resource asynchronously"),
                         diagnostic);
                     break;

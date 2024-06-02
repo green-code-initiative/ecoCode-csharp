@@ -17,8 +17,7 @@ public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
     {
         if (context.Diagnostics.Length == 0) return;
 
-        var document = context.Document;
-        var root = await document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is null) return;
 
         foreach (var diagnostic in context.Diagnostics)
@@ -32,7 +31,7 @@ public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         title: "Make variable constant",
-                        createChangedDocument: token => RefactorAsync(document, declaration, token),
+                        createChangedDocument: token => RefactorAsync(context.Document, declaration, token),
                         equivalenceKey: "Make variable constant"),
                     diagnostic);
                 break;
@@ -64,9 +63,7 @@ public sealed class VariableCanBeMadeConstantFixer : CodeFixProvider
             .WithDeclaration(varDecl)
             .WithAdditionalAnnotations(Formatter.Annotation);
 
-        // Replace the old local declaration with the new local declaration.
-        var oldRoot = await document.GetSyntaxRootAsync(token).ConfigureAwait(false);
-        return oldRoot is null ? document : document.WithSyntaxRoot(oldRoot.ReplaceNode(localDecl, formattedLocal));
+        return await document.WithUpdatedRoot(localDecl, formattedLocal).ConfigureAwait(false);
 
         static async Task<VariableDeclarationSyntax> GetDeclarationForVarAsync(Document document, VariableDeclarationSyntax varDecl, TypeSyntax varTypeName, CancellationToken token)
         {

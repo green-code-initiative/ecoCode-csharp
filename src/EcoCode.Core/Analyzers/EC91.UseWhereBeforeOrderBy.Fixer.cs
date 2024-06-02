@@ -29,7 +29,7 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             title: "Use Where before OrderBy",
-                            createChangedDocument: token => RefactorMethodSyntaxAsync(context.Document, invocation, token),
+                            createChangedDocument: _ => RefactorMethodSyntaxAsync(context.Document, invocation),
                             equivalenceKey: "Use Where before OrderBy"),
                         diagnostic);
                     break;
@@ -39,7 +39,7 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                     context.RegisterCodeFix(
                         CodeAction.Create(
                             title: "Use Where before OrderBy",
-                            createChangedDocument: token => RefactorQuerySyntaxAsync(context.Document, query, token),
+                            createChangedDocument: _ => RefactorQuerySyntaxAsync(context.Document, query),
                             equivalenceKey: "Use Where before OrderBy"),
                         diagnostic);
                     break;
@@ -48,13 +48,10 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
         }
     }
 
-    private static async Task<Document> RefactorMethodSyntaxAsync(Document document, InvocationExpressionSyntax whereInvocation, CancellationToken token)
+    private static async Task<Document> RefactorMethodSyntaxAsync(Document document, InvocationExpressionSyntax whereInvocation)
     {
-        if (whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess ||
-            await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root)
-        {
+        if (whereInvocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess)
             return document;
-        }
 
         var sortMethods = new List<InvocationExpressionSyntax>();
         var currentInvocation = whereMemberAccess.Expression as InvocationExpressionSyntax;
@@ -74,14 +71,11 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
         foreach (var sortInvocation in sortMethods)
             newSortChain = sortInvocation.WithExpression(((MemberAccessExpressionSyntax)sortInvocation.Expression).WithExpression(newSortChain));
 
-        return document.WithSyntaxRoot(root.ReplaceNode(whereInvocation, newSortChain));
+        return await document.WithUpdatedRoot(whereInvocation, newSortChain).ConfigureAwait(false);
     }
 
-    private static async Task<Document> RefactorQuerySyntaxAsync(Document document, QueryExpressionSyntax query, CancellationToken token)
+    private static async Task<Document> RefactorQuerySyntaxAsync(Document document, QueryExpressionSyntax query)
     {
-        if (await document.GetSyntaxRootAsync(token).ConfigureAwait(false) is not { } root)
-            return document;
-
         var clauses = query.Body.Clauses;
         for (int i = 0; i < clauses.Count - 1; i++)
         {
@@ -95,7 +89,7 @@ public sealed class UseWhereBeforeOrderByFixer : CodeFixProvider
                     var newClauses = clauses.ToList();
                     newClauses.RemoveAt(j);
                     newClauses.Insert(i, whereClause);
-                    return document.WithSyntaxRoot(root.ReplaceNode(query, query.WithBody(query.Body.WithClauses(SyntaxFactory.List(newClauses)))));
+                    return await document.WithUpdatedRoot(query, query.WithBody(query.Body.WithClauses(SyntaxFactory.List(newClauses)))).ConfigureAwait(false);
                 }
                 if (nextClause is not OrderByClauseSyntax)
                 {

@@ -13,9 +13,8 @@ public static class DocumentExtensions
     /// <param name="document">The document.</param>
     /// <param name="oldNode">The old syntax node to replace.</param>
     /// <param name="newNode">The new syntax node to use.</param>
-    public static async Task<Document> WithUpdatedRoot(this Document document, SyntaxNode oldNode, SyntaxNode newNode)
-    {
-        var root = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-        return document.WithSyntaxRoot(root!.ReplaceNode(oldNode, newNode));
-    }
+    public static async Task<Document> WithUpdatedRoot(this Document document, SyntaxNode oldNode, SyntaxNode newNode) =>
+        await document.GetSyntaxRootAsync().ConfigureAwait(false) is { } root
+        ? document.WithSyntaxRoot(root.ReplaceNode(oldNode, newNode))
+        : document;
 }
