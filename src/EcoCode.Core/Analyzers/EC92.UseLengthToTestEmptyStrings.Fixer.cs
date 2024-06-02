@@ -14,34 +14,33 @@ public sealed class UseLengthToTestEmptyStringsFixer : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-        if (root is null) return;
+        if (await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false) is not { } root)
+            return;
 
-        var diagnostic = context.Diagnostics[0];
+        foreach (var diagnostic in context.Diagnostics)
+        {
+            if (root.FindNode(diagnostic.Location.SourceSpan) is not BinaryExpressionSyntax binaryExpr)
+                continue;
 
-        context.RegisterCodeFix(
-            CodeAction.Create(
-                title: "Use string.Length instead of comparison with empty string",
-                createChangedDocument: token => ReplaceWithLengthCheckAsync(context.Document, root.FindNode(diagnostic.Location.SourceSpan), token),
-                equivalenceKey: "Use string.Length instead of comparison with empty string"),
-            diagnostic);
+            context.RegisterCodeFix(
+                CodeAction.Create(
+                    title: "Use string.Length instead of comparison with empty string",
+                    createChangedDocument: _ => ReplaceWithLengthCheckAsync(context.Document, binaryExpr),
+                    equivalenceKey: "Use string.Length instead of comparison with empty string"),
+                diagnostic);
+        }
     }
 
-    private static async Task<Document> ReplaceWithLengthCheckAsync(Document document, SyntaxNode node, CancellationToken cancellationToken)
+    private static async Task<Document> ReplaceWithLengthCheckAsync(Document document, BinaryExpressionSyntax binaryExpr)
     {
-        if (node is BinaryExpressionSyntax binaryExpression)
-        {
-            var (left, right) = (binaryExpression.Left, binaryExpression.Right);
-            var stringExpr = left.IsEmptyStringLiteral() ? right : right.IsEmptyStringLiteral() ? left : null;
-            if (stringExpr is not null && await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false) is { } root)
-            {
-                return document.WithSyntaxRoot(root.ReplaceNode(binaryExpression, SyntaxFactory.BinaryExpression(
-                    binaryExpression.Kind(),
-                    SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, stringExpr, SyntaxFactory.IdentifierName("Length")),
-                    SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0)))
-                    .WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation)));
-            }
-        }
-        return document;
+        var (left, right) = (binaryExpr.Left, binaryExpr.Right);
+        var stringExpr = left.IsEmptyStringLiteral() ? right : right.IsEmptyStringLiteral() ? left : null;
+        return stringExpr is null ? document : await document.WithUpdatedRoot(binaryExpr, UpdateBinaryExpression(binaryExpr, stringExpr));
+
+        static BinaryExpressionSyntax UpdateBinaryExpression(BinaryExpressionSyntax binaryExpr, ExpressionSyntax stringExpr) =>
+            SyntaxFactory.BinaryExpression(binaryExpr.Kind(),
+                SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, stringExpr, SyntaxFactory.IdentifierName("Length")),
+                SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0)))
+                .WithAdditionalAnnotations(Formatter.Annotation, Simplifier.Annotation);
     }
 }
