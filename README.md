@@ -52,9 +52,9 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 
 This plugin customizes the severity of certain Roslyn rules.
 
-|Id|Description|Old Severity|New Severity|Enabled|Code fix|
-|--|-----------|:----------:|:----------:|:-----:|:------:|
-|[CA1825](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1825)|Avoid zero-length array allocations|ℹ️|⚠️|✔️|✔️|
+|Id|Description|Old Severity|New Severity|Code fix|
+|--|-----------|:----------:|:----------:|:------:|
+|[CA1825](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1825)|Avoid zero-length array allocations|ℹ️|⚠️|✔️|
 
 🤝 Contribution
 ---------------
