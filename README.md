@@ -55,7 +55,7 @@ This plugin customizes the severity of certain Roslyn rules.
 |Id|Description|Old Severity|New Severity|Code fix|
 |--|-----------|:----------:|:----------:|:------:|
 |[CA1825](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1825)|Avoid zero-length array allocations|ℹ️|⚠️|✔️|
-|[CA1827](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1827)|Do not use Count()/LongCount() when Any() can be used|ℹ️|⚠️|✔️|✔️|
+|[CA1827](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1827)|Do not use Count()/LongCount() when Any() can be used|ℹ️|⚠️|✔️|
 
 🤝 Contribution
 ---------------
