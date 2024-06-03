@@ -36,7 +36,7 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC69](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC69/csharp/EC69.asciidoc)|Don’t call loop invariant functions in loop conditions|⚠️|❌|
 |[EC72](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC72/csharp/EC72.asciidoc)|Don’t execute SQL queries in loops|⚠️|❌|
 |[EC75](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC75/csharp/EC75.asciidoc)|Don’t concatenate `strings` in loops|⚠️|❌|
-|[EC81](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC81/csharp/EC81.asciidoc)|Specify struct layouts|⚠️|✔️|
+|[EC81](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC81/csharp/EC81.asciidoc)|Specify `struct` layouts|⚠️|✔️|
 |[EC82](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC82/csharp/EC82.asciidoc)|Variable can be made constant|ℹ️|✔️|
 |[EC83](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC83/csharp/EC83.asciidoc)|Replace Enum `ToString()` with `nameof`|⚠️|✔️|
 |[EC84](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC84/csharp/EC84.asciidoc)|Avoid `async void` methods|⚠️|✔️|
@@ -45,7 +45,8 @@ Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 
 |[EC87](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC87/csharp/EC87.asciidoc)|Use collection indexer|⚠️|✔️|
 |[EC88](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC88/csharp/EC88.asciidoc)|Dispose resource asynchronously|⚠️|✔️|
 |[EC91](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC91/csharp/EC91.asciidoc)|Use `Where` before `OrderBy`|⚠️|✔️|
-|[EC92](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC92/csharp/EC92.asciidoc)|Use `Length` to test empty strings|⚠️|✔️|
+|[EC92](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC92/csharp/EC92.asciidoc)|Use `Length` to test empty `strings`|⚠️|✔️|
+|[EC93](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC93/csharp/EC93.asciidoc)|Return `Task` directly|ℹ️|✔️|
 
 🌿 Roslyn Rules
 -------------------
