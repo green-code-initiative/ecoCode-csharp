@@ -34,7 +34,7 @@ public sealed class ReturnTaskDirectly : DiagnosticAnalyzer
         if (asyncIndex == -1) return;
 
         if (methodDeclaration.ExpressionBody is { Expression: AwaitExpressionSyntax } ||
-            methodDeclaration.Body?.Statements.SingleOrDefault() is ExpressionStatementSyntax { Expression: AwaitExpressionSyntax })
+            methodDeclaration.Body?.Statements.SingleOrDefaultNoThrow() is ExpressionStatementSyntax { Expression: AwaitExpressionSyntax })
         {
             context.ReportDiagnostic(Diagnostic.Create(Descriptor, methodDeclaration.Modifiers[asyncIndex].GetLocation()));
         }

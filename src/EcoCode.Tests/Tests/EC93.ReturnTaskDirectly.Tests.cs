@@ -9,52 +9,156 @@ public sealed class ReturnTaskDirectlyTests
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
-    public Task DontWarnOnMissingUsingsAsync() => VerifyAsync("""
-        using System;
+    public Task DontWarnWhenReturningTask1Async() => VerifyAsync("""
         using System.Threading.Tasks;
         public static class Test
         {
-            public static [|async|] Task Run1()
-            {
-                await Task.Delay(0);
-            }
-
-            public static [|async|] Task Run2()
-            {
-                // Test
-                await Task.Delay(0);
-            }
+            public static Task Run() => Task.Delay(0);
         }
         """);
 
     [TestMethod]
-    public Task DontWarnOnMissingUsings3Async() => VerifyAsync("""
-        using System;
+    public Task DontWarnWhenReturningTask2Async() => VerifyAsync("""
         using System.Threading.Tasks;
         public static class Test
         {
-            public static [|async|] Task Run1() => await Task.Delay(0);
-            public static [|async|] Task Run2() =>
-                // Test
-                await Task.Delay(0);
-        }
-        """);
-
-    [TestMethod]
-    public Task DontWarnOnMissingUsings2Async() => VerifyAsync("""
-        using System;
-        using System.Threading.Tasks;
-        public static class Test
-        {
-            public static Task Run1() => Task.Delay(0);
-            public static Task Run2()
+            public static Task Run()
             {
                 return Task.Delay(0);
             }
-            public static async Task Run3()
+        }
+        """);
+
+    [TestMethod]
+    public Task DontWarnWhenReturningTask3Async() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task Run()
             {
-                Console.WriteLine();
+                System.Console.WriteLine();
+                return Task.Delay(0);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task DontWarnWithMultipleStatements1Async() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static async Task Run()
+            {
+                System.Console.WriteLine();
                 await Task.Delay(0);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task DontWarnWithMultipleStatements2Async() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static async Task Run()
+            {
+                await Task.Delay(0);
+                await Task.Delay(0);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitExpressionAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task Run() => await Task.Delay(0);
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task Run() => Task.Delay(0);
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitWithTrivia1ExpressionAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task Run() => await Task.Delay(0); // Comment
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task Run() => Task.Delay(0); // Comment
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitWithTrivia2ExpressionAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task Run() =>
+                // Comment
+                await Task.Delay(0);
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task Run() =>
+                // Comment
+                Task.Delay(0);
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitBodyAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task Run()
+            {
+                await Task.Delay(0);
+            }
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task Run()
+            {
+                return Task.Delay(0);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitBodyWithTriviaAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task Run()
+            {
+                // Comment 0
+                await Task.Delay(0); // Comment 1
+                // Comment 2
+            }
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task Run()
+            {
+                // Comment 0
+                return Task.Delay(0); // Comment 1
+                // Comment 2
             }
         }
         """);
