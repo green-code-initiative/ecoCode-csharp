@@ -118,7 +118,7 @@ public sealed class ReturnTaskDirectlyTests
         """);
 
     [TestMethod]
-    public Task WarnOnSingleAwaitBodyAsync() => VerifyAsync("""
+    public Task WarnOnSingleAwaitBody1Async() => VerifyAsync("""
         using System.Threading.Tasks;
         public static class Test
         {
@@ -139,7 +139,28 @@ public sealed class ReturnTaskDirectlyTests
         """);
 
     [TestMethod]
-    public Task WarnOnSingleAwaitBodyWithTriviaAsync() => VerifyAsync("""
+    public Task WarnOnSingleAwaitBody2Async() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task<int> Run()
+            {
+                return await Task.FromResult(0);
+            }
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task<int> Run()
+            {
+                return Task.FromResult(0);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitBodyWithTrivia1Async() => VerifyAsync("""
         using System.Threading.Tasks;
         public static class Test
         {
@@ -159,6 +180,52 @@ public sealed class ReturnTaskDirectlyTests
                 // Comment 0
                 return Task.Delay(0); // Comment 1
                 // Comment 2
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task WarnOnSingleAwaitBodyWithTrivia2Async() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static [|async|] Task<int> Run()
+            {
+                // Comment 0
+                return await Task.FromResult(0); // Comment 1
+                // Comment 2
+            }
+        }
+        """, """
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static Task<int> Run()
+            {
+                // Comment 0
+                return Task.FromResult(0); // Comment 1
+                // Comment 2
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task DontWarnOnNestedAwaitExpressionAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static async Task Run() => await Task.Delay(await Task.FromResult(0));
+        }
+        """);
+
+    [TestMethod]
+    public Task DontWarnOnNestedAwaitBodyAsync() => VerifyAsync("""
+        using System.Threading.Tasks;
+        public static class Test
+        {
+            public static async Task Run()
+            {
+                await Task.Delay(await Task.FromResult(0));
             }
         }
         """);

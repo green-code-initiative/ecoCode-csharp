@@ -29,14 +29,26 @@ public sealed class ReturnTaskDirectly : DiagnosticAnalyzer
 
     private static void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
     {
+        // Check if the method is async
         var methodDeclaration = (MethodDeclarationSyntax)context.Node;
         int asyncIndex = methodDeclaration.Modifiers.IndexOf(SyntaxKind.AsyncKeyword);
         if (asyncIndex == -1) return;
 
-        if (methodDeclaration.ExpressionBody is { Expression: AwaitExpressionSyntax } ||
-            methodDeclaration.Body?.Statements.SingleOrDefaultNoThrow() is ExpressionStatementSyntax { Expression: AwaitExpressionSyntax })
+        // Check if the method contains a single await statement
+        var awaitExpr = methodDeclaration.ExpressionBody?.Expression as AwaitExpressionSyntax;
+        if (awaitExpr is null && methodDeclaration.Body?.Statements.SingleOrDefaultNoThrow() is { } statement)
         {
-            context.ReportDiagnostic(Diagnostic.Create(Descriptor, methodDeclaration.Modifiers[asyncIndex].GetLocation()));
+            if (statement is ExpressionStatementSyntax expressionStmt) // Is it an 'await' statement
+                awaitExpr = expressionStmt.Expression as AwaitExpressionSyntax;
+            else if (statement is ReturnStatementSyntax returnStmt) // Is it a 'return await' statement
+                awaitExpr = returnStmt.Expression as AwaitExpressionSyntax;
         }
+        if (awaitExpr is null) return;
+
+        // Check if the await statement has any nested await statement (like parameters)
+        foreach (var node in awaitExpr.DescendantNodes())
+            if (node is AwaitExpressionSyntax) return;
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, methodDeclaration.Modifiers[asyncIndex].GetLocation()));
     }
 }
