@@ -9,6 +9,7 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
         SyntaxKind.ForEachStatement,
         SyntaxKind.WhileStatement,
         SyntaxKind.DoStatement];
+    private static readonly ImmutableArray<OperationKind> Invocations = [OperationKind.Invocation];
 
     /// <summary>The diagnostic descriptor.</summary>
     public static DiagnosticDescriptor Descriptor { get; } = Rule.CreateDescriptor(
@@ -29,6 +30,7 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
         context.RegisterSyntaxNodeAction(static context => AnalyzeLoopNode(context), SyntaxKinds);
+        context.RegisterOperationAction(static context => AnalyzeForEachInvocation(context), Invocations);
     }
 
     private static void AnalyzeLoopNode(SyntaxNodeAnalysisContext context)
@@ -45,6 +47,75 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, assignment.Parent!.GetLocation()));
             }
+        }
+    }
+
+    private static void AnalyzeForEachInvocation(OperationAnalysisContext context)
+    {
+        if (context.Operation is not IInvocationOperation { TargetMethod.Name: "ForEach" } operation ||
+            GetDelegateArgument(operation, context.Compilation)?.Value is not IDelegateCreationOperation { Target: { } body })
+        {
+            return;
+        }
+
+        foreach (var op in body.Descendants())
+        {
+            if (op is not IBinaryOperation binOp ||
+                binOp.OperatorKind is not BinaryOperatorKind.Add ||
+                binOp.Type?.SpecialType is not SpecialType.System_String)
+            {
+                continue;
+            }
+
+            // Check the recipient of the concatenation result
+            var parentOperation = binOp.Parent;
+            while (parentOperation is not null && parentOperation.Kind is not OperationKind.SimpleAssignment)
+                parentOperation = parentOperation.Parent;
+
+            if (parentOperation is not ISimpleAssignmentOperation assignmentOperation) continue;
+
+            bool shouldReport = false;
+            if (assignmentOperation.Target is IFieldReferenceOperation or IPropertyReferenceOperation)
+            {
+                shouldReport = true;
+            }
+            else if (assignmentOperation.Target is ILocalReferenceOperation localReference)
+            {
+                var declaringSyntax = localReference.Local.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
+                if (declaringSyntax is not null && !body.Syntax.Span.Contains(declaringSyntax.Span))
+                    shouldReport = true;
+            }
+            else if (assignmentOperation.Target is IParameterReferenceOperation parameterReference)
+            {
+                var parameterSymbol = parameterReference.Parameter;
+                if (!SymbolEqualityComparer.Default.Equals(parameterSymbol.ContainingSymbol, body))
+                    shouldReport = true;
+            }
+
+            if (shouldReport)
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, binOp.Syntax.GetLocation()));
+        }
+
+        static IArgumentOperation? GetDelegateArgument(IInvocationOperation operation, Compilation compilation)
+        {
+            var symbol = operation.TargetMethod.ContainingType.OriginalDefinition;
+            if (operation.TargetMethod.ContainingType.IsStatic) // Parallel.ForEach<T>, the delegate to analyze is always called 'body'
+            {
+                if (SymbolEqualityComparer.Default.Equals(symbol, compilation.GetTypeByMetadataName("System.Threading.Tasks.Parallel")))
+                    return operation.Arguments.FirstOrDefault(a => a.Parameter?.Name == "body");
+            }
+            else if (operation.TargetMethod.IsStatic) // Array : static void ForEach<T>(T[] array, Action<T> action)
+            {
+                if (SymbolEqualityComparer.Default.Equals(symbol, compilation.GetTypeByMetadataName("System.Array")))
+                    return operation.Arguments[1];
+            }
+            else if ( // List<T> and ImmutableList<T> : void ForEach(Action<T> action)
+                SymbolEqualityComparer.Default.Equals(symbol, compilation.GetTypeByMetadataName("System.Collections.Generic.List`1")) ||
+                SymbolEqualityComparer.Default.Equals(symbol, compilation.GetTypeByMetadataName("System.Collections.Immutable.ImmutableList`1")))
+            {
+                return operation.Arguments[0];
+            }
+            return null;
         }
     }
 }
