@@ -30,7 +30,7 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
         context.RegisterSyntaxNodeAction(static context => AnalyzeLoopNode(context), SyntaxKinds);
-        context.RegisterOperationAction(static context => AnalyzeForEachInvocation(context), Invocations);
+        context.RegisterOperationAction(static context => AnalyzeForEach(context), Invocations);
     }
 
     private static void AnalyzeLoopNode(SyntaxNodeAnalysisContext context)
@@ -45,12 +45,12 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
                 symbol.IsVariableOfType(SpecialType.System_String) &&
                 symbol.IsDeclaredOutsideLoop(context.Node))
             {
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, assignment.Parent!.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, assignment.GetLocation()));
             }
         }
     }
 
-    private static void AnalyzeForEachInvocation(OperationAnalysisContext context)
+    private static void AnalyzeForEach(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation { TargetMethod.Name: "ForEach" } operation ||
             GetDelegateArgument(operation, context.Compilation)?.Value is not IDelegateCreationOperation { Target: { } body })
@@ -60,40 +60,34 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
 
         foreach (var op in body.Descendants())
         {
-            if (op is not IBinaryOperation binOp ||
-                binOp.OperatorKind is not BinaryOperatorKind.Add ||
-                binOp.Type?.SpecialType is not SpecialType.System_String)
-            {
-                continue;
-            }
+            var target = default(IOperation);
 
-            // Check the recipient of the concatenation result
-            var parentOperation = binOp.Parent;
-            while (parentOperation is not null && parentOperation.Kind is not OperationKind.SimpleAssignment)
-                parentOperation = parentOperation.Parent;
+            if (op is ICompoundAssignmentOperation compoundAssignment && compoundAssignment.OperatorKind is BinaryOperatorKind.Add)
+                target = compoundAssignment.Target;
 
-            if (parentOperation is not ISimpleAssignmentOperation assignmentOperation) continue;
+            if (target?.Type?.SpecialType is not SpecialType.System_String) continue;
 
             bool shouldReport = false;
-            if (assignmentOperation.Target is IFieldReferenceOperation or IPropertyReferenceOperation)
+
+            if (target is IFieldReferenceOperation or IPropertyReferenceOperation)
             {
                 shouldReport = true;
             }
-            else if (assignmentOperation.Target is ILocalReferenceOperation localReference)
+            else if (target is ILocalReferenceOperation localReference)
             {
                 var declaringSyntax = localReference.Local.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
                 if (declaringSyntax is not null && !body.Syntax.Span.Contains(declaringSyntax.Span))
                     shouldReport = true;
             }
-            else if (assignmentOperation.Target is IParameterReferenceOperation parameterReference)
+            else if (target is IParameterReferenceOperation parameterReference)
             {
                 var parameterSymbol = parameterReference.Parameter;
-                if (!SymbolEqualityComparer.Default.Equals(parameterSymbol.ContainingSymbol, body))
+                if (!SymbolEqualityComparer.Default.Equals(parameterSymbol.ContainingSymbol, body as ISymbol))
                     shouldReport = true;
             }
 
             if (shouldReport)
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, binOp.Syntax.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Descriptor, op.Syntax.GetLocation()));
         }
 
         static IArgumentOperation? GetDelegateArgument(IInvocationOperation operation, Compilation compilation)
