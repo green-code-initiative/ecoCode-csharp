@@ -37,13 +37,23 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
     {
         foreach (var loopStatement in context.Node.GetLoopStatements())
         {
-            if (loopStatement is ExpressionStatementSyntax expressionStatement &&
-                expressionStatement.Expression is AssignmentExpressionSyntax assignment &&
-                assignment.IsKind(SyntaxKind.AddAssignmentExpression) &&
-                assignment.Left is IdentifierNameSyntax identifierName &&
-                context.SemanticModel.GetSymbolInfo(identifierName).Symbol is ISymbol symbol &&
-                symbol.IsVariableOfType(SpecialType.System_String) &&
-                symbol.IsDeclaredOutsideLoop(context.Node))
+            if (loopStatement is not ExpressionStatementSyntax { Expression: AssignmentExpressionSyntax assignment } ||
+                assignment.Left is not IdentifierNameSyntax identifierName ||
+                context.SemanticModel.GetSymbolInfo(identifierName).Symbol is not ISymbol symbol ||
+                !symbol.IsVariableOfType(SpecialType.System_String))
+            {
+                continue;
+            }
+
+            // AddAssignmentExpression corresponds to : a += b. We know we can warn at this point
+            // SimpleAssignmentExpression corresponds to : a = b. In this case, check that the right term
+            // is an addition and that the assigned symbol is the left operand (ie. a = a + b, but not a = b + a)
+            if ((assignment.IsKind(SyntaxKind.AddAssignmentExpression) ||
+                 assignment.IsKind(SyntaxKind.SimpleAssignmentExpression) &&
+                 assignment.Right is BinaryExpressionSyntax binExpr &&
+                 binExpr.IsKind(SyntaxKind.AddExpression) &&
+                 SymbolEqualityComparer.Default.Equals(symbol, context.SemanticModel.GetSymbolInfo(binExpr.Left).Symbol)) &&
+                 symbol.IsDeclaredOutsideLoop(context.Node)) // Test last, as it can be the most expensive
             {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, assignment.GetLocation()));
             }
@@ -64,6 +74,9 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
 
             if (op is ICompoundAssignmentOperation compoundAssignment && compoundAssignment.OperatorKind is BinaryOperatorKind.Add)
                 target = compoundAssignment.Target;
+
+            else if (op is ISimpleAssignmentOperation simpleAssign)
+                target = simpleAssign.Target;
 
             if (target?.Type?.SpecialType is not SpecialType.System_String) continue;
 
