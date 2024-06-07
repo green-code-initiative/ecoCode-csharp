@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public sealed class DontConcatenateStringsInLoopsTests
@@ -9,8 +7,6 @@ public sealed class DontConcatenateStringsInLoopsTests
 
     [TestMethod]
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
-
-    #region Regular loops
 
     private const string WarningCode = """
 
@@ -22,6 +18,8 @@ public sealed class DontConcatenateStringsInLoopsTests
             s = si + si;
         }
         """;
+
+    #region Regular loops
 
     [TestMethod]
     public async Task DontConcatenateStringsInLoopsParameterWithAllLoopsAsync() => await VerifyAsync($$"""
@@ -106,13 +104,17 @@ public sealed class DontConcatenateStringsInLoopsTests
         {
             void Run()
             {
+                string s = string.Empty;
+                for (int i = 0; i < 10; i++){{WarningCode}}
+
                 for (int i = 0; i < 10; i++)
                 {
-                    string s = string.Empty;
-                    s += i;
-                    s = s + i.ToString();
-                    s = i.ToString();
-                    s = i.ToString() + s;
+                    string si = i.ToString();
+                    string s2 = string.Empty;
+                    s2 += si;
+                    s2 = s2 + si;
+                    s2 = si + s2;
+                    s2 = si + si;
                 }
             }
         }
@@ -123,105 +125,115 @@ public sealed class DontConcatenateStringsInLoopsTests
     #region ForEach methods
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachAsync() => await VerifyAsync("""
+    public async Task DontConcatenateStringsInForEachParameterAsync() => await VerifyAsync($$"""
         using System.Collections.Generic;
         public class Test
         {
-            private string s1 = string.Empty;
-            private static string s2 = string.Empty;
-
-            public void Run(string s0)
+            public void Run(List<int> list, string s)
             {
-                string s3 = string.Empty;
-                var list = new List<int>();
-                list.ForEach(i =>
-                {
-                    s0 = i.ToString();
-                    [|s0 += i|];
-
-                    s1 = i.ToString();
-                    [|s1 += i|];
-
-                    s2 = i.ToString();
-                    [|s2 += i|];
-
-                    s3 = i.ToString();
-                    [|s3 += i|];
-
-                    string s4 = string.Empty;
-                    s4 = i.ToString();
-                    s4 += i;
-                });
+                list.ForEach(i =>{{WarningCode}});
+                list.ForEach(i => [|s += i.ToString()|]);
+                list.ForEach(i => [|s = s + i.ToString()|]);
+                list.ForEach(i => [|s = i.ToString() + s|]);
+                list.ForEach(i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEach1Async() => await VerifyAsync("""
-        using System.Collections.Generic;
-        class Test
-        {
-            void Run(string s)
-            {
-                var list = new List<int>();
-                list.ForEach(_ =>
-                {
-                    [|s = s + 'A'|];
-                });
-            }
-        }
-        """).ConfigureAwait(false);
-
-    [TestMethod]
-    public async Task DontConcatenateStringsInForEach2Async() => await VerifyAsync("""
-        using System.Collections.Generic;
-        class Test
-        {
-            void Run(string s)
-            {
-                var list = new List<int>();
-                list.ForEach(_ => [|s += 'A'|]);
-            }
-        }
-        """).ConfigureAwait(false);
-
-    public static void Run11()
-    {
-        string s = string.Empty;
-        var list = new List<int>();
-        list.ForEach(i =>
-        {
-            s += i;
-            s = s + 'A';
-        });
-    }
-
-    [TestMethod]
-    public async Task DontConcatenateStringsInForEachXXAsync() => await VerifyAsync("""
+    public async Task DontConcatenateStringsInForEachFieldAsync() => await VerifyAsync($$"""
         using System.Collections.Generic;
         public class Test
         {
-            public void Run(string s)
+            private string s = string.Empty;
+            public void Run(List<int> list)
             {
-                var list = new List<int>();
-                list.ForEach(i =>
-                {
-                    s = i.ToString();
-                    [|s += i|];
-                });
+                list.ForEach(i =>{{WarningCode}});
+                list.ForEach(i => [|s += i.ToString()|]);
+                list.ForEach(i => [|s = s + i.ToString()|]);
+                list.ForEach(i => [|s = i.ToString() + s|]);
+                list.ForEach(i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
-    // Cas 1 : lambda
-    // 1.1 : body with no parameter
-    // 1.2 : body with a single parameter without parenthesis
-    // 1.3 : body with parenthesis
-    // 2.1 : expression body with no parameter
-    // 2.2 : expression body with a single parameter without parenthesis
-    // 2.3 : expression body with parenthesis
+    [TestMethod]
+    public async Task DontConcatenateStringsInForEachPropertyAsync() => await VerifyAsync($$"""
+        using System.Collections.Generic;
+        public class Test
+        {
+            private string s { get; set; } = string.Empty;
+            public void Run(List<int> list)
+            {
+                list.ForEach(i =>{{WarningCode}});
+                list.ForEach(i => [|s += i.ToString()|]);
+                list.ForEach(i => [|s = s + i.ToString()|]);
+                list.ForEach(i => [|s = i.ToString() + s|]);
+                list.ForEach(i => s = i.ToString() + i.ToString());
+            }
+        }
+        """).ConfigureAwait(false);
 
-    // Cas 2 : direct function call
+    [TestMethod]
+    public async Task DontConcatenateStringsInForEachStaticFieldAsync() => await VerifyAsync($$"""
+        using System.Collections.Generic;
+        public class Test
+        {
+            private static string s = string.Empty;
+            public void Run(List<int> list)
+            {
+                list.ForEach(i =>{{WarningCode}});
+                list.ForEach(i => [|s += i.ToString()|]);
+                list.ForEach(i => [|s = s + i.ToString()|]);
+                list.ForEach(i => [|s = i.ToString() + s|]);
+                list.ForEach(i => s = i.ToString() + i.ToString());
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontConcatenateStringsInForEachStaticPropertyAsync() => await VerifyAsync($$"""
+        using System.Collections.Generic;
+        public class Test
+        {
+            private static string s { get; set; } = string.Empty;
+            public void Run(List<int> list)
+            {
+                list.ForEach(i =>{{WarningCode}});
+                list.ForEach(i => [|s += i.ToString()|]);
+                list.ForEach(i => [|s = s + i.ToString()|]);
+                list.ForEach(i => [|s = i.ToString() + s|]);
+                list.ForEach(i => s = i.ToString() + i.ToString());
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontConcatenateStringsInForEachLocalVariableAsync() => await VerifyAsync($$"""
+        using System.Collections.Generic;
+        public class Test
+        {
+            public void Run(List<int> list)
+            {
+                string s = string.Empty;
+                list.ForEach(i =>{{WarningCode}});
+                list.ForEach(i => [|s += i.ToString()|]);
+                list.ForEach(i => [|s = s + i.ToString()|]);
+                list.ForEach(i => [|s = i.ToString() + s|]);
+                list.ForEach(i => s = i.ToString() + i.ToString());
+
+                list.ForEach(i =>
+                {
+                    string si = i.ToString();
+                    string s2 = string.Empty;
+                    s2 += si;
+                    s2 = s2 + si;
+                    s2 = si + s2;
+                    s2 = si + si;
+                });
+            }
+        }
+        """).ConfigureAwait(false);
 
     #endregion
 }

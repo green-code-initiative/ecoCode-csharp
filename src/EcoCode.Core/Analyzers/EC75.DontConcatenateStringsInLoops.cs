@@ -63,7 +63,7 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
     private static void AnalyzeForEach(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation { TargetMethod.Name: "ForEach" } operation ||
-            GetDelegateArgument(operation, context.Compilation)?.Value is not IDelegateCreationOperation { Target: { } body })
+            GetBodyDelegateOperation(operation, context.Compilation)?.Value is not IDelegateCreationOperation { Target: { } body })
         {
             return;
         }
@@ -93,7 +93,7 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
             }
         }
 
-        static IArgumentOperation? GetDelegateArgument(IInvocationOperation operation, Compilation compilation)
+        static IArgumentOperation? GetBodyDelegateOperation(IInvocationOperation operation, Compilation compilation)
         {
             var symbol = operation.TargetMethod.ContainingType.OriginalDefinition;
             if (operation.TargetMethod.ContainingType.IsStatic) // Parallel.ForEach<T>, the delegate to analyze is always called 'body'
