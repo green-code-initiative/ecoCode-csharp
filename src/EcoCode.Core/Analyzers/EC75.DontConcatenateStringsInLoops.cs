@@ -40,23 +40,23 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
             if (loopStatement is not ExpressionStatementSyntax { Expression: AssignmentExpressionSyntax assignment } ||
                 assignment.Left is not IdentifierNameSyntax identifierName ||
                 context.SemanticModel.GetSymbolInfo(identifierName).Symbol is not ISymbol symbol ||
-                !symbol.IsVariableOfType(SpecialType.System_String))
+                !symbol.IsVariableOfType(SpecialType.System_String)) // The assigned symbol must be a string
             {
                 continue;
             }
 
             // AddAssignmentExpression corresponds to : a += b. We know we can warn at this point
-            // SimpleAssignmentExpression corresponds to : a = b. In this case, check that the right term
-            // is an addition and that the assigned symbol is the left operand (ie. a = a + b, but not a = b + a)
-            if ((assignment.IsKind(SyntaxKind.AddAssignmentExpression) ||
-                 assignment.IsKind(SyntaxKind.SimpleAssignmentExpression) &&
-                 assignment.Right is BinaryExpressionSyntax binExpr &&
-                 binExpr.IsKind(SyntaxKind.AddExpression) &&
-                 SymbolEqualityComparer.Default.Equals(symbol, context.SemanticModel.GetSymbolInfo(binExpr.Left).Symbol)) &&
-                 symbol.IsDeclaredOutsideLoop(context.Node)) // Test last, as it can be the most expensive
-            {
+            // SimpleAssignmentExpression corresponds to : a = b. In this case, check that
+            // the right term is an addition and the assigned symbol is one of the operands
+            bool report = assignment.IsKind(SyntaxKind.AddAssignmentExpression) ||
+                assignment.IsKind(SyntaxKind.SimpleAssignmentExpression) &&
+                assignment.Right is BinaryExpressionSyntax binExpr &&
+                binExpr.IsKind(SyntaxKind.AddExpression) &&
+                (SymbolEqualityComparer.Default.Equals(symbol, context.SemanticModel.GetSymbolInfo(binExpr.Left).Symbol) ||
+                 SymbolEqualityComparer.Default.Equals(symbol, context.SemanticModel.GetSymbolInfo(binExpr.Right).Symbol));
+
+            if (report && symbol.IsDeclaredOutsideLoop(context.Node)) // Check IsDeclaredOutsideLoop last as it requires more work
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, assignment.GetLocation()));
-            }
         }
     }
 
@@ -71,36 +71,26 @@ public sealed class DontConcatenateStringsInLoops : DiagnosticAnalyzer
         foreach (var op in body.Descendants())
         {
             var target = default(IOperation);
-
-            if (op is ICompoundAssignmentOperation compoundAssignment && compoundAssignment.OperatorKind is BinaryOperatorKind.Add)
-                target = compoundAssignment.Target;
-
-            else if (op is ISimpleAssignmentOperation simpleAssign)
+            if (op is ICompoundAssignmentOperation compoundAssign) // a += b
+            {
+                if (compoundAssign.OperatorKind is BinaryOperatorKind.Add && compoundAssign.Target.Type?.SpecialType is SpecialType.System_String)
+                    target = compoundAssign.Target;
+            }
+            else if (op is ISimpleAssignmentOperation simpleAssign && // a = b
+                simpleAssign.Target.Type?.SpecialType is SpecialType.System_String &&
+                simpleAssign.Value is IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } binOp &&
+                simpleAssign.MatchesAnyOperand(binOp.LeftOperand, binOp.RightOperand))
+            {
                 target = simpleAssign.Target;
-
-            if (target?.Type?.SpecialType is not SpecialType.System_String) continue;
-
-            bool shouldReport = false;
-
-            if (target is IFieldReferenceOperation or IPropertyReferenceOperation)
-            {
-                shouldReport = true;
             }
-            else if (target is ILocalReferenceOperation localReference)
-            {
-                var declaringSyntax = localReference.Local.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax();
-                if (declaringSyntax is not null && !body.Syntax.Span.Contains(declaringSyntax.Span))
-                    shouldReport = true;
-            }
-            else if (target is IParameterReferenceOperation parameterReference)
-            {
-                var parameterSymbol = parameterReference.Parameter;
-                if (!SymbolEqualityComparer.Default.Equals(parameterSymbol.ContainingSymbol, body as ISymbol))
-                    shouldReport = true;
-            }
+            if (target is null) continue;
 
-            if (shouldReport)
+            if (target is not ILocalReferenceOperation localRef ||
+                localRef.Local.DeclaringSyntaxReferences.FirstOrDefault()?.GetSyntax() is { } declaringSyntax &&
+                !body.Syntax.Span.Contains(declaringSyntax.Span)) // Local variable is a capture, declared outside of the method body
+            {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, op.Syntax.GetLocation()));
+            }
         }
 
         static IArgumentOperation? GetDelegateArgument(IInvocationOperation operation, Compilation compilation)

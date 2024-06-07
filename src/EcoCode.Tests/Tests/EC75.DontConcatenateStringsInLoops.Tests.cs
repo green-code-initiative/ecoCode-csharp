@@ -18,8 +18,8 @@ public sealed class DontConcatenateStringsInLoopsTests
             string si = i.ToString();
             [|s += si|];
             [|s = s + si|];
-            s = si + s;
-            s = i.ToString() + i.ToString();
+            [|s = si + s|];
+            s = si + si;
         }
         """;
 
@@ -159,19 +159,31 @@ public sealed class DontConcatenateStringsInLoopsTests
     [TestMethod]
     public async Task DontConcatenateStringsInForEach1Async() => await VerifyAsync("""
         using System.Collections.Generic;
-        public class Test
+        class Test
         {
-            private string s = string.Empty;
-            public void Run11()
+            void Run(string s)
             {
                 var list = new List<int>();
                 list.ForEach(_ =>
                 {
-                    [|s = s + 'A' + 'B'|];
+                    [|s = s + 'A'|];
                 });
             }
         }
-        """).ConfigureAwait(false); // [|s += 'A'|];
+        """).ConfigureAwait(false);
+
+    [TestMethod]
+    public async Task DontConcatenateStringsInForEach2Async() => await VerifyAsync("""
+        using System.Collections.Generic;
+        class Test
+        {
+            void Run(string s)
+            {
+                var list = new List<int>();
+                list.ForEach(_ => [|s += 'A'|]);
+            }
+        }
+        """).ConfigureAwait(false);
 
     public static void Run11()
     {
@@ -185,7 +197,7 @@ public sealed class DontConcatenateStringsInLoopsTests
     }
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEach2Async() => await VerifyAsync("""
+    public async Task DontConcatenateStringsInForEachXXAsync() => await VerifyAsync("""
         using System.Collections.Generic;
         public class Test
         {
