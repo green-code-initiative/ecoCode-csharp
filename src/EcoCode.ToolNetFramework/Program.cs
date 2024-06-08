@@ -1,4 +1,5 @@
-﻿using EcoCode.Analyzers;
+﻿using CommandLine;
+using EcoCode.Analyzers;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -10,34 +11,32 @@ using System.Threading.Tasks;
 
 namespace EcoCode.ToolNetFramework;
 
-internal class Program
+internal static class Program
 {
-    private const string SolutionDir = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project";
-    private const string SolutionPath = @$"{SolutionDir}\ecoCode-csharp-test-project.sln";
+    // private const string SolutionDir = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project";
+    // private const string SolutionPath = @$"{SolutionDir}\ecoCode-csharp-test-project.sln";
 
-    // -s or --source: .sln, .slnf or .csproj in absolute/relative path. Takes the one in the same directory if not specified, error if there are several.
-    // -o or --output: .htm, .html, .json, csv or .txt in absolute/relative path. In the same directory as the source if the path is not specified, with the same name if not specified.
-    // -a or --analyzers to specify the analyzers to use. Default is All. Ex: -a "EC72;EC75;EC81"
-    // -i or --ignore to specify the analyzers to ignore. Default is Empty. Ex: -i "EC84;EC85;EC86". Has priority over -a.
-    // -r or --severity to specify the minimum severity of the analyzers to use. Can be All, Info, Warning or Error. Default is All.
-    // -v or --verbosity to customize information display about the analysis. Can be None, Normal or Detailed. Default is Normal.
-    // -h or --help to display the help message.
-
-    public static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
-        string path = args.Length == 0 ? SolutionPath : args[0];
+        var result = await Parser.Default.ParseArguments<CommandOptions>(args).WithParsedAsync(RunAsync);
 
-        if (!File.Exists(path))
-        {
-            Console.WriteLine($"The file {path} does not exist.");
-            return;
-        }
+        if (result is not Parsed<CommandOptions> parsed)
+            return 1;
+
+        Console.WriteLine("Press a key to exit..");
+        _ = Console.ReadKey();
+        return 0;
+    }
+
+    private static async Task RunAsync(CommandOptions options)
+    {
+        options.Validate();
+
+        string path = options.Source;
 
         if (MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault() is not { } instance)
-        {
-            Console.WriteLine($"No MSBuild instance was found, exiting.");
-            return;
-        }
+            throw new InvalidOperationException("No MSBuild instance was found, exiting.");
+        
         Console.WriteLine($"Using MSBuild at '{instance.MSBuildPath}' to load projects.");
         MSBuildLocator.RegisterInstance(instance);
 
@@ -48,36 +47,27 @@ internal class Program
         if (string.Equals(extension, ".sln", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(extension, ".slnf", StringComparison.OrdinalIgnoreCase))
         {
-            var solution = await workspace.OpenSolutionAsync(path);
-            if (solution is null)
-            {
-                Console.WriteLine("Cannot load the provided solution.");
-            }
-            else
-            {
-                var analyzers = LoadAnalyzers();
-                foreach (var project in solution.Projects)
-                    await AnalyzeProject(project, analyzers);
-            }
+            var solution = await workspace.OpenSolutionAsync(path)
+                ?? throw new InvalidOperationException("Cannot load the provided solution.");
+            var analyzers = LoadAnalyzers();
+
+            var report = new HtmlReport();
+            foreach (var project in solution.Projects)
+                await AnalyzeProject(project, analyzers, report);
+            report.Generate(options.Output!);
         }
         else if (string.Equals(extension, ".csproj", StringComparison.OrdinalIgnoreCase))
         {
-            var project = await workspace.OpenProjectAsync(path);
-            if (project is null)
-                Console.WriteLine("Cannot load the provided project");
-            else
-                await AnalyzeProject(project, LoadAnalyzers());
-        }
-        else
-        {
-            Console.WriteLine("Please provide a valid .sln, .slnf or .csproj file.");
-        }
+            var project = await workspace.OpenProjectAsync(path)
+                ?? throw new InvalidOperationException("Cannot load the provided project.");
 
-        Console.WriteLine("Press a key to exit..");
-        _ = Console.ReadKey();
+            var report = new HtmlReport();
+            await AnalyzeProject(project, LoadAnalyzers(), report);
+            report.Generate(options.Output!);
+        }
     }
 
-    private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers)
+    private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalyzerReport report)
     {
         Console.WriteLine($"Analyzing project {project.Name}...");
 
@@ -87,15 +77,13 @@ internal class Program
             return;
         }
 
-        var report = new HtmlReport();
         foreach (var diagnostic in await compilation!.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync())
             report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
-        report.Generate(Path.Combine(SolutionDir, "report.html"));
 
         Console.WriteLine($"Analysis complete for project {project.Name}");
     }
 
-    private static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers()
+    private static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers() // TODO : options
     {
         var analyzers = ImmutableArray.CreateBuilder<DiagnosticAnalyzer>(64);
         foreach (var type in typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes())

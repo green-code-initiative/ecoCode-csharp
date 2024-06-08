@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EcoCode.ToolNetFramework": {
+      "commandName": "Project",
+      "commandLineArgs": "-s \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\""
+    }
+  }
+}
