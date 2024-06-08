@@ -3,7 +3,6 @@ They seem to be good candidates but need reviewing first.
 
 From [Roslynator](https://github.com/dotnet/roslynator):
 + Optimize LINQ method call: [RCS1077](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1077/)
-+ Use string.Length instead of comparison with empty string: [RCS1156](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1156/)
 + Use 'is' operator instead of 'as' operator: [RCS1172](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1172/)
 + Unnecessary assignment: [RCS1179](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1179/)
 + Use constant instead of field : [RCS1187](https://josefpihrt.github.io/docs/roslynator/analyzers/RCS1187/)
@@ -20,7 +19,6 @@ From [Meziantou Analyzer](https://github.com/meziantou/Meziantou.Analyzer):
 + Optimize Enumerable.Count() usage: [MA0031](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0031.md)
 + Do not use blocking calls in an async method: [MA0042](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0042.md)
 + Do not use finalizer: [MA0055](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0055.md)
-+ Use Where before OrderBy: [MA0063](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0063.md)
 + Default ValueType.Equals or HashCode is used for struct equality: [MA0065](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0065.md)
 + Use 'Cast' instead of 'Select' to cast: [MA0078](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0078.md)
 + Optimize string method usage: [MA0089](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0089.md)
@@ -37,4 +35,3 @@ From [SonarQube](https://www.sonarsource.com/products/sonarqube/):
 Rules that are natively implemented in [Roslyn](https://github.com/dotnet/roslyn), that we could transitively enable:
 + Do not declare static members on generic types: [CA1000](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1000)
 + Mark members as static: [CA1822](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1822)
-+ Use 'Count/Length' property instead of 'Any' method: [CA1860](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1860)
