@@ -1,6 +1,4 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
-
-namespace EcoCode.Tests;
+﻿namespace EcoCode.Tests;
 
 [TestClass]
 public sealed class UseListIndexerTests
