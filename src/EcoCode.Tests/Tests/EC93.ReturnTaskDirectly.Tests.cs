@@ -73,7 +73,7 @@ public sealed class ReturnTaskDirectlyTests
         using System.Threading.Tasks;
         public static class Test
         {
-            public static [|async|] Task Run() => await Task.Delay(0);
+            public static [|async|] Task Run() => await Task.Delay(0).ConfigureAwait(false);
         }
         """, """
         using System.Threading.Tasks;
@@ -88,7 +88,7 @@ public sealed class ReturnTaskDirectlyTests
         using System.Threading.Tasks;
         public static class Test
         {
-            public static [|async|] Task Run() => await Task.Delay(0); // Comment
+            public static [|async|] Task Run() => await Task.Delay(0).ConfigureAwait(false); // Comment
         }
         """, """
         using System.Threading.Tasks;
@@ -124,7 +124,7 @@ public sealed class ReturnTaskDirectlyTests
         {
             public static [|async|] Task Run()
             {
-                await Task.Delay(0);
+                await Task.Delay(0).ConfigureAwait(true);
             }
         }
         """, """
@@ -192,7 +192,7 @@ public sealed class ReturnTaskDirectlyTests
             public static [|async|] Task<int> Run()
             {
                 // Comment 0
-                return await Task.FromResult(0); // Comment 1
+                return await Task.FromResult(0).ConfigureAwait(false); // Comment 1
                 // Comment 2
             }
         }
