@@ -34,9 +34,9 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
                 {
                     context.RegisterCodeFix( // Expression body
                         CodeAction.Create(
-                            title: "Dispose resource asynchronously",
+                            title: "Return Task directly",
                             createChangedDocument: _ => ReturnTaskDirectlyWithExpressionAsync(context.Document, methodDecl, awaitExpr1, asyncIndex),
-                            equivalenceKey: "Dispose resource asynchronously"),
+                            equivalenceKey: "Return Task directly"),
                         diagnostic);
                     break;
                 }
@@ -46,9 +46,9 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
                 {
                     context.RegisterCodeFix( // Body with 'await' statement
                         CodeAction.Create(
-                            title: "Dispose resource asynchronously",
+                            title: "Return Task directly",
                             createChangedDocument: _ => ReturnTaskDirectlyWithBodyAwaitAsync(context.Document, methodDecl, awaitExpr2, asyncIndex),
-                            equivalenceKey: "Dispose resource asynchronously"),
+                            equivalenceKey: "Return Task directly"),
                         diagnostic);
                     break;
                 }
@@ -56,9 +56,9 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
                 {
                     context.RegisterCodeFix( // Body with 'return await' statement
                         CodeAction.Create(
-                            title: "Dispose resource asynchronously",
+                            title: "Return Task directly",
                             createChangedDocument: _ => ReturnTaskDirectlyWithBodyReturnAwaitAsync(context.Document, methodDecl, returnStmt, awaitExpr3, asyncIndex),
-                            equivalenceKey: "Dispose resource asynchronously"),
+                            equivalenceKey: "Return Task directly"),
                         diagnostic);
                     break;
                 }
@@ -66,13 +66,18 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
         }
     }
 
+    private static ExpressionSyntax GetExpressionToReturn(AwaitExpressionSyntax awaitExpr) =>
+        awaitExpr.Expression is InvocationExpressionSyntax { Expression: MemberAccessExpressionSyntax { Name.Identifier.Text: "ConfigureAwait" } memberAccess }
+        ? memberAccess.Expression // If it is a ConfigureAwait call, strip it for the return statement
+        : awaitExpr.Expression; // Else keep the expression as is
+
     private static async Task<Document> ReturnTaskDirectlyWithExpressionAsync(
         Document document,
         MethodDeclarationSyntax methodDecl,
         AwaitExpressionSyntax awaitExpr,
         int asyncIndex)
     {
-        var newReturnStmt = SyntaxFactory.ReturnStatement(awaitExpr.Expression);
+        var newReturnStmt = SyntaxFactory.ReturnStatement(GetExpressionToReturn(awaitExpr));
 
         var newBody = SyntaxFactory.ArrowExpressionClause(newReturnStmt.Expression!.WithTriviaFrom(awaitExpr))
             .WithTriviaFrom(methodDecl.ExpressionBody!);
@@ -88,7 +93,7 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
         AwaitExpressionSyntax awaitExpr,
         int asyncIndex)
     {
-        var newReturnStmt = SyntaxFactory.ReturnStatement(awaitExpr.Expression)
+        var newReturnStmt = SyntaxFactory.ReturnStatement(GetExpressionToReturn(awaitExpr))
             .WithLeadingTrivia(awaitExpr.GetLeadingTrivia())
             .WithTrailingTrivia(((ExpressionStatementSyntax)awaitExpr.Parent!).SemicolonToken.TrailingTrivia);
 
@@ -109,7 +114,7 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
         AwaitExpressionSyntax awaitExpr,
         int asyncIndex)
     {
-        var newReturnStmt = returnStmt.WithExpression(awaitExpr.Expression);
+        var newReturnStmt = returnStmt.WithExpression(GetExpressionToReturn(awaitExpr));
 
         var newBody = SyntaxFactory.Block(newReturnStmt)
             .WithOpenBraceToken(methodDecl.Body!.OpenBraceToken)
