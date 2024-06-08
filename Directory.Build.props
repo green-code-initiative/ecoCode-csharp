@@ -12,7 +12,7 @@
 		<Nullable>enable</Nullable>
 		<NeutralLanguage>en</NeutralLanguage>
 		<IsPackable>false</IsPackable>
-		
+
 		<AnalysisMode>all</AnalysisMode>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
