@@ -125,95 +125,149 @@ public sealed class DontConcatenateStringsInLoopsTests
     #region ForEach methods
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachParameterAsync() => await VerifyAsync($$"""
+    [DataRow("List<int>")]
+    [DataRow("ImmutableList<int>")]
+    public async Task DontConcatenateStringsInForEachParameterAsync(string type) => await VerifyAsync($$"""
         using System.Collections.Generic;
+        using System.Collections.Immutable;
+        using System.Threading.Tasks;
         public class Test
         {
-            public void Run(List<int> list, string s)
+            public void Run({{type}} list, string s)
             {
                 list.ForEach(i =>{{WarningCode}});
                 list.ForEach(i => [|s += i.ToString()|]);
                 list.ForEach(i => [|s = s + i.ToString()|]);
                 list.ForEach(i => [|s = i.ToString() + s|]);
                 list.ForEach(i => s = i.ToString() + i.ToString());
+
+                Parallel.ForEach(list, i =>{{WarningCode}});
+                Parallel.ForEach(list, i => [|s += i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = s + i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = i.ToString() + s|]);
+                Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachFieldAsync() => await VerifyAsync($$"""
+    [DataRow("List<int>")]
+    [DataRow("ImmutableList<int>")]
+    public async Task DontConcatenateStringsInForEachFieldAsync(string type) => await VerifyAsync($$"""
         using System.Collections.Generic;
+        using System.Collections.Immutable;
+        using System.Threading.Tasks;
         public class Test
         {
             private string s = string.Empty;
-            public void Run(List<int> list)
+            public void Run({{type}} list)
             {
                 list.ForEach(i =>{{WarningCode}});
                 list.ForEach(i => [|s += i.ToString()|]);
                 list.ForEach(i => [|s = s + i.ToString()|]);
                 list.ForEach(i => [|s = i.ToString() + s|]);
                 list.ForEach(i => s = i.ToString() + i.ToString());
+        
+                Parallel.ForEach(list, i =>{{WarningCode}});
+                Parallel.ForEach(list, i => [|s += i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = s + i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = i.ToString() + s|]);
+                Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachPropertyAsync() => await VerifyAsync($$"""
+    [DataRow("List<int>")]
+    [DataRow("ImmutableList<int>")]
+    public async Task DontConcatenateStringsInForEachPropertyAsync(string type) => await VerifyAsync($$"""
         using System.Collections.Generic;
+        using System.Collections.Immutable;
+        using System.Threading.Tasks;
         public class Test
         {
             private string s { get; set; } = string.Empty;
-            public void Run(List<int> list)
+            public void Run({{type}} list)
             {
                 list.ForEach(i =>{{WarningCode}});
                 list.ForEach(i => [|s += i.ToString()|]);
                 list.ForEach(i => [|s = s + i.ToString()|]);
                 list.ForEach(i => [|s = i.ToString() + s|]);
                 list.ForEach(i => s = i.ToString() + i.ToString());
+        
+                Parallel.ForEach(list, i =>{{WarningCode}});
+                Parallel.ForEach(list, i => [|s += i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = s + i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = i.ToString() + s|]);
+                Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachStaticFieldAsync() => await VerifyAsync($$"""
+    [DataRow("List<int>")]
+    [DataRow("ImmutableList<int>")]
+    public async Task DontConcatenateStringsInForEachStaticFieldAsync(string type) => await VerifyAsync($$"""
         using System.Collections.Generic;
+        using System.Collections.Immutable;
+        using System.Threading.Tasks;
         public class Test
         {
             private static string s = string.Empty;
-            public void Run(List<int> list)
+            public void Run({{type}} list)
             {
                 list.ForEach(i =>{{WarningCode}});
                 list.ForEach(i => [|s += i.ToString()|]);
                 list.ForEach(i => [|s = s + i.ToString()|]);
                 list.ForEach(i => [|s = i.ToString() + s|]);
                 list.ForEach(i => s = i.ToString() + i.ToString());
+        
+                Parallel.ForEach(list, i =>{{WarningCode}});
+                Parallel.ForEach(list, i => [|s += i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = s + i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = i.ToString() + s|]);
+                Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachStaticPropertyAsync() => await VerifyAsync($$"""
+    [DataRow("List<int>")]
+    [DataRow("ImmutableList<int>")]
+    public async Task DontConcatenateStringsInForEachStaticPropertyAsync(string type) => await VerifyAsync($$"""
         using System.Collections.Generic;
+        using System.Collections.Immutable;
+        using System.Threading.Tasks;
         public class Test
         {
             private static string s { get; set; } = string.Empty;
-            public void Run(List<int> list)
+            public void Run({{type}} list)
             {
                 list.ForEach(i =>{{WarningCode}});
                 list.ForEach(i => [|s += i.ToString()|]);
                 list.ForEach(i => [|s = s + i.ToString()|]);
                 list.ForEach(i => [|s = i.ToString() + s|]);
                 list.ForEach(i => s = i.ToString() + i.ToString());
+        
+                Parallel.ForEach(list, i =>{{WarningCode}});
+                Parallel.ForEach(list, i => [|s += i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = s + i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = i.ToString() + s|]);
+                Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
         """).ConfigureAwait(false);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInForEachLocalVariableAsync() => await VerifyAsync($$"""
+    [DataRow("List<int>")]
+    [DataRow("ImmutableList<int>")]
+    public async Task DontConcatenateStringsInForEachLocalVariableAsync(string type) => await VerifyAsync($$"""
         using System.Collections.Generic;
+        using System.Collections.Immutable;
+        using System.Threading.Tasks;
         public class Test
         {
-            public void Run(List<int> list)
+            public void Run({{type}} list)
             {
                 string s = string.Empty;
                 list.ForEach(i =>{{WarningCode}});
@@ -222,7 +276,23 @@ public sealed class DontConcatenateStringsInLoopsTests
                 list.ForEach(i => [|s = i.ToString() + s|]);
                 list.ForEach(i => s = i.ToString() + i.ToString());
 
+                Parallel.ForEach(list, i =>{{WarningCode}});
+                Parallel.ForEach(list, i => [|s += i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = s + i.ToString()|]);
+                Parallel.ForEach(list, i => [|s = i.ToString() + s|]);
+                Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
+
                 list.ForEach(i =>
+                {
+                    string si = i.ToString();
+                    string s2 = string.Empty;
+                    s2 += si;
+                    s2 = s2 + si;
+                    s2 = si + s2;
+                    s2 = si + si;
+                });
+
+                Parallel.ForEach(list, i =>
                 {
                     string si = i.ToString();
                     string s2 = string.Empty;
