@@ -1,11 +1,9 @@
-﻿using CommandLine;
-using EcoCode.Analyzers;
+﻿using EcoCode.Analyzers;
+using EcoCode.ToolNetFramework.Reports;
 using Microsoft.Build.Locator;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.MSBuild;
 using System.Collections.Immutable;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,71 +13,58 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        var result = await Parser.Default
-            .ParseArguments<CommandOptions>(args)
-            .WithParsed(options => options.ValidateAndInitialize())
-            .WithParsedAsync(options => options.HasError ? Task.CompletedTask : RunAsync(options));
-
-        int exitCode = 1;
-        if (result is Parsed<CommandOptions> parsed)
-        {
-            if (parsed.Value.HasError)
-                Console.WriteLine(parsed.Value.Error);
-            else
-                exitCode = 0;
-        }
-
+        int exitCode = await StartAndRunAsync(args);
         if (!Console.IsOutputRedirected) // Running in interactive mode
         {
             Console.WriteLine("Press a key to exit..");
             _ = Console.ReadKey();
         }
-
         return exitCode;
     }
 
-    private static async Task RunAsync(CommandOptions options)
+    private static async Task<int> StartAndRunAsync(string[] args)
+    {
+        if (Parser.Default.ParseArguments<CommandOptions>(args) is not Parsed<CommandOptions> { Value: { } options })
+            return 1; // No need to display the problem, the library already does it in this case
+
+        string? error = options.ValidateAndInitialize() ?? await RunAsync(options).ConfigureAwait(false);
+        if (error is not null) return 0;
+        Console.WriteLine(error);
+        return 1;
+    }
+
+    private static async Task<string?> RunAsync(CommandOptions options)
     {
         if (MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault() is not { } instance)
-        {
-            options.Fail("No MSBuild instance was found, exiting.");
-            return;
-        }
-        
+            return "No MSBuild instance was found, exiting.";
+
         Console.WriteLine($"Using MSBuild at '{instance.MSBuildPath}' to load projects.");
         MSBuildLocator.RegisterInstance(instance);
 
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Console.WriteLine(e.Diagnostic.Message);
 
-        string extension = Path.GetExtension(options.Source);
-        if (string.Equals(extension, ".sln", StringComparison.OrdinalIgnoreCase) ||
-            string.Equals(extension, ".slnf", StringComparison.OrdinalIgnoreCase))
+        var report = new HtmlReport(); // TODO : options
+
+        if (options.SourceType is SourceType.Solution)
         {
             if (await workspace.OpenSolutionAsync(options.Source) is not { } solution)
-            {
-                options.Fail("Cannot load the provided solution.");
-                return;
-            }
-            
-            var report = new HtmlReport();
+                return "Cannot load the provided solution.";
+
             var analyzers = LoadAnalyzers();
             foreach (var project in solution.Projects)
                 await AnalyzeProject(project, analyzers, report);
-            report.Generate(options.Output!);
         }
-        else if (string.Equals(extension, ".csproj", StringComparison.OrdinalIgnoreCase))
+        else // options.SourceType is SourceType.Project
         {
             if (await workspace.OpenProjectAsync(options.Source) is not { } project)
-            {
-                options.Fail("Cannot load the provided project.");
-                return;
-            }
+                return "Cannot load the provided project.";
 
-            var report = new HtmlReport();
             await AnalyzeProject(project, LoadAnalyzers(), report);
-            report.Generate(options.Output!);
         }
+
+        report.WriteToFile(options.Output!);
+        return null;
     }
 
     private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalyzerReport report)
