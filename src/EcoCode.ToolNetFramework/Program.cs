@@ -13,29 +13,38 @@ namespace EcoCode.ToolNetFramework;
 
 internal static class Program
 {
-    // private const string SolutionDir = @"C:\Users\vlajoumard\source\ecoCode-csharp-test-project";
-    // private const string SolutionPath = @$"{SolutionDir}\ecoCode-csharp-test-project.sln";
-
     public static async Task<int> Main(string[] args)
     {
-        var result = await Parser.Default.ParseArguments<CommandOptions>(args).WithParsedAsync(RunAsync);
+        var result = await Parser.Default
+            .ParseArguments<CommandOptions>(args)
+            .WithParsed(options => options.ValidateAndInitialize())
+            .WithParsedAsync(options => options.HasError ? Task.CompletedTask : RunAsync(options));
 
-        if (result is not Parsed<CommandOptions> parsed)
-            return 1;
+        int exitCode = 1;
+        if (result is Parsed<CommandOptions> parsed)
+        {
+            if (parsed.Value.HasError)
+                Console.WriteLine(parsed.Value.Error);
+            else
+                exitCode = 0;
+        }
 
-        Console.WriteLine("Press a key to exit..");
-        _ = Console.ReadKey();
-        return 0;
+        if (!Console.IsOutputRedirected) // Running in interactive mode
+        {
+            Console.WriteLine("Press a key to exit..");
+            _ = Console.ReadKey();
+        }
+
+        return exitCode;
     }
 
     private static async Task RunAsync(CommandOptions options)
     {
-        options.Validate();
-
-        string path = options.Source;
-
         if (MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault() is not { } instance)
-            throw new InvalidOperationException("No MSBuild instance was found, exiting.");
+        {
+            options.Fail("No MSBuild instance was found, exiting.");
+            return;
+        }
         
         Console.WriteLine($"Using MSBuild at '{instance.MSBuildPath}' to load projects.");
         MSBuildLocator.RegisterInstance(instance);
@@ -43,23 +52,29 @@ internal static class Program
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Console.WriteLine(e.Diagnostic.Message);
 
-        string extension = Path.GetExtension(path);
+        string extension = Path.GetExtension(options.Source);
         if (string.Equals(extension, ".sln", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(extension, ".slnf", StringComparison.OrdinalIgnoreCase))
         {
-            var solution = await workspace.OpenSolutionAsync(path)
-                ?? throw new InvalidOperationException("Cannot load the provided solution.");
-            var analyzers = LoadAnalyzers();
-
+            if (await workspace.OpenSolutionAsync(options.Source) is not { } solution)
+            {
+                options.Fail("Cannot load the provided solution.");
+                return;
+            }
+            
             var report = new HtmlReport();
+            var analyzers = LoadAnalyzers();
             foreach (var project in solution.Projects)
                 await AnalyzeProject(project, analyzers, report);
             report.Generate(options.Output!);
         }
         else if (string.Equals(extension, ".csproj", StringComparison.OrdinalIgnoreCase))
         {
-            var project = await workspace.OpenProjectAsync(path)
-                ?? throw new InvalidOperationException("Cannot load the provided project.");
+            if (await workspace.OpenProjectAsync(options.Source) is not { } project)
+            {
+                options.Fail("Cannot load the provided project.");
+                return;
+            }
 
             var report = new HtmlReport();
             await AnalyzeProject(project, LoadAnalyzers(), report);
