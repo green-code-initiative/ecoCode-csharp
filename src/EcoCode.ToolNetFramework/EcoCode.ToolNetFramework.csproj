@@ -14,7 +14,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommandLineParser" />
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
@@ -23,6 +22,12 @@
 		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Spectre.Console" />
+		<PackageReference Include="Spectre.Console.Analyzer">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Spectre.Console.Cli" />
 	</ItemGroup>
 
 	<ItemGroup>
