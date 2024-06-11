@@ -1,6 +1,9 @@
-﻿using System.ComponentModel;
+﻿using Spectre.Console;
+using Spectre.Console.Cli;
+using System.ComponentModel;
+using System.IO;
 
-namespace EcoCode.ToolNetFramework.Commands;
+namespace EcoCode.Tool.Library.Commands;
 
 internal enum SourceType
 {

@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using EcoCode.Tool.Library.Models;
+using System.Collections.Generic;
+using System.IO;
 
-namespace EcoCode.ToolNetFramework.Reports;
+namespace EcoCode.Tool.Library.Reports;
 
 internal abstract class BaseReport : IAnalyzerReport
 {

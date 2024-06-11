@@ -1,4 +1,6 @@
-﻿namespace EcoCode.ToolNetFramework.Reports;
+﻿using EcoCode.Tool.Library.Models;
+
+namespace EcoCode.Tool.Library.Reports;
 
 internal interface IAnalyzerReport
 {

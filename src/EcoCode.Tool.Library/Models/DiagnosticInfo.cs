@@ -1,4 +1,7 @@
-﻿namespace EcoCode.ToolNetFramework;
+﻿using Microsoft.CodeAnalysis;
+using System.IO;
+
+namespace EcoCode.Tool.Library.Models;
 
 internal readonly struct DiagnosticInfo
 {

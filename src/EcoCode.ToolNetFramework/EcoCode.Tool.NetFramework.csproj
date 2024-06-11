@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net472</TargetFramework>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Build.Locator" />
+		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EcoCode.Tool.Library\EcoCode.Tool.Library.csproj" />
+	</ItemGroup>
+
+</Project>

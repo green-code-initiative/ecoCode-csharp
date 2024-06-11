@@ -1,4 +1,6 @@
-﻿namespace EcoCode.ToolNetFramework.Reports;
+﻿using System.IO;
+
+namespace EcoCode.Tool.Library.Reports;
 
 internal sealed class HtmlReport : BaseReport
 {

@@ -1,15 +1,17 @@
 ﻿using EcoCode.Analyzers;
-using EcoCode.ToolNetFramework.Reports;
-using Microsoft.Build.Locator;
+using EcoCode.Tool.Library.Models;
+using EcoCode.Tool.Library.Reports;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.MSBuild;
+using Spectre.Console;
+using Spectre.Console.Cli;
 using System.Collections.Immutable;
-using System.Linq;
+using System.IO;
 using System.Threading.Tasks;
 
-namespace EcoCode.ToolNetFramework.Commands;
+namespace EcoCode.Tool.Library.Commands;
 
-internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
+internal sealed class AnalyzeCommand(Tool.Delegates delegates) : AsyncCommand<AnalyzeSettings>
 {
     public override ValidationResult Validate(CommandContext context, AnalyzeSettings settings)
     {
@@ -33,25 +35,18 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
 
     public override async Task<int> ExecuteAsync(CommandContext context, AnalyzeSettings settings)
     {
-        if (MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault() is not { } instance)
-        {
-            AnsiConsole.WriteLine("[red]No MSBuild instance was found, exiting.[/]");
-            return 1;
-        }
-
-        AnsiConsole.WriteLine($"Using MSBuild found at {instance.MSBuildPath}.");
-        MSBuildLocator.RegisterInstance(instance);
-
-        using var workspace = MSBuildWorkspace.Create();
-        workspace.WorkspaceFailed += (sender, e) => AnsiConsole.WriteLine($"[red]{e.Diagnostic.Message}[/]");
-
         var report = new HtmlReport(); // TODO : options
 
         if (settings.SourceType is SourceType.Solution)
         {
-            if (await workspace.OpenSolutionAsync(settings.Source) is not { } solution)
+            Solution solution;
+            try
             {
-                AnsiConsole.WriteLine("Cannot load the provided solution.");
+                solution = await delegates.OpenSolutionAsync(settings.Source);
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.WriteLine($"[red]Cannot load the provided solution: {ex.Message}[/]");
                 return 1;
             }
 
@@ -61,9 +56,14 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
         }
         else // options.SourceType is SourceType.Project
         {
-            if (await workspace.OpenProjectAsync(settings.Source) is not { } project)
+            Project project;
+            try
             {
-                AnsiConsole.WriteLine("Cannot load the provided project.");
+                project = await delegates.OpenProjectAsync(settings.Source);
+            }
+            catch (Exception ex)
+            {
+                AnsiConsole.WriteLine($"[red]Cannot load the provided project: {ex.Message}[/]");
                 return 1;
             }
             await AnalyzeProject(project, LoadAnalyzers(), report);
