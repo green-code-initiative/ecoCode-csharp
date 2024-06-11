@@ -1,6 +1,4 @@
-﻿using Spectre.Console;
-using Spectre.Console.Cli;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace EcoCode.ToolNetFramework.Commands;
 
@@ -30,8 +28,8 @@ internal sealed class AnalyzeSettings : CommandSettings
     public string Source { get; set; } = default!;
 
     [Description("Path to the .html/.json/.csv/.txt file to save the analysis into.")]
-    [CommandOption("-o|--output <outputPath>")]
-    public string? Output { get; set; }
+    [CommandArgument(1, "[outputPath]")]
+    public string Output { get; set; } = default!;
 
     public SourceType SourceType => IsSolution(Path.GetExtension(Source)) ? SourceType.Solution : SourceType.Project;
 
@@ -47,16 +45,13 @@ internal sealed class AnalyzeSettings : CommandSettings
         if (Path.GetExtension(Source) is not { } sourceExt || !IsSolution(sourceExt) && !IsProject(sourceExt))
             return ValidationResult.Error($"The source path {Source} must point to a valid .sln, .slnf or .csproj file.");
 
-        if (Output is not null)
+        if (Path.GetExtension(Output) is not { } outputExt ||
+            !string.Equals(outputExt, ".html", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(outputExt, ".json", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(outputExt, ".csv", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(outputExt, ".txt", StringComparison.OrdinalIgnoreCase))
         {
-            if (Path.GetExtension(Output) is not { } outputExt ||
-                !string.Equals(outputExt, ".html", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(outputExt, ".json", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(outputExt, ".csv", StringComparison.OrdinalIgnoreCase) &&
-                !string.Equals(outputExt, ".txt", StringComparison.OrdinalIgnoreCase))
-            {
-                return ValidationResult.Error($"The output path {Output} must point to a .html, .json, .csv or .txt file.");
-            }
+            return ValidationResult.Error($"The output path {Output} must point to a .html, .json, .csv or .txt file.");
         }
 
         return ValidationResult.Success();

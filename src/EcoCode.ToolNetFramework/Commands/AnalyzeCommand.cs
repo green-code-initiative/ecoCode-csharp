@@ -3,15 +3,13 @@ using EcoCode.ToolNetFramework.Reports;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.MSBuild;
-using Spectre.Console;
-using Spectre.Console.Cli;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EcoCode.ToolNetFramework.Commands;
 
-internal sealed class AnalyzeCommand : Command<AnalyzeSettings>
+internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
 {
     public override ValidationResult Validate(CommandContext context, AnalyzeSettings settings)
     {
@@ -26,14 +24,14 @@ internal sealed class AnalyzeCommand : Command<AnalyzeSettings>
             }
             catch (Exception ex)
             {
-                return ValidationResult.Error($"The output directory {outputDir} cannot be opened or created:{Environment.NewLine}{ex.Message}");
+                return ValidationResult.Error($"The output directory {outputDir} cannot be opened or created: {ex.Message}");
             }
         }
 
         return base.Validate(context, settings);
     }
 
-    public override int Execute(CommandContext context, AnalyzeSettings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, AnalyzeSettings settings)
     {
         if (MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault() is not { } instance)
         {
@@ -49,10 +47,13 @@ internal sealed class AnalyzeCommand : Command<AnalyzeSettings>
 
         var report = new HtmlReport(); // TODO : options
 
-        if (options.SourceType is SourceType.Solution)
+        if (settings.SourceType is SourceType.Solution)
         {
-            if (await workspace.OpenSolutionAsync(options.Source) is not { } solution)
-                return "Cannot load the provided solution.";
+            if (await workspace.OpenSolutionAsync(settings.Source) is not { } solution)
+            {
+                AnsiConsole.WriteLine("Cannot load the provided solution.");
+                return 1;
+            }
 
             var analyzers = LoadAnalyzers();
             foreach (var project in solution.Projects)
@@ -60,15 +61,15 @@ internal sealed class AnalyzeCommand : Command<AnalyzeSettings>
         }
         else // options.SourceType is SourceType.Project
         {
-            if (await workspace.OpenProjectAsync(options.Source) is not { } project)
-                return "Cannot load the provided project.";
-
+            if (await workspace.OpenProjectAsync(settings.Source) is not { } project)
+            {
+                AnsiConsole.WriteLine("Cannot load the provided project.");
+                return 1;
+            }
             await AnalyzeProject(project, LoadAnalyzers(), report);
         }
 
-        report.WriteToFile(options.Output!);
-        return null;
-
+        report.WriteToFile(settings.Output!);
         return 0;
     }
 
