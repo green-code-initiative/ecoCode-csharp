@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace EcoCode.Tool.Library.Reports;
+namespace EcoCode.Tool.Core.Reports;
 
 internal sealed class HtmlReport : BaseReport
 {

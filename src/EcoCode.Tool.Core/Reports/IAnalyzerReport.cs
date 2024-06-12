@@ -1,6 +1,6 @@
-﻿using EcoCode.Tool.Library.Models;
+﻿using EcoCode.Tool.Core.Models;
 
-namespace EcoCode.Tool.Library.Reports;
+namespace EcoCode.Tool.Core.Reports;
 
 internal interface IAnalyzerReport
 {

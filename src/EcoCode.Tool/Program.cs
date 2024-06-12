@@ -1,5 +1,6 @@
-﻿using EcoCode.Tool.Library;
+﻿using EcoCode.Tool.Core;
 using Microsoft.Build.Locator;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
 using System.Linq;
 
@@ -15,15 +16,15 @@ MSBuildLocator.RegisterInstance(instance);
 using var workspace = MSBuildWorkspace.Create();
 workspace.WorkspaceFailed += (sender, e) => Tool.WriteLine(e.Diagnostic.Message, "red");
 
-var delegates = new Tool.Delegates(
-    filePath => workspace.OpenSolutionAsync(filePath),
-    filePath => workspace.OpenProjectAsync(filePath));
+int errorCode = await Tool.RunAsync(args,
+    openSolutionAsync: filePath => workspace.OpenSolutionAsync(filePath),
+    openProjectAsync: filePath => workspace.OpenProjectAsync(filePath))
+    .ConfigureAwait(false);
 
-int errorCode = await Tool.RunAsync(delegates, args);
-
-if (!Console.IsOutputRedirected) // Running in interactive mode
+if (!Console.IsOutputRedirected) // Interactive mode
 {
     Tool.WriteLine("Press a key to exit..");
     _ = Console.ReadKey();
 }
+
 return errorCode;

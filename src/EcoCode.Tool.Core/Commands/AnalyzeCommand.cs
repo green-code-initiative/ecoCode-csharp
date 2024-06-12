@@ -1,17 +1,12 @@
 ﻿using EcoCode.Analyzers;
-using EcoCode.Tool.Library.Models;
-using EcoCode.Tool.Library.Reports;
-using Microsoft.CodeAnalysis;
+using EcoCode.Tool.Core.Models;
+using EcoCode.Tool.Core.Reports;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Spectre.Console;
-using Spectre.Console.Cli;
 using System.Collections.Immutable;
-using System.IO;
-using System.Threading.Tasks;
 
-namespace EcoCode.Tool.Library.Commands;
+namespace EcoCode.Tool.Core.Commands;
 
-internal sealed class AnalyzeCommand(Tool.Delegates delegates) : AsyncCommand<AnalyzeSettings>
+internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<AnalyzeSettings>
 {
     public override ValidationResult Validate(CommandContext context, AnalyzeSettings settings)
     {
@@ -42,11 +37,11 @@ internal sealed class AnalyzeCommand(Tool.Delegates delegates) : AsyncCommand<An
             Solution solution;
             try
             {
-                solution = await delegates.OpenSolutionAsync(settings.Source);
+                solution = await workspace.OpenSolutionAsync(settings.Source);
             }
             catch (Exception ex)
             {
-                AnsiConsole.WriteLine($"[red]Cannot load the provided solution: {ex.Message}[/]");
+                Tool.WriteLine($"Cannot load the provided solution: {ex.Message}", "red");
                 return 1;
             }
 
@@ -59,11 +54,11 @@ internal sealed class AnalyzeCommand(Tool.Delegates delegates) : AsyncCommand<An
             Project project;
             try
             {
-                project = await delegates.OpenProjectAsync(settings.Source);
+                project = await workspace.OpenProjectAsync(settings.Source);
             }
             catch (Exception ex)
             {
-                AnsiConsole.WriteLine($"[red]Cannot load the provided project: {ex.Message}[/]");
+                Tool.WriteLine($"Cannot load the provided project: {ex.Message}", "red");
                 return 1;
             }
             await AnalyzeProject(project, LoadAnalyzers(), report);
@@ -75,18 +70,18 @@ internal sealed class AnalyzeCommand(Tool.Delegates delegates) : AsyncCommand<An
 
     private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalyzerReport report)
     {
-        AnsiConsole.WriteLine($"[orange]Analyzing[/] project {project.Name}...");
+        Tool.WriteLine($"Analyzing project {project.Name}...", "darkorange");
 
         if (await project.GetCompilationAsync() is not { } compilation)
         {
-            AnsiConsole.WriteLine($"[red]Unable to load the project {project.Name} compilation, skipping.[/]");
+            Tool.WriteLine($"Unable to load the project {project.Name} compilation, skipping.", "red");
             return;
         }
 
         foreach (var diagnostic in await compilation!.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync())
             report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
 
-        AnsiConsole.WriteLine($"[green]Analysis complete[/] for project {project.Name}");
+        Tool.WriteLine($"Analysis complete for project {project.Name}", "green");
     }
 
     private static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers() // TODO : options

@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Spectre.Console.Cli;
-
-namespace EcoCode.Tool.Library.Infrastructure;
+﻿namespace EcoCode.Tool.Core.Commands;
 
 internal sealed class TypeRegistrar(ServiceCollection builder) : ITypeRegistrar
 {
@@ -12,4 +9,15 @@ internal sealed class TypeRegistrar(ServiceCollection builder) : ITypeRegistrar
     public void RegisterInstance(Type service, object implementation) => builder.AddSingleton(service, implementation);
 
     public void RegisterLazy(Type service, Func<object> func) => builder.AddSingleton(service, _ => func());
+}
+
+internal sealed class TypeResolver(IServiceProvider provider) : ITypeResolver, IDisposable
+{
+    public object? Resolve(Type? type) => type is null ? null : provider.GetService(type);
+
+    public void Dispose()
+    {
+        if (provider is IDisposable disposable)
+            disposable.Dispose();
+    }
 }
