@@ -2,17 +2,21 @@
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework></TargetFramework>
+		<TargetFrameworks>net472;net8.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
-		<PackageReference Include="Microsoft.Extensions.Logging" />
 	</ItemGroup>
 
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+	</ItemGroup>
+	
 	<ItemGroup>
-		<ProjectReference Include="..\EcoCode.Tool\EcoCode.Tool.csproj" />
+		<ProjectReference Include="..\EcoCode.Tool\EcoCode.Tool.Core.csproj" />
 	</ItemGroup>
 
 </Project>
