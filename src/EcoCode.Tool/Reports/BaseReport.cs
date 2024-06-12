@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 
-namespace EcoCode.Tool.Library.Reports;
+namespace EcoCode.Tool.Reports;
 
 internal abstract class BaseReport : IAnalyzerReport
 {

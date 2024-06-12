@@ -1,4 +1,4 @@
-﻿using EcoCode.Tool.Library;
+﻿using EcoCode.Tool;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
