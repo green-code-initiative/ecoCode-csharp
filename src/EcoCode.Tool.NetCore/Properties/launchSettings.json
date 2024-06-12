@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EcoCode.Tool.NetCore": {
+      "commandName": "Project",
+      "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\""
+    }
+  }
+}
