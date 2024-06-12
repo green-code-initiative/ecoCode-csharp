@@ -43,9 +43,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filters", "Filters", "{7230
 		VsixOnly.slnf = VsixOnly.slnf
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Tool", "src\EcoCode.Tool.NetFramework\EcoCode.Tool.csproj", "{D4503810-7865-4D41-AAC6-8B88071E79BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Tool", "src\EcoCode.Tool\EcoCode.Tool.csproj", "{D4503810-7865-4D41-AAC6-8B88071E79BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Tool.Core", "src\EcoCode.Tool\EcoCode.Tool.Core.csproj", "{2A90514D-693D-4588-BFD5-FC6BFEA48A5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcoCode.Tool.Core", "src\EcoCode.Tool.Core\EcoCode.Tool.Core.csproj", "{2A90514D-693D-4588-BFD5-FC6BFEA48A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,14 @@
+{
+    "profiles": {
+        "EcoCode.Tool 4.7.2": {
+            "commandName": "Project",
+            "targetFramework": "net472",
+            "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\""
+        },
+        "EcoCode.Tool 8": {
+            "commandName": "Project",
+            "targetFramework": "net8.0",
+            "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\""
+        }
+    }
+}

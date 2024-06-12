@@ -16,7 +16,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<ProjectReference Include="..\EcoCode.Tool\EcoCode.Tool.Core.csproj" />
+		<ProjectReference Include="..\EcoCode.Tool.Core\EcoCode.Tool.Core.csproj" />
 	</ItemGroup>
 
 </Project>
