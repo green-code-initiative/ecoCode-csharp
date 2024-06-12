@@ -1,10 +1,9 @@
 ﻿using EcoCode.Analyzers;
-using EcoCode.Tool.Core.Models;
-using EcoCode.Tool.Core.Reports;
+using EcoCode.Tool.Library.Reports;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
-namespace EcoCode.Tool.Core.Commands;
+namespace EcoCode.Tool.Library.Commands;
 
 internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<AnalyzeSettings>
 {

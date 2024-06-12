@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Tool.Core.Models;
+﻿namespace EcoCode.Tool.Library.Reports;
 
 internal readonly struct DiagnosticInfo
 {

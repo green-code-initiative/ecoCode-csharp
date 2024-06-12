@@ -1,6 +1,6 @@
-﻿using EcoCode.Tool.Core.Commands;
+﻿using EcoCode.Tool.Library.Commands;
 
-namespace EcoCode.Tool.Core;
+namespace EcoCode.Tool.Library;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public static class Tool

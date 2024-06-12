@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EcoCode.Tool.Core.Commands;
+namespace EcoCode.Tool.Library.Commands;
 
 internal enum SourceType
 {

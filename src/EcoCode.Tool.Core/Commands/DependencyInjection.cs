@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Tool.Core.Commands;
+﻿namespace EcoCode.Tool.Library.Commands;
 
 internal sealed class TypeRegistrar(ServiceCollection builder) : ITypeRegistrar
 {
