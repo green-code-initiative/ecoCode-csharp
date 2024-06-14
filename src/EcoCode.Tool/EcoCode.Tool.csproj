@@ -6,6 +6,11 @@
 		<TargetFrameworks>net472;net8.0</TargetFrameworks>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>ecocode-cs</ToolCommandName>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
@@ -14,9 +19,17 @@
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
 		<PackageReference Include="Microsoft.Extensions.Logging" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="..\EcoCode.Tool.Core\EcoCode.Tool.Core.csproj" />
 	</ItemGroup>
+
+	<!--<Target Name="PublishNet472" Condition="'$(TargetFramework)' == 'net472'">
+		<Exec Command="dotnet publish -f net472 -r win-x64 - -self-contained false -o $(OutputPath)" />
+	</Target>
+
+	<Target Name="PublishNet8Tool" Condition="'$(TargetFramework)' == 'net8.0'">
+		<Exec Command="dotnet tool publish - -framework net8.0 - -output $(OutputPath)" />
+	</Target>-->
 
 </Project>
