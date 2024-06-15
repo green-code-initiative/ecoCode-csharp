@@ -19,6 +19,8 @@ internal enum OutputType
 
 internal sealed class AnalyzeSettings : CommandSettings
 {
+    private static readonly ImmutableArray<string> SolutionExtensions = [ ".sln", ".slnf", ".slnx" ];
+
     // Arg 0: Source path
     // Arg 1: Output path
     // -i or --include to specify the analyzers to include. Default is All. Ex: -i "EC72;EC75;EC81"
@@ -34,17 +36,9 @@ internal sealed class AnalyzeSettings : CommandSettings
     [CommandArgument(1, "[outputPath]")]
     public string Output { get; set; } = default!;
 
-    public SourceType SourceType => _sourceTypeLazy.Value;
-    private readonly Lazy<SourceType> _sourceTypeLazy;
+    public SourceType SourceType => GetSourceType(Path.GetExtension(Source));
 
-    public OutputType OutputType => _outputTypeLazy.Value;
-    private readonly Lazy<OutputType> _outputTypeLazy;
-
-    public AnalyzeSettings()
-    {
-        _sourceTypeLazy = new(() => GetSourceType(Source));
-        _outputTypeLazy = new(() => GetOutputType(Output));
-    }
+    public OutputType OutputType => GetOutputType(Path.GetExtension(Output));
 
     public override ValidationResult Validate() =>
         SourceType is SourceType.Unknown
@@ -54,12 +48,8 @@ internal sealed class AnalyzeSettings : CommandSettings
         : ValidationResult.Success();
 
     private static SourceType GetSourceType(string ext) =>
-        string.Equals(ext, ".sln", StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(ext, ".slnf", StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(ext, ".slnx", StringComparison.OrdinalIgnoreCase)
-        ? SourceType.Solution
-        : string.Equals(ext, ".csproj", StringComparison.OrdinalIgnoreCase)
-        ? SourceType.Project
+        SolutionExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase) ? SourceType.Solution
+        : string.Equals(ext, ".csproj", StringComparison.OrdinalIgnoreCase) ? SourceType.Project
         : SourceType.Unknown;
 
     private static OutputType GetOutputType(string ext) =>
