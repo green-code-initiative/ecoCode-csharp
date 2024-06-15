@@ -1,6 +1,6 @@
-﻿namespace EcoCode.Tool.Reports;
+﻿namespace EcoCode.Tool.Core.Reports;
 
-internal sealed class HtmlReport : BaseReport
+internal sealed class HtmlAnalysisReport : BaseAnalysisReport
 {
     private const string HtmlHeader = """
         <html>

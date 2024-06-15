@@ -1,6 +1,6 @@
-﻿namespace EcoCode.Tool.Reports;
+﻿namespace EcoCode.Tool.Core.Reports;
 
-internal readonly struct DiagnosticInfo
+internal readonly struct DiagnosticInfo : IEquatable<DiagnosticInfo>
 {
     public string Directory { get; }
     public string File { get; }
@@ -30,4 +30,16 @@ internal readonly struct DiagnosticInfo
             diagnostic.Id,
             diagnostic.GetMessage());
     }
+
+    public override int GetHashCode() => (Directory, File, Location, Severity, Code, Message).GetHashCode();
+
+    public bool Equals(DiagnosticInfo other) =>
+        Directory == other.Directory &&
+        File == other.File &&
+        Location == other.Location &&
+        Severity == other.Severity &&
+        Code == other.Code &&
+        Message == other.Message;
+
+    public override bool Equals(object? obj) => obj is DiagnosticInfo other && Equals(other);
 }

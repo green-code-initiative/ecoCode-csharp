@@ -1,6 +1,4 @@
-﻿using EcoCode.Tool.Commands;
-
-namespace EcoCode.Tool;
+﻿namespace EcoCode.Tool.Core;
 
 /// <summary>Carries the logic for the ecoCode analysis when called from the tools.</summary>
 public static class Tool
@@ -24,7 +22,7 @@ public static class Tool
         var registrations = new ServiceCollection();
         _ = registrations.AddSingleton(new Workspace(openSolutionAsync, openProjectAsync));
 
-        var app = new CommandApp(new TypeRegistrar(registrations));
+        var app = new CommandApp(TypeRegistrarService.CreateRegistrar(registrations));
         app.Configure(config => config.AddCommand<AnalyzeCommand>("analyze"));
         return app.RunAsync(args);
     }

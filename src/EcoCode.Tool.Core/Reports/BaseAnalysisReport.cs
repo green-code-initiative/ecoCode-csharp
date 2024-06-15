@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
+﻿namespace EcoCode.Tool.Core.Reports;
 
-namespace EcoCode.Tool.Reports;
-
-internal abstract class BaseReport : IAnalyzerReport
+internal abstract class BaseAnalysisReport : IAnalysisReport
 {
     protected List<DiagnosticInfo> Diagnostics { get; } = [];
 
-    protected BaseReport()
+    protected BaseAnalysisReport()
     {
     }
 

@@ -1,6 +1,6 @@
-﻿namespace EcoCode.Tool.Reports;
+﻿namespace EcoCode.Tool.Core.Reports;
 
-internal interface IAnalyzerReport
+internal interface IAnalysisReport
 {
     void Add(DiagnosticInfo diagnosticInfo);
 

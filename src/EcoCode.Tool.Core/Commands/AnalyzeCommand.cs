@@ -1,9 +1,4 @@
-﻿using EcoCode.Analyzers;
-using EcoCode.Tool.Reports;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-
-namespace EcoCode.Tool.Commands;
+﻿namespace EcoCode.Tool.Core.Commands;
 
 internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<AnalyzeSettings>
 {
@@ -29,68 +24,24 @@ internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<An
 
     public override async Task<int> ExecuteAsync(CommandContext context, AnalyzeSettings settings)
     {
-        var report = new HtmlReport(); // TODO : options
+        var report = new HtmlAnalysisReport(); // TODO : options
 
         if (settings.SourceType is SourceType.Solution)
         {
-            Solution solution;
-            try
-            {
-                solution = await workspace.OpenSolutionAsync(settings.Source);
-            }
-            catch (Exception ex)
-            {
-                Tool.WriteLine($"Cannot load the provided solution: {ex.Message}", "red");
-                return 1;
-            }
+            if (await AnalyzeService.OpenSolutionAsync(workspace, settings.Source) is not { } solution) return 1;
 
-            var analyzers = LoadAnalyzers();
+            var analyzers = AnalyzeService.LoadAnalyzers();
             foreach (var project in solution.Projects)
-                await AnalyzeProject(project, analyzers, report);
+                await AnalyzeService.AnalyzeProject(project, analyzers, report);
         }
         else // options.SourceType is SourceType.Project
         {
-            Project project;
-            try
-            {
-                project = await workspace.OpenProjectAsync(settings.Source);
-            }
-            catch (Exception ex)
-            {
-                Tool.WriteLine($"Cannot load the provided project: {ex.Message}", "red");
-                return 1;
-            }
-            await AnalyzeProject(project, LoadAnalyzers(), report);
+            if (await AnalyzeService.OpenProjectAsync(workspace, settings.Source) is not { } project) return 1;
+
+            await AnalyzeService.AnalyzeProject(project, AnalyzeService.LoadAnalyzers(), report);
         }
 
         report.WriteToFile(settings.Output!);
         return 0;
-    }
-
-    private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalyzerReport report)
-    {
-        Tool.WriteLine($"Analyzing project {project.Name}...", "darkorange");
-
-        if (await project.GetCompilationAsync() is not { } compilation)
-        {
-            Tool.WriteLine($"Unable to load the project {project.Name} compilation, skipping.", "red");
-            return;
-        }
-
-        foreach (var diagnostic in await compilation!.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync())
-            report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
-
-        Tool.WriteLine($"Analysis complete for project {project.Name}", "green");
-    }
-
-    private static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers() // TODO : options
-    {
-        var analyzers = ImmutableArray.CreateBuilder<DiagnosticAnalyzer>(64);
-        foreach (var type in typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes())
-        {
-            if (type.IsSealed && type.IsSubclassOf(typeof(DiagnosticAnalyzer)))
-                analyzers.Add((DiagnosticAnalyzer)Activator.CreateInstance(type));
-        }
-        return analyzers.ToImmutableArray();
     }
 }

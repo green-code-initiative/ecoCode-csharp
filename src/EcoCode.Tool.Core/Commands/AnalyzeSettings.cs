@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace EcoCode.Tool.Commands;
+namespace EcoCode.Tool.Core.Commands;
 
 internal enum SourceType
 {
@@ -12,22 +12,23 @@ internal enum OutputType
 {
     Html,
     Json,
-    Csv,
-    Txt
+    Csv
 }
 
 internal sealed class AnalyzeSettings : CommandSettings
 {
-    // -a or --analyzers to specify the analyzers to use. Default is All. Ex: -a "EC72;EC75;EC81"
-    // -i or --ignore to specify the analyzers to ignore. Default is Empty. Ex: -i "EC84;EC85;EC86". Has priority over -a.
-    // -r or --severity to specify the minimum severity of the analyzers to use. Can be All, Info, Warning or Error. Default is All.
-    // -v or --verbosity to customize information display about the analysis. Can be None, Normal or Detailed. Default is Normal.
+    // Arg 0: Source path
+    // Arg 1: Output path
+    // -i or --include to specify the analyzers to include. Default is All. Ex: -i "EC72;EC75;EC81"
+    // -e or --exclude to specify the analyzers to exclude. Default is Empty. Ex: -e "EC84;EC85;EC86". Has priority over -i for conflicts.
+    // -s or --severity to specify the minimum severity of the analyzers to use. Can be Info, Warning or Error. Default is Info.
+    // -q or --quiet to stop any console output. Default is not quiet.
 
     [Description("Path to the .sln/.slnf/.csproj file to load and analyze.")]
     [CommandArgument(0, "[sourcePath]")]
     public string Source { get; set; } = default!;
 
-    [Description("Path to the .html/.json/.csv/.txt file to save the analysis into.")]
+    [Description("Path to the .html/.json/.csv file to save the analysis into.")]
     [CommandArgument(1, "[outputPath]")]
     public string Output { get; set; } = default!;
 
@@ -40,20 +41,13 @@ internal sealed class AnalyzeSettings : CommandSettings
     private static bool IsProject(string? ext) =>
         string.Equals(ext, ".csproj", StringComparison.OrdinalIgnoreCase);
 
-    public override ValidationResult Validate()
-    {
-        if (Path.GetExtension(Source) is not { } sourceExt || !IsSolution(sourceExt) && !IsProject(sourceExt))
-            return ValidationResult.Error($"The source path {Source} must point to a valid .sln, .slnf or .csproj file.");
-
-        if (Path.GetExtension(Output) is not { } outputExt ||
+    public override ValidationResult Validate() =>
+        Path.GetExtension(Source) is not { } sourceExt || !IsSolution(sourceExt) && !IsProject(sourceExt)
+        ? ValidationResult.Error($"The source path {Source} must point to a valid .sln, .slnf or .csproj file.")
+        : Path.GetExtension(Output) is not { } outputExt ||
             !string.Equals(outputExt, ".html", StringComparison.OrdinalIgnoreCase) &&
             !string.Equals(outputExt, ".json", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(outputExt, ".csv", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(outputExt, ".txt", StringComparison.OrdinalIgnoreCase))
-        {
-            return ValidationResult.Error($"The output path {Output} must point to a .html, .json, .csv or .txt file.");
-        }
-
-        return ValidationResult.Success();
-    }
+            !string.Equals(outputExt, ".csv", StringComparison.OrdinalIgnoreCase)
+        ? ValidationResult.Error($"The output path {Output} must point to a .html, .json or .csv file.")
+        : ValidationResult.Success();
 }
