@@ -31,6 +31,17 @@ internal static class AnalyzeService
         }
     }
 
+    public static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers() // TODO : options
+    {
+        var analyzers = ImmutableArray.CreateBuilder<DiagnosticAnalyzer>(64);
+        foreach (var type in typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes())
+        {
+            if (type.IsSealed && type.IsSubclassOf(typeof(DiagnosticAnalyzer)))
+                analyzers.Add((DiagnosticAnalyzer)Activator.CreateInstance(type));
+        }
+        return analyzers.ToImmutableArray();
+    }
+
     public static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalysisReport report)
     {
         Tool.WriteLine($"Analyzing project {project.Name}...", "darkorange");
@@ -45,16 +56,5 @@ internal static class AnalyzeService
             report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
 
         Tool.WriteLine($"Analysis complete for project {project.Name}", "green");
-    }
-
-    public static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers() // TODO : options
-    {
-        var analyzers = ImmutableArray.CreateBuilder<DiagnosticAnalyzer>(64);
-        foreach (var type in typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes())
-        {
-            if (type.IsSealed && type.IsSubclassOf(typeof(DiagnosticAnalyzer)))
-                analyzers.Add((DiagnosticAnalyzer)Activator.CreateInstance(type));
-        }
-        return analyzers.ToImmutableArray();
     }
 }
