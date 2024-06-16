@@ -30,15 +30,14 @@ internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<An
         {
             if (await AnalyzeService.OpenSolutionAsync(workspace, settings.Source) is not { } solution) return 1;
 
-            var analyzers = AnalyzeService.LoadAnalyzers();
             foreach (var project in solution.Projects)
-                await AnalyzeService.AnalyzeProject(project, analyzers, report);
+                await AnalyzeService.AnalyzeProject(project, AnalyzeService.Analyzers, report);
         }
         else // options.SourceType is SourceType.Project
         {
             if (await AnalyzeService.OpenProjectAsync(workspace, settings.Source) is not { } project) return 1;
 
-            await AnalyzeService.AnalyzeProject(project, AnalyzeService.LoadAnalyzers(), report);
+            await AnalyzeService.AnalyzeProject(project, AnalyzeService.Analyzers, report);
         }
 
         report.WriteToFile(settings.Output!);

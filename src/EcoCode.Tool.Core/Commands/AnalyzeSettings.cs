@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 
 namespace EcoCode.Tool.Core.Commands;
 
@@ -17,16 +18,17 @@ internal enum OutputType
     Csv
 }
 
+internal enum SeverityLevel
+{
+    Unknown,
+    Info,
+    Warning,
+    Error
+}
+
 internal sealed class AnalyzeSettings : CommandSettings
 {
     private static readonly ImmutableArray<string> SolutionExtensions = [ ".sln", ".slnf", ".slnx" ];
-
-    // Arg 0: Source path
-    // Arg 1: Output path
-    // -i or --include to specify the analyzers to include. Default is All. Ex: -i "EC72;EC75;EC81"
-    // -e or --exclude to specify the analyzers to exclude. Default is Empty. Ex: -e "EC84;EC85;EC86". Has priority over -i for conflicts.
-    // -s or --severity to specify the minimum severity of the analyzers to use. Can be Info, Warning or Error. Default is Info.
-    // -q or --quiet to stop any console output. Default is not quiet.
 
     [Description("Path to the .sln/.slnf/.slnx/.csproj file to load and analyze.")]
     [CommandArgument(0, "[sourcePath]")]
@@ -36,25 +38,60 @@ internal sealed class AnalyzeSettings : CommandSettings
     [CommandArgument(1, "[outputPath]")]
     public string Output { get; set; } = default!;
 
-    public SourceType SourceType => GetSourceType(Path.GetExtension(Source));
+    [Description("The analyzers to include, default is empty for all. Ex: \"EC72;EC75;EC81\"")]
+    [CommandOption("-i|--include")]
+    public string? Include { get; set; }
 
-    public OutputType OutputType => GetOutputType(Path.GetExtension(Output));
+    [Description("The analyzers to exclude, default is empty for none. Ex: \"EC84;EC85;EC83\"")]
+    [CommandOption("-e|--exclude")]
+    public string? Exclude { get; set; }
 
-    public override ValidationResult Validate() =>
-        SourceType is SourceType.Unknown
-        ? ValidationResult.Error($"The source path {Source} must point to a valid .sln, .slnf, .slnx or .csproj file.")
-        : OutputType is OutputType.Unknown
-        ? ValidationResult.Error($"The output path {Output} must point to a .html, .json or .csv file.")
-        : ValidationResult.Success();
+    [Description("The minimum severity of the analyzers to run. Can be Info, Warning or Error. Default is Info.")]
+    [CommandOption("-s|--severity")]
+    [DefaultValue("Info")]
+    public string Severity { get; set; } = default!;
 
-    private static SourceType GetSourceType(string ext) =>
-        SolutionExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase) ? SourceType.Solution
+    [Description("Stops all console outputs, default is verbose.")]
+    [CommandOption("-q|--quiet")]
+    public bool Quiet { get; set; }
+
+    public SourceType SourceType =>
+        Path.GetExtension(Source) is not { } ext ? SourceType.Unknown
+        : SolutionExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase) ? SourceType.Solution
         : string.Equals(ext, ".csproj", StringComparison.OrdinalIgnoreCase) ? SourceType.Project
         : SourceType.Unknown;
 
-    private static OutputType GetOutputType(string ext) =>
-        string.Equals(ext, ".html", StringComparison.OrdinalIgnoreCase) ? OutputType.Html
+    public OutputType OutputType =>
+        Path.GetExtension(Output) is not { } ext ? OutputType.Unknown
+        : string.Equals(ext, ".html", StringComparison.OrdinalIgnoreCase) ? OutputType.Html
         : string.Equals(ext, ".json", StringComparison.OrdinalIgnoreCase) ? OutputType.Json
         : string.Equals(ext, ".csv", StringComparison.OrdinalIgnoreCase) ? OutputType.Csv
         : OutputType.Unknown;
+
+    public SeverityLevel SeverityLevel =>
+        string.Equals(Severity, nameof(SeverityLevel.Info), StringComparison.OrdinalIgnoreCase) ? SeverityLevel.Info
+        : string.Equals(Severity, nameof(SeverityLevel.Warning), StringComparison.OrdinalIgnoreCase) ? SeverityLevel.Warning
+        : string.Equals(Severity, nameof(SeverityLevel.Error), StringComparison.OrdinalIgnoreCase) ? SeverityLevel.Error
+        : SeverityLevel.Unknown;
+
+    public override ValidationResult Validate()
+    {
+        if (SourceType is SourceType.Unknown)
+            return ValidationResult.Error($"The source path {Source} must point to a valid .sln, .slnf, .slnx or .csproj file.");
+
+        if (OutputType is OutputType.Unknown)
+            return ValidationResult.Error($"The output path {Output} must point to a .html, .json or .csv file.");
+
+        if (SeverityLevel is SeverityLevel.Unknown)
+            return ValidationResult.Error($"The severity level is unknown.");
+
+        var validIds = new HashSet<string>(AnalyzeService.Analyzers
+            .SelectMany(analyzer => analyzer.SupportedDiagnostics.Select(diag => diag.Id)));
+
+        return Include?.Split(';').Any(token => !validIds.Contains(token)) == true
+            ? ValidationResult.Error("The include option contains invalid analyzer ids.")
+            : Exclude?.Split(';').Any(token => !validIds.Contains(token)) == true
+            ? ValidationResult.Error("The exclude option contains invalid analyzer ids.")
+            : ValidationResult.Success();
+    }
 }

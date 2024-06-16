@@ -1,10 +1,13 @@
 ﻿using EcoCode.Analyzers;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Linq;
 
 namespace EcoCode.Tool.Core.Services;
 
 internal static class AnalyzeService
 {
+    // Code loading
+
     public static async Task<Solution?> OpenSolutionAsync(Tool.Workspace workspace, string solutionFilePath)
     {
         try
@@ -31,16 +34,13 @@ internal static class AnalyzeService
         }
     }
 
-    public static ImmutableArray<DiagnosticAnalyzer> LoadAnalyzers() // TODO : options
-    {
-        var analyzers = ImmutableArray.CreateBuilder<DiagnosticAnalyzer>(64);
-        foreach (var type in typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes())
-        {
-            if (type.IsSealed && type.IsSubclassOf(typeof(DiagnosticAnalyzer)))
-                analyzers.Add((DiagnosticAnalyzer)Activator.CreateInstance(type));
-        }
-        return analyzers.ToImmutableArray();
-    }
+    // Code analysis
+
+    public static readonly ImmutableArray<DiagnosticAnalyzer> Analyzers =
+        typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes()
+        .Where(type => type.IsSealed && type.IsSubclassOf(typeof(DiagnosticAnalyzer)))
+        .Select(type => (DiagnosticAnalyzer)Activator.CreateInstance(type))
+        .ToImmutableArray();
 
     public static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalysisReport report)
     {
