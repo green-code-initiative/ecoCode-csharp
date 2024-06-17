@@ -3,8 +3,8 @@
 internal enum SourceType
 {
     Unknown,
-    Solution,
-    Project
+    Project,
+    Solution
 }
 
 internal enum OutputType
@@ -25,7 +25,11 @@ internal enum SeverityLevel
 
 internal static class Extensions
 {
-    public static ImmutableArray<string> Solution { get; } = [".sln", ".slnf", ".slnx"];
+    private const string Project = ".csproj";
 
-    public const string Project = ".csproj";
+    private static readonly ImmutableArray<string> Solution = [".sln", ".slnf", ".slnx"];
+
+    public static bool IsProject(string? ext) => string.Equals(ext, Project, StringComparison.OrdinalIgnoreCase);
+
+    public static bool IsSolution(string? ext) => ext?.Length > 0 && Solution.Contains(ext, StringComparer.OrdinalIgnoreCase);
 }

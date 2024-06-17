@@ -24,13 +24,14 @@ internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<An
 
     public override async Task<int> ExecuteAsync(CommandContext context, AnalyzeSettings settings)
     {
-        var report = new HtmlAnalysisReport(); // TODO : options
+        IAnalysisReport report;
 
         if (settings.SourceType is SourceType.Solution)
         {
             if (await AnalyzeService.OpenSolutionAsync(workspace, settings.Source) is not { } solution) return 1;
 
             var analizers = settings.GetActiveAnalyzers();
+            report = AnalysisReport.Create(settings.OutputType);
             foreach (var project in solution.Projects)
                 await AnalyzeService.AnalyzeProject(project, analizers, report);
         }
@@ -39,6 +40,7 @@ internal sealed class AnalyzeCommand(Tool.Workspace workspace) : AsyncCommand<An
             if (await AnalyzeService.OpenProjectAsync(workspace, settings.Source) is not { } project) return 1;
 
             var analizers = settings.GetActiveAnalyzers();
+            report = AnalysisReport.Create(settings.OutputType);
             await AnalyzeService.AnalyzeProject(project, analizers, report);
         }
 

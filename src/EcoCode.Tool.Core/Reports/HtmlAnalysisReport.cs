@@ -1,6 +1,6 @@
 ﻿namespace EcoCode.Tool.Core.Reports;
 
-internal sealed class HtmlAnalysisReport : BaseAnalysisReport
+internal sealed class HtmlAnalysisReport : AnalysisReport
 {
     private const string HtmlHeader = """
         <html>
@@ -33,15 +33,15 @@ internal sealed class HtmlAnalysisReport : BaseAnalysisReport
     protected override void WriteToStream(StreamWriter writer)
     {
         writer.WriteLine(HtmlHeader);
-        foreach (var diagnostic in Diagnostics)
+        foreach (var diag in Diagnostics)
         {
             writer.WriteLine("      <tr>");
-            writer.WriteLine($"         <td>{diagnostic.Directory}</td>");
-            writer.WriteLine($"         <td>{diagnostic.File}</td>");
-            writer.WriteLine($"         <td>{diagnostic.Location}</td>");
-            writer.WriteLine($"         <td>{diagnostic.Severity}</td>");
-            writer.WriteLine($"         <td>{diagnostic.Code}</td>");
-            writer.WriteLine($"         <td>{diagnostic.Message}</td>");
+            writer.WriteLine($"         <td>{diag.Directory}</td>");
+            writer.WriteLine($"         <td>{diag.File}</td>");
+            writer.WriteLine($"         <td>{diag.Location}</td>");
+            writer.WriteLine($"         <td>{diag.Severity}</td>");
+            writer.WriteLine($"         <td>{diag.Code}</td>");
+            writer.WriteLine($"         <td>{diag.Message}</td>");
             writer.WriteLine("      </tr>");
         }
         writer.WriteLine(HtmlFooter);

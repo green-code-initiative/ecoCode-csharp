@@ -1,14 +1,24 @@
 {
-    "profiles": {
-        "EcoCode.Tool 4.7.2": {
-            "commandName": "Project",
-            "targetFramework": "net472",
-            "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\""
-        },
-        "EcoCode.Tool 8": {
-            "commandName": "Project",
-            "targetFramework": "net8.0",
-            "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\""
-        }
+  "profiles": {
+    "Tool net8.0 csv": {
+      "commandName": "Project",
+      "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.csv\"",
+      "targetFramework": "net8.0"
+    },
+    "Tool net8.0 html": {
+      "commandName": "Project",
+      "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\"",
+      "targetFramework": "net8.0"
+    },
+    "Tool net472 html": {
+      "commandName": "Project",
+      "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.html\"",
+      "targetFramework": "net472"
+    },
+    "Tool net8.0 json": {
+      "commandName": "Project",
+      "commandLineArgs": "analyze \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.sln\" \"C:\\Users\\vlajoumard\\source\\ecoCode-csharp-test-project\\ecoCode-csharp-test-project.json\"",
+      "targetFramework": "net8.0"
     }
+  }
 }

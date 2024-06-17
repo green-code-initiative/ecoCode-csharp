@@ -42,12 +42,13 @@ internal sealed class AnalyzeSettings : CommandSettings
         Severity = severity;
 
         string? ext = Path.GetExtension(source);
-        SourceType = Extensions.Solution.Contains(ext, StringComparer.OrdinalIgnoreCase) ? SourceType.Solution
-            : string.Equals(ext, Extensions.Project, StringComparison.OrdinalIgnoreCase) ? SourceType.Project
+        SourceType = Extensions.IsProject(ext) ? SourceType.Project
+            : Extensions.IsSolution(ext) ? SourceType.Solution
             : SourceType.Unknown;
 
-        ext = Path.GetExtension(output); // Substring(1) to remove the leading dot
-        OutputType = Enum.TryParse<OutputType>(ext?.Substring(1), ignoreCase: true, out var extType) ? extType : OutputType.Unknown;
+        OutputType = Enum.TryParse<OutputType>(Path.GetExtension(output)?.Substring(1), ignoreCase: true, out var extType)
+            ? extType // Substring(1) to remove the leading dot
+            : OutputType.Unknown;
 
         SeverityLevel = Enum.TryParse<SeverityLevel>(severity, ignoreCase: true, out var level) ? level : SeverityLevel.Unknown;
     }
