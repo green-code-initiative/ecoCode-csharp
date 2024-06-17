@@ -1,6 +1,4 @@
 ﻿using EcoCode.Analyzers;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Linq;
 
 namespace EcoCode.Tool.Core.Services;
 
