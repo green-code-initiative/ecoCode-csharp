@@ -27,7 +27,6 @@
   <Project Path="src\EcoCode.Core\EcoCode.Core.csproj" />
   <Project Path="src\EcoCode.Package\EcoCode.Package.csproj" />
   <Project Path="src\EcoCode.Tests\EcoCode.Tests.csproj" />
-  <Project Path="src\EcoCode.Tool.Core\EcoCode.Tool.Core.csproj" />
   <Project Path="src\EcoCode.Tool\EcoCode.Tool.csproj" />
   <Project Path="src\EcoCode.Vsix\EcoCode.Vsix.csproj" />
 </Solution>

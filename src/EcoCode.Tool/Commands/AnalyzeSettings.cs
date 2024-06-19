@@ -1,9 +1,16 @@
-﻿using System.ComponentModel;
+﻿using EcoCode.Analyzers;
+using System.ComponentModel;
 
-namespace EcoCode.Tool.Core.Commands;
+namespace EcoCode.Tool.Commands;
 
 internal sealed class AnalyzeSettings : CommandSettings
 {
+    private static readonly ImmutableArray<DiagnosticAnalyzer> AllAnalyzers =
+        typeof(DontCallFunctionsInLoopConditions).Assembly.GetTypes()
+        .Where(type => type.IsSealed && type.IsSubclassOf(typeof(DiagnosticAnalyzer)))
+        .Select(type => (DiagnosticAnalyzer)Activator.CreateInstance(type)!)
+        .ToImmutableArray();
+
     [Description("Path to the .sln/.slnf/.slnx/.csproj file to load and analyze.")]
     [CommandArgument(0, "[sourcePath]")]
     public string Source { get; set; }
@@ -46,8 +53,8 @@ internal sealed class AnalyzeSettings : CommandSettings
             : Extensions.IsSolution(ext) ? SourceType.Solution
             : SourceType.Unknown;
 
-        OutputType = Enum.TryParse<OutputType>(Path.GetExtension(output)?.Substring(1), ignoreCase: true, out var extType)
-            ? extType // Substring(1) to remove the leading dot
+        OutputType = Enum.TryParse<OutputType>(Path.GetExtension(output)?[1..], ignoreCase: true, out var extType)
+            ? extType // [1..] to remove the leading dot
             : OutputType.Unknown;
 
         SeverityLevel = Enum.TryParse<SeverityLevel>(severity, ignoreCase: true, out var level) ? level : SeverityLevel.Unknown;
@@ -64,8 +71,7 @@ internal sealed class AnalyzeSettings : CommandSettings
         if (SeverityLevel is SeverityLevel.Unknown)
             return ValidationResult.Error("The severity level must be Info, Warn or Error.");
 
-        var validIds = new HashSet<string>(AnalyzeService.Analyzers
-            .SelectMany(analyzer => analyzer.SupportedDiagnostics.Select(diag => diag.Id)));
+        var validIds = new HashSet<string>(AllAnalyzers.SelectMany(analyzer => analyzer.SupportedDiagnostics.Select(diag => diag.Id)));
 
         return Include.Length != 0 && Include.Split(';').Any(token => !validIds.Contains(token))
             ? ValidationResult.Error("The include option contains invalid analyzer ids.")
@@ -80,13 +86,13 @@ internal sealed class AnalyzeSettings : CommandSettings
             Include.Length == 0
             ? Exclude.Length == 0
                 ? null
-                : analyzer => !analyzer.SupportedDiagnostics.All(diag => Exclude.Contains(diag.Id))
+                : analyzer => !analyzer.SupportedDiagnostics.All(diag => Exclude.Contains(diag.Id, StringComparison.OrdinalIgnoreCase))
             : Exclude.Length == 0
-                ? analyzer => analyzer.SupportedDiagnostics.Any(diag => Include.Contains(diag.Id))
+                ? analyzer => analyzer.SupportedDiagnostics.Any(diag => Include.Contains(diag.Id, StringComparison.OrdinalIgnoreCase))
                 : analyzer =>
-                    analyzer.SupportedDiagnostics.Any(diag => Include.Contains(diag.Id)) &&
-                    !analyzer.SupportedDiagnostics.All(diag => Exclude.Contains(diag.Id));
+                    analyzer.SupportedDiagnostics.Any(diag => Include.Contains(diag.Id, StringComparison.OrdinalIgnoreCase)) &&
+                    !analyzer.SupportedDiagnostics.All(diag => Exclude.Contains(diag.Id, StringComparison.OrdinalIgnoreCase));
 
-        return predicate is null ? AnalyzeService.Analyzers : AnalyzeService.Analyzers.Where(predicate).ToImmutableArray();
+        return predicate is null ? AllAnalyzers : AllAnalyzers.Where(predicate).ToImmutableArray();
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Tool.Core.Reports;
+﻿namespace EcoCode.Tool.Reports;
 
 internal interface IAnalysisReport
 {

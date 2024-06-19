@@ -1,9 +1,6 @@
-﻿global using EcoCode.Tool.Core.Commands;
-global using EcoCode.Tool.Core.Reports;
-global using EcoCode.Tool.Core.Services;
+﻿global using EcoCode.Tool.Commands;
 global using Microsoft.CodeAnalysis;
 global using Microsoft.CodeAnalysis.Diagnostics;
-global using Microsoft.Extensions.DependencyInjection;
 global using Spectre.Console;
 global using Spectre.Console.Cli;
 global using System.Collections.Generic;

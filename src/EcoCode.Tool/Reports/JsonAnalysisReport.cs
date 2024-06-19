@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace EcoCode.Tool.Core.Reports;
+namespace EcoCode.Tool.Reports;
 
 internal sealed class JsonAnalysisReport : AnalysisReport
 {
@@ -9,7 +9,7 @@ internal sealed class JsonAnalysisReport : AnalysisReport
         writer.WriteLine("[");
         for (int i = 0; i < Diagnostics.Count - 1; i++)
             writer.WriteLine(JsonSerializer.Serialize(Diagnostics[i]) + ',');
-        writer.WriteLine(JsonSerializer.Serialize(Diagnostics[Diagnostics.Count - 1]));
+        writer.WriteLine(JsonSerializer.Serialize(Diagnostics[^1]));
         writer.WriteLine("]");
     }
 }

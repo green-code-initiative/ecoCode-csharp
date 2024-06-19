@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Tool.Core.Reports;
+﻿namespace EcoCode.Tool.Reports;
 
 internal readonly struct DiagnosticInfo : IEquatable<DiagnosticInfo>
 {
@@ -23,12 +23,12 @@ internal readonly struct DiagnosticInfo : IEquatable<DiagnosticInfo>
     {
         var pos = diagnostic.Location.GetLineSpan();
         return new DiagnosticInfo(
-            Path.GetDirectoryName(pos.Path),
+            Path.GetDirectoryName(pos.Path) ?? string.Empty,
             Path.GetFileName(pos.Path),
             $"Row {pos.StartLinePosition.Line + 1}, Column {pos.StartLinePosition.Character + 1}",
             diagnostic.Severity.ToString(),
             diagnostic.Id,
-            diagnostic.GetMessage());
+            diagnostic.GetMessage(formatProvider: null));
     }
 
     public override int GetHashCode() => (Directory, File, Location, Severity, Code, Message).GetHashCode();
