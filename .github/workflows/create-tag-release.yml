@@ -27,13 +27,24 @@ jobs:
   #   needs: versioning
   #   uses: ./.github/workflows/03-build-vsix.yml
 
+  # publish-nuget:
+  #   needs: build-nuget #, build-vsix
+  #   uses: ./.github/workflows/04-publish-nuget.yml
+  #   with:
+  #     tag: ${{ needs.versioning.outputs.tag }}
+  #   secrets:
+  #     nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+
   publish-nuget:
-    needs: build-nuget #, build-vsix
-    uses: ./.github/workflows/04-publish-nuget.yml
-    with:
-      tag: ${{ needs.versioning.outputs.tag }}
-    secrets:
-      nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: nupkg
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - run: echo "PACKAGE=$(find . -name "EcoCode.${{ needs.versioning.outputs.tag }}.nupkg" | head -n 1)" >> $GITHUB_ENV
+    - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
 
   # publish-vsix:
   #   needs: [versioning, build-nuget, build-vsix]
