@@ -43,6 +43,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             catch (Exception ex)
             {
                 Program.WriteLine($"Cannot load the provided solution: {ex.Message}", "red");
+                Program.WriteLine(ex.StackTrace!);
                 return 1;
             }
 
@@ -61,6 +62,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             catch (Exception ex)
             {
                 Program.WriteLine($"Cannot load the provided project: {ex.Message}", "red");
+                Program.WriteLine(ex.StackTrace!);
                 return 1;
             }
 

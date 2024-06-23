@@ -11,18 +11,25 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="publish\**" />
-	  <EmbeddedResource Remove="publish\**" />
-	  <None Remove="publish\**" />
+		<Compile Remove="container\**" />
+		<Compile Remove="publish\**" />
+		<EmbeddedResource Remove="container\**" />
+		<EmbeddedResource Remove="publish\**" />
+		<None Remove="container\**" />
+		<None Remove="publish\**" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Build" PrivateAssets="all">
+			<ExcludeAssets>compile; runtime</ExcludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+		<PackageReference Include="Microsoft.Extensions.Logging" />
 		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<ExcludeAssets>compile; runtime</ExcludeAssets>
 		</PackageReference>
 		<PackageReference Include="Spectre.Console" />
 		<PackageReference Include="Spectre.Console.Cli" />

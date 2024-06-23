@@ -6,12 +6,14 @@
 		<Copyright>Copyright EcoCode © 2024</Copyright>
 
 		<TargetFramework>netstandard2.0</TargetFramework>
+		<IsPackable>false</IsPackable>
 		<LangVersion>latest</LangVersion>
 		<GenerateDependencyFile>false</GenerateDependencyFile>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<Nullable>enable</Nullable>
+
 		<NeutralLanguage>en</NeutralLanguage>
-		<IsPackable>false</IsPackable>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
 		<AnalysisMode>all</AnalysisMode>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>

@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace EcoCode.Tool.Commands;
+﻿namespace EcoCode.Tool.Commands;
 
 internal enum SourceType
 {

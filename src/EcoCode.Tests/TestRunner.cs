@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace EcoCode.Tests;
 
@@ -13,7 +14,7 @@ internal static class TestRunner
         where TAnalyzer : DiagnosticAnalyzer, new() =>
         new CustomAnalyzerVerifier<TAnalyzer>(source, languageVersion).RunAsync();
 
-    private sealed class CustomAnalyzerVerifier<TAnalyzer> : CSharpAnalyzerTest<TAnalyzer, MSTestVerifier>
+    private sealed class CustomAnalyzerVerifier<TAnalyzer> : CSharpAnalyzerTest<TAnalyzer, DefaultVerifier>
         where TAnalyzer : DiagnosticAnalyzer, new()
     {
         private readonly LanguageVersion _languageVersion;
@@ -36,7 +37,7 @@ internal static class TestRunner
         where TCodeFix : CodeFixProvider, new() =>
         new CustomCodeFixVerifier<TAnalyzer, TCodeFix>(source, fixedSource, languageVersion).RunAsync();
 
-    private sealed class CustomCodeFixVerifier<TAnalyzer, TCodeFix> : CSharpCodeFixTest<TAnalyzer, TCodeFix, MSTestVerifier>
+    private sealed class CustomCodeFixVerifier<TAnalyzer, TCodeFix> : CSharpCodeFixTest<TAnalyzer, TCodeFix, DefaultVerifier>
         where TAnalyzer : DiagnosticAnalyzer, new()
         where TCodeFix : CodeFixProvider, new()
     {

@@ -6,14 +6,10 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        if (MSBuildLocator.QueryVisualStudioInstances().FirstOrDefault() is not { } instance)
-        {
-            WriteLine("No MSBuild instance was found, exiting.", "red");
-            return 1;
-        }
+        WriteLine($"EcoCode.Tool started with: {string.Join(", ", args)}");
 
-        WriteLine($"Using MSBuild found at {instance.MSBuildPath}.");
-        MSBuildLocator.RegisterInstance(instance);
+        _ = MSBuildLocator.RegisterDefaults();
+        // MSBuildLocator.RegisterMSBuildPath(AppContext.BaseDirectory);
 
         var app = new CommandApp();
         app.Configure(config => config.AddCommand<AnalyzeCommand>("analyze"));

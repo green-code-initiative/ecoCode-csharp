@@ -5,20 +5,18 @@
 		<Product>EcoCode.Tests</Product>
 		<TargetFramework>net8.0</TargetFramework>
 		<IsTestProject>true</IsTestProject>
-		<NoWarn>$(NoWarn);1591</NoWarn><!--No need for mandatory code comments-->
+		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="coverlet.collector" PrivateAssets="all">
+			<ExcludeAssets>compile; runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="coverlet.msbuild">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="coverlet.msbuild" PrivateAssets="all">
+			<ExcludeAssets>compile; runtime</ExcludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing.MSTest" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing.MSTest" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
 		<PackageReference Include="MSTest.TestAdapter" PrivateAssets="all" />
 		<PackageReference Include="MSTest.TestFramework" PrivateAssets="all" />
