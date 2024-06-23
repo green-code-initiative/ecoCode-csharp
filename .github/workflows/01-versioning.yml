@@ -2,6 +2,11 @@ name: Versioning
 
 on:
   workflow_call:
+    outputs:
+      tag:
+        value: ${{ jobs.versioning.outputs.tag }}
+      version:
+        value: ${{ jobs.versioning.outputs.version }}  
 
 jobs:
   versioning:
