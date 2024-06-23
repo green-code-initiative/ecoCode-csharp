@@ -1,5 +1,11 @@
 <Solution>
   <Folder Name="/Solution Items/Workflows/">
+    <File Path=".github\workflows\01-versioning.yml" />
+    <File Path=".github\workflows\02-build-nuget.yml" />
+    <File Path=".github\workflows\03-build-vsix.yml" />
+    <File Path=".github\workflows\04-publish-nuget.yml" />
+    <File Path=".github\workflows\05-publish-vsix.yml" />
+    <File Path=".github\workflows\06-create-release.yml" />
     <File Path=".github\workflows\build-and-test.yml" />
     <File Path=".github\workflows\create-tag-release.yml" />
   </Folder>

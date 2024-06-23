@@ -1,0 +1,27 @@
+name: Publish VSIX
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+jobs:
+  publish-vsix:
+    if: ${{ inputs.tag == inputs.version }}
+    runs-on: windows-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: cezarypiatek/VsixPublisherAction@1.1
+      with:
+        extension-file: vsix/EcoCode.vsix
+        publish-manifest-file: vsix/publishManifest.json
+        personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}

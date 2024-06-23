@@ -1,0 +1,26 @@
+name: Build VSIX
+
+on:
+  workflow_call:
+
+jobs:
+  build-vsix:
+    runs-on: windows-latest
+    steps:
+    - name: Restore versioned sources
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          !**/.git
+          **/*
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: actions/setup-dotnet@v4
+    - run: dotnet restore VsixOnly.slnf
+    - uses: microsoft/setup-msbuild@v2
+    - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
+    - uses: actions/cache/save@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
