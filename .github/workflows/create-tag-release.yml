@@ -36,6 +36,7 @@ jobs:
   #     nuget-api-key: ${{ secrets.NUGET_API_KEY }}
 
   publish-nuget:
+    needs: build-nuget
     runs-on: ubuntu-latest
     steps:
     - uses: actions/cache/restore@v4
