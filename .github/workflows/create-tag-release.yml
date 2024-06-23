@@ -28,7 +28,7 @@ jobs:
   #   uses: ./.github/workflows/03-build-vsix.yml
 
   publish-nuget:
-    needs: [versioning, build-nuget, build-vsix]
+    needs: build-nuget #, build-vsix
     uses: ./.github/workflows/04-publish-nuget.yml
     with:
       tag: ${{ needs.versioning.outputs.tag }}
