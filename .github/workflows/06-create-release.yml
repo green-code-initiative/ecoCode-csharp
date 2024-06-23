@@ -1,0 +1,36 @@
+name: Create Release
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/cache/restore@v4
+      with:
+        path: nupkg
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ inputs.tag }}
+        name: ${{ inputs.tag }}
+        draft: false
+        prerelease: ${{ inputs.tag != inputs.version }}
+        body: "Release of version ${{ inputs.tag }}"
+        files: |
+          nupkg/**/EcoCode.${{ inputs.tag }}.nupkg
+          vsix/EcoCode.vsix

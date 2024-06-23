@@ -15,176 +15,37 @@ env:
 
 jobs:
   versioning:
-    runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.versioning.outputs.tag }}
-      version: ${{ steps.versioning.outputs.version }} # same as tag but without the -betaN part at the end, if present
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 # Necessary to fetch tags
-    - name: Install xmlstarlet
-      run: |
-          sudo apt-get update
-          sudo apt-get install -y xmlstarlet
-    - id: versioning
-      run: |
-        TAG=${GITHUB_REF#refs/tags/}
-
-        TAG_COMMIT=$(git rev-list -n 1 $TAG)
-        MAIN_BRANCH_COMMIT=$(git rev-parse origin/${{ github.event.repository.default_branch }})
-        if ! git merge-base --is-ancestor $TAG_COMMIT $MAIN_BRANCH_COMMIT; then
-          echo "Tag is not on the main branch, stopping workflow."
-          exit 1
-        fi
-
-        if [[ $TAG =~ ^([0-9]+\.[0-9]+\.[0-9]+)(-beta[0-9]+)?$ ]]; then
-          echo "version=${BASH_REMATCH[1]}" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-        else
-          echo "Error: Tag does not match the expected format 'X.Y.Z' or 'X.Y.Z-betaN'"
-          exit 1
-        fi
-    - name: Set Version in Directory.Build.props
-      run: xmlstarlet ed --inplace -u "/Project/PropertyGroup/Version" -v "${{ steps.versioning.outputs.version }}" Directory.Build.props
-    - name: Set Version in VSIX manifest
-      shell: pwsh
-      run: |
-        [xml]$manifest = Get-Content "src\EcoCode.Vsix\source.extension.vsixmanifest"
-        $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
-        if ($identity -ne $null) {
-            $identity.Version = "${{ steps.versioning.outputs.version }}"
-        }
-        $manifest.Save("src\EcoCode.Vsix\source.extension.vsixmanifest")
-    - name: Cache updated sources
-      uses: actions/cache/save@v4
-      with:
-        path: |
-          !**/.git
-          **/*
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
+    uses: ./.github/workflows/01-versioning.yml
 
   build-nuget:
     needs: versioning
-    runs-on: ubuntu-latest
-    steps:
-    - name: Restore versioned sources
-      uses: actions/cache/restore@v4
-      with:
-        path: |
-          !**/.git
-          **/*
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: actions/setup-dotnet@v4
-    - run: dotnet restore NuGetOnly.slnf
-    - run: dotnet build NuGetOnly.slnf -c Release --no-restore
-    - run: dotnet pack NuGetOnly.slnf -c Release --no-build -o ./nupkg -p:Version=${{ needs.versioning.outputs.tag }}
-    - uses: actions/cache/save@v4
-      with:
-        path: nupkg
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
+    uses: ./.github/workflows/02-build-nuget.yml
+    with:
+      tag: ${{ needs.versioning.outputs.tag }}
 
   build-vsix:
     needs: versioning
-    runs-on: windows-latest
-    steps:
-    - name: Restore versioned sources
-      uses: actions/cache/restore@v4
-      with:
-        path: |
-          !**/.git
-          **/*
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: actions/setup-dotnet@v4
-    - run: dotnet restore VsixOnly.slnf
-    - uses: microsoft/setup-msbuild@v2
-    - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
-    - uses: actions/cache/save@v4
-      with:
-        path: vsix
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
+    uses: ./.github/workflows/03-build-vsix.yml
+    with:
+      tag: ${{ needs.versioning.outputs.tag }}
 
-  publish-nuget: # Only if both builds succeeded
+  publish-nuget:
     needs: [versioning, build-nuget, build-vsix]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/cache/restore@v4
-      with:
-        path: nupkg
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - run: echo "PACKAGE=$(find . -name "EcoCode.${{ needs.versioning.outputs.tag }}.nupkg" | head -n 1)" >> $GITHUB_ENV
-    - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.NUGET_API_KEY }}" -s https://api.nuget.org/v3/index.json
+    uses: ./.github/workflows/04-publish-nuget.yml
+    with:
+      tag: ${{ needs.versioning.outputs.tag }}
+      version: ${{ needs.versioning.outputs.version }}
 
-  publish-vsix: # Only if both builds succeeded, and the tag is not a pre-release
+  publish-vsix:
     needs: [versioning, build-nuget, build-vsix]
-    if: ${{ needs.versioning.outputs.tag == needs.versioning.outputs.version }}
-    runs-on: windows-latest
-    steps:
-    - uses: actions/cache/restore@v4
-      with:
-        path: vsix
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: cezarypiatek/VsixPublisherAction@1.1
-      with:
-        extension-file: vsix\EcoCode.vsix
-        publish-manifest-file: vsix\publishManifest.json
-        personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}
+    uses: ./.github/workflows/05-publish-vsix.yml
+    with:
+      tag: ${{ needs.versioning.outputs.tag }}
+      version: ${{ needs.versioning.outputs.version }}
 
-  create-release: # Only if both builds succeeded
-    needs: [versioning, build-nuget, build-vsix]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/cache/restore@v4
-      with:
-        path: nupkg
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: actions/cache/restore@v4
-      with:
-        path: vsix
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: softprops/action-gh-release@v2
-      with:
-        tag_name: ${{ needs.versioning.outputs.tag }}
-        name: ${{ needs.versioning.outputs.tag }}
-        draft: false
-        prerelease: ${{ needs.versioning.outputs.tag != needs.versioning.outputs.version }}
-        body: "Release of version ${{ needs.versioning.outputs.tag }}"
-        files: |
-          nupkg/**/EcoCode.${{ needs.versioning.outputs.tag }}.nupkg
-          vsix/EcoCode.vsix
-
-  # Adapt when the test project is hosted and ready
-  # update-test-project:
-  #   needs: create-release
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout test project
-  #       uses: actions/checkout@v4
-  #       with:
-  #         repository: 'your-github-username/ecoCode-csharp-test-project'
-  #         token: ${{ secrets.TESTPROJECT_ACCESS_TOKEN }}
-  #         path: 'test-project'
-
-  #     - name: Update package version in csproj
-  #       run: |
-  #         sed -i 's/<PackageReference Include="EcoCode" Version=".*">/<PackageReference Include="EcoCode" Version="${{ needs.versioning.outputs.tag }}">' test-project/ecoCode-csharp-test-project.csproj
-
-  #     - name: Commit and push if changed
-  #       run: |
-  #         cd test-project
-  #         git config user.name github-actions
-  #         git config user.email github-actions@github.com
-  #         git add .
-  #         git commit -m "Update EcoCode package version to ${{ needs.versioning.outputs.tag }}" || exit 0
-  #         git push
-  #       env:
-  #         ACCESS_TOKEN: ${{ secrets.TESTPROJECT_ACCESS_TOKEN }}
+  create-release:
+    needs: [publish-nuget, publish-vsix]
+    uses: ./.github/workflows/06-create-release.yml
+    with:
+      tag: ${{ needs.versioning.outputs.tag }}
+      version: ${{ needs.versioning.outputs.version }}
