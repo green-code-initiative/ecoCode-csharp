@@ -7,6 +7,7 @@
 		<IsPackable>true</IsPackable>
 		<PackAsTool>true</PackAsTool>
 		<EnablePackageValidation>true</EnablePackageValidation>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
 
 		<Title>EcoCode.Tool</Title>
@@ -32,6 +33,10 @@
 		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
+
+	<Target Name="PostPublishCleanup" AfterTargets="Publish">
+		<RemoveDir Directories="$(PublishDir)/BuildHost-net472" />
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Build" PrivateAssets="all" ExcludeAssets="compile; runtime" />
