@@ -3,12 +3,8 @@
 		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageVersion Include="coverlet.collector" Version="6.0.2" PrivateAssets="all">
-			<ExcludeAssets>compile; runtime</ExcludeAssets>
-		</PackageVersion>
-		<PackageVersion Include="coverlet.msbuild" Version="6.0.2" PrivateAssets="all">
-			<ExcludeAssets>compile; runtime</ExcludeAssets>
-		</PackageVersion>
+		<PackageVersion Include="coverlet.collector" Version="6.0.2" PrivateAssets="all" ExcludeAssets="compile; runtime" />
+		<PackageVersion Include="coverlet.msbuild" Version="6.0.2" PrivateAssets="all" ExcludeAssets="compile; runtime" />
 		<PackageVersion Include="Microsoft.Build" Version="17.10.4" />
 		<PackageVersion Include="Microsoft.Build.Locator" Version="1.7.8" />
 		<PackageVersion Include="Microsoft.CodeAnalysis" Version="4.10.0" />

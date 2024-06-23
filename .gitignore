@@ -483,4 +483,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-/src/EcoCode.Tool/container
+
+**/Container
+**/Publish

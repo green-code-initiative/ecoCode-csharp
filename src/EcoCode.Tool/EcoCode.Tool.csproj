@@ -4,33 +4,43 @@
 		<OutputType>Exe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 
-		<!--<PackAsTool>true</PackAsTool>
-		<ToolCommandName>ecocode-cs</ToolCommandName>-->
+		<IsPackable>true</IsPackable>
+		<PackAsTool>true</PackAsTool>
+		<EnablePackageValidation>true</EnablePackageValidation>
+		<RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
+
+		<Title>EcoCode.Tool</Title>
+		<Product>EcoCode.Tool</Product>
+		<PackageId>EcoCode.Tool</PackageId>
+		<ToolCommandName>ecocode</ToolCommandName>
+
+		<PackageProjectUrl>https://github.com/green-code-initiative/ecoCode-csharp</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/green-code-initiative/ecoCode-csharp</RepositoryUrl>
+		<PackageIcon>icon.jpeg</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageTags>EcoCode, Analyzers, Environment</PackageTags>
+		<PackageReleaseNotes></PackageReleaseNotes>
+		<RestoreSources>https://api.nuget.org/v3/index.json</RestoreSources>
 
 		<NoWarn>${NoWarn};CA1812</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Remove="container\**" />
-		<Compile Remove="publish\**" />
-		<EmbeddedResource Remove="container\**" />
-		<EmbeddedResource Remove="publish\**" />
-		<None Remove="container\**" />
-		<None Remove="publish\**" />
+		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Build" PrivateAssets="all">
-			<ExcludeAssets>compile; runtime</ExcludeAssets>
-		</PackageReference>
+		<PackageReference Include="Microsoft.Build" PrivateAssets="all" ExcludeAssets="compile; runtime" />
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.Logging" />
-		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all">
-			<ExcludeAssets>compile; runtime</ExcludeAssets>
-		</PackageReference>
+		<PackageReference Include="Roslynator.Analyzers" PrivateAssets="all" ExcludeAssets="compile; runtime" />
 		<PackageReference Include="Spectre.Console" />
 		<PackageReference Include="Spectre.Console.Cli" />
 		<PackageReference Include="System.Text.Json" />

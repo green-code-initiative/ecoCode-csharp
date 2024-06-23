@@ -6,10 +6,7 @@ internal static class Program
 {
     public static async Task<int> Main(string[] args)
     {
-        WriteLine($"EcoCode.Tool started with: {string.Join(", ", args)}");
-
         _ = MSBuildLocator.RegisterDefaults();
-        // MSBuildLocator.RegisterMSBuildPath(AppContext.BaseDirectory);
 
         var app = new CommandApp();
         app.Configure(config => config.AddCommand<AnalyzeCommand>("analyze"));

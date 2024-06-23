@@ -9,12 +9,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" PrivateAssets="all">
-			<ExcludeAssets>compile; runtime</ExcludeAssets>
-		</PackageReference>
-		<PackageReference Include="coverlet.msbuild" PrivateAssets="all">
-			<ExcludeAssets>compile; runtime</ExcludeAssets>
-		</PackageReference>
+		<PackageReference Include="coverlet.collector" PrivateAssets="all" ExcludeAssets="compile; runtime" />
+		<PackageReference Include="coverlet.msbuild" PrivateAssets="all" ExcludeAssets="compile; runtime" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeFix.Testing" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" PrivateAssets="all" />
