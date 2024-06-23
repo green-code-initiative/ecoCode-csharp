@@ -18,6 +18,8 @@
 		<StartAction>Program</StartAction>
 		<StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
 		<StartArguments>/rootsuffix $(VSSDKTargetPlatformRegRootSuffix)</StartArguments>
+
+		<NoWarn>${NoWarn};NU1603</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

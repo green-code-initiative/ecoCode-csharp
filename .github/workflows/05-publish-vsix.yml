@@ -9,6 +9,9 @@ on:
       version:
         required: true
         type: string
+    secrets:
+      vsmarketplace-api-key:
+        required: true
 
 jobs:
   publish-vsix:
@@ -24,4 +27,4 @@ jobs:
       with:
         extension-file: vsix/EcoCode.vsix
         publish-manifest-file: vsix/publishManifest.json
-        personal-access-code: ${{ secrets.VSMARKETPLACE_API_KEY }}
+        personal-access-code: ${{ secrets.vsmarketplace-api-key }}
