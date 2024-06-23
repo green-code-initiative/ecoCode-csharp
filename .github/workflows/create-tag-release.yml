@@ -25,8 +25,8 @@ jobs:
         fetch-depth: 0 # Necessary to fetch tags
     - name: Install xmlstarlet
       run: |
-          sudo apt-get update
-          sudo apt-get install -y xmlstarlet
+        sudo apt-get update
+        sudo apt-get install -y xmlstarlet
     - id: versioning
       run: |
         TAG=${GITHUB_REF#refs/tags/}
