@@ -20,10 +20,12 @@ jobs:
   build-nuget:
     needs: versioning
     uses: ./.github/workflows/02-build-nuget.yml
+    with:
+      tag: ${{ needs.versioning.outputs.tag }}
 
-  build-vsix:
-    needs: versioning
-    uses: ./.github/workflows/03-build-vsix.yml
+  # build-vsix:
+  #   needs: versioning
+  #   uses: ./.github/workflows/03-build-vsix.yml
 
   publish-nuget:
     needs: [versioning, build-nuget, build-vsix]
@@ -33,17 +35,18 @@ jobs:
     secrets:
       nuget-api-key: ${{ secrets.NUGET_API_KEY }}
 
-  publish-vsix:
-    needs: [versioning, build-nuget, build-vsix]
-    uses: ./.github/workflows/05-publish-vsix.yml
-    with:
-      tag: ${{ needs.versioning.outputs.tag }}
-      version: ${{ needs.versioning.outputs.version }}
-    secrets:
-      vsmarketplace-api-key: ${{ secrets.VSMARKETPLACE_API_KEY }}
+  # publish-vsix:
+  #   needs: [versioning, build-nuget, build-vsix]
+  #   uses: ./.github/workflows/05-publish-vsix.yml
+  #   with:
+  #     tag: ${{ needs.versioning.outputs.tag }}
+  #     version: ${{ needs.versioning.outputs.version }}
+  #   secrets:
+  #     vsmarketplace-api-key: ${{ secrets.VSMARKETPLACE_API_KEY }}
 
   create-release:
-    needs: [publish-nuget, publish-vsix]
+    # needs: [publish-nuget, publish-vsix]
+    needs: publish-nuget
     uses: ./.github/workflows/06-create-release.yml
     with:
       tag: ${{ needs.versioning.outputs.tag }}
