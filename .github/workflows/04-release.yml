@@ -19,6 +19,11 @@ jobs:
         path: nupkg
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+    - uses: actions/cache/restore@v4
+      with:
+        path: tool
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
     # - uses: actions/cache/restore@v4
     #   with:
     #     path: vsix
@@ -31,7 +36,10 @@ jobs:
         draft: false
         prerelease: ${{ inputs.tag != inputs.version }}
         body: "Release of version ${{ inputs.tag }}"
-        files: nupkg/**/EcoCode.${{ inputs.tag }}.nupkg
+        files: |
+          nupkg/**/EcoCode.${{ inputs.tag }}.nupkg
+          tool/**/EcoCode.Tool.${{ inputs.tag }}.nupkg
         # files: |
         #   nupkg/**/EcoCode.${{ inputs.tag }}.nupkg
+        #   tool/**/EcoCode.Tool.${{ inputs.tag }}.nupkg
         #   vsix/EcoCode.vsix
