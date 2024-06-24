@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filters", "Filters", "{2750
 	ProjectSection(SolutionItems) = preProject
 		NuGetOnly.slnf = NuGetOnly.slnf
 		TestsOnly.slnf = TestsOnly.slnf
+		ToolOnly.slnf = ToolOnly.slnf
 		VsixOnly.slnf = VsixOnly.slnf
 	EndProjectSection
 EndProject
@@ -89,7 +90,7 @@ Global
 		{375CBD0D-5754-352F-9D9D-ED72E2F1B0ED} = {089100B1-113F-4E66-888A-E83F3999EAFD}
 	EndGlobalSection
 EndGlobal
-		{27501C7C-A65B-40A8-464F-F047BAFE6F81} = {089100B1-113F-4E66-888A-E83F3999EAFD}
+FE6F81} = {089100B1-113F-4E66-888A-E83F3999EAFD}
 		{375CBD0D-5754-352F-9D9D-ED72E2F1B0ED} = {089100B1-113F-4E66-888A-E83F3999EAFD}
 	EndGlobalSection
 EndGlobal
