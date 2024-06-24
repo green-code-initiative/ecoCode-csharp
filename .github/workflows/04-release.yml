@@ -1,4 +1,4 @@
-name: Create Release
+name: Release
 
 on:
   workflow_call:
@@ -24,11 +24,11 @@ jobs:
         path: tool
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
-    # - uses: actions/cache/restore@v4
-    #   with:
-    #     path: vsix
-    #     key: cache-${{ github.sha }}
-    #     enableCrossOsArchive: true
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
     - uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ inputs.tag }}
@@ -39,7 +39,4 @@ jobs:
         files: |
           nupkg/**/EcoCode.${{ inputs.tag }}.nupkg
           tool/**/EcoCode.Tool.${{ inputs.tag }}.nupkg
-        # files: |
-        #   nupkg/**/EcoCode.${{ inputs.tag }}.nupkg
-        #   tool/**/EcoCode.Tool.${{ inputs.tag }}.nupkg
-        #   vsix/EcoCode.vsix
+          vsix/EcoCode.vsix
