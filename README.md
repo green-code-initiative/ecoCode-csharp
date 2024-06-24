@@ -5,28 +5,53 @@ EcoCode-C#
 
 _ecoCode_ is a collective project aiming to reduce environmental footprint of software at the code level. The goal of the project is to provide a list of static code analyzers to highlight code structures that may have a negative ecological impact: energy and resources over-consumption, "fatware", shortening terminals' lifespan, etc.
 
-_ecoCode_ is based on evolving catalogs of [good practices](https://github.com/green-code-initiative/ecoCode/blob/main/docs/rules), for various technologies.
-
-This set of Roslyn analyzers implements these catalogs as rules for scanning your C# projects.
+_ecoCode_ is based on evolving catalogs of [good practices](https://github.com/green-code-initiative/ecoCode/blob/main/docs/rules), for various technologies. This set of Roslyn analyzers implements these catalogs as rules for scanning your C# projects.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://github.com/green-code-initiative/ecoCode-common/blob/main/doc/CODE_OF_CONDUCT.md)
 
 🚀 Getting Started
 ------------------
 
-There are several ways you can use the ecoCode analyzers in your .Net projects:
-1. As a NuGet package : https://www.nuget.org/packages/EcoCode/.
-2. As a DotNet Tool to scan existing code bases : https://www.nuget.org/packages/EcoCode.Tool.
-3. As a Visual Studio extension : https://marketplace.visualstudio.com/items?itemName=greencodeinitiative.ecoCode.
+There are several ways you can use the ecoCode C# analyzers in your .Net projects:
+1. As a [NuGet package](#nugetPackage)
+2. As a [.NET tool](#dotnetTool)
+3. As a [Visual Studio extension](#vsExtension)
 4. Coming soon : as a VS Code extension.
-5. Coming soon : a documentation on how to set up [SonarScanner for .Net](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-dotnet/) and display the EcoCode warnings in [SonarQube](https://www.sonarsource.com/products/sonarqube/).
+5. As an [analyzer for SonarQube](#sonarQube).
 
-🧩 Compatibility
+<a name="nugetPackage"></a>🧩 NuGet package
 -----------------
+The package is available on nuget.org at this address : https://www.nuget.org/packages/EcoCode, and can be added to your projects/solutions like any NuGet package. Once referenced and restored, the ecoCode analyzers are automatically integrated in your IDE/compilation process, and will list any applicable info/alert.
 
-Both the ecoCode NuGet package and Visual Studio extension target .Net Standard 2.0 and can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported .Net Frameworks in .Net Standard 2.0.
+Pre-requisite : .Net Standard 2.0, which can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported Frameworks.
 
-The ecoCode DotNet Tool requires the .Net 8 SDK or newer, as it relies on MSBuild under the hood.
+<a name="dotnetTool"></a>🧩 .Net tool
+-----------------
+The .Net tool is available on nuget.org at this address : https://www.nuget.org/packages/EcoCode.Tool, and can be fetched on your machine using the following command :
+
+`dotnet tool install --global EcoCode.Tool`
+
+See [.Net tools documentation](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools) for additional information.
+
+Once installed, you can launch an analyzis on an existing codebase like this :
+
+`ecocode-cli analyze path/to/mySolution.sln path/to/myReport.html`.
+
+The file to analyze can be a .sln, a .slnx or a .csproj. The report format depends on it's required extension, the following are currently supported : .html, .json and .csv.
+
+Pre-requisite : .Net 8 SDK, with the goal of requiring the oldest .Net Core LTS from then on (ie. require .Net 10 in November 2026).
+
+<a name="vsExtension"></a>🧩 Visual Studio extension
+-----------------
+The extension is available on  the VS marketplace at this address : https://marketplace.visualstudio.com/items?itemName=greencodeinitiative.ecoCode, and can be installed in your Visual Studio instance like any extension, typically through the extension manager available in Visual Studio. Once installed, the ecoCode analyzers are automatically activated in your IDE/compilation process, and will list any applicable info/alert.
+
+<a name="vsCodeExtension"></a>🧩 VS Code extension
+-----------------
+Not available yet, stay tuned.
+
+<a name="sonarQube"></a>🧩 Analyzer for SonarQube
+-----------------
+EcoCode C# can use [SonarScanner for .Net](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-dotnet/) to integrate with [SonarQube](https://www.sonarsource.com/products/sonarqube/), and uses a custom import addition to enrich what is reported to Sonar (severity, description, url page, category, and so on). See our [dedicated repository](https://github.com/green-code-initiative/ecoCode-csharp-sonarqube) for more information.
 
 🌿 EcoCode Rules
 -------------------
@@ -53,10 +78,10 @@ The ecoCode DotNet Tool requires the .Net 8 SDK or newer, as it relies on MSBuil
 
 This plugin customizes the severity of certain Roslyn rules.
 
-|Id|Description|Old Severity|New Severity|Code fix|
-|--|-----------|:----------:|:----------:|:------:|
-|[CA1825](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1825)|Avoid zero-length array allocations|ℹ️|⚠️|✔️|
-|[CA1827](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1827)|Do not use Count()/LongCount() when Any() can be used|ℹ️|⚠️|✔️|
+|Id|Description|Old Severity|New Severity|
+|--|-----------|:----------:|:----------:|
+|[CA1825](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1825)|Avoid zero-length array allocations|ℹ️|⚠️|
+|[CA1827](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1827)|Do not use Count()/LongCount() when Any() can be used|ℹ️|⚠️|
 
 🤝 Contribution
 ---------------
