@@ -9,8 +9,6 @@ _ecoCode_ is based on evolving catalogs of [good practices](https://github.com/g
 
 This set of Roslyn analyzers implements these catalogs as rules for scanning your C# projects.
 
-> ⚠️ This is still a very early stage project. Any feedback or contribution will be highly appreciated. Please refer to the contribution section.
-
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://github.com/green-code-initiative/ecoCode-common/blob/main/doc/CODE_OF_CONDUCT.md)
 
 🚀 Getting Started
@@ -18,15 +16,17 @@ This set of Roslyn analyzers implements these catalogs as rules for scanning you
 
 There are several ways you can use the ecoCode analyzers in your .Net projects:
 1. As a NuGet package : https://www.nuget.org/packages/EcoCode/.
-2. As a Visual Studio extension : https://marketplace.visualstudio.com/items?itemName=greencodeinitiative.ecoCode
-3. Coming soon : as a VS Code extension.
-4. Coming soon : as a .Net CLI Tool to scan existing code bases.
+2. As a DotNet Tool to scan existing code bases : https://www.nuget.org/packages/EcoCode.Tool.
+3. As a Visual Studio extension : https://marketplace.visualstudio.com/items?itemName=greencodeinitiative.ecoCode.
+4. Coming soon : as a VS Code extension.
 5. Coming soon : a documentation on how to set up [SonarScanner for .Net](https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/scanners/sonarscanner-for-dotnet/) and display the EcoCode warnings in [SonarQube](https://www.sonarsource.com/products/sonarqube/).
 
 🧩 Compatibility
 -----------------
 
-Both the EcoCode NuGet package and Visual Studio extension target .Net Standard 2.0 and can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported .Net Frameworks in .Net Standard 2.0.
+Both the ecoCode NuGet package and Visual Studio extension target .Net Standard 2.0 and can be used in a wide range of projects. See [Microsoft documentation](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0#select-net-standard-version) for details about the supported .Net Frameworks in .Net Standard 2.0.
+
+The ecoCode DotNet Tool requires the .Net 8 SDK or newer, as it relies on MSBuild under the hood.
 
 🌿 EcoCode Rules
 -------------------
