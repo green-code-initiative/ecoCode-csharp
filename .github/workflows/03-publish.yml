@@ -6,7 +6,7 @@ on:
       tag:
         required: true
         type: string
-    version:
+      version:
         required: true
         type: string
     secrets:
