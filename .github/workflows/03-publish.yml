@@ -1,4 +1,4 @@
-name: Publish NuGet Package
+name: Publish
 
 on:
   workflow_call:
@@ -19,14 +19,13 @@ jobs:
   publish-nuget:
     runs-on: ubuntu-latest
     steps:
-    - run: echo "Skipped for now"
-    # - uses: actions/cache/restore@v4
-    #   with:
-    #     path: nupkg
-    #     key: cache-${{ github.sha }}
-    #     enableCrossOsArchive: true
-    # - run: echo "PACKAGE=$(find . -name 'EcoCode.${{ inputs.tag }}.nupkg' | head -n 1)" >> $GITHUB_ENV
-    # - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.nuget-api-key }}" -s https://api.nuget.org/v3/index.json
+    - uses: actions/cache/restore@v4
+      with:
+        path: nupkg
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - run: echo "PACKAGE=$(find . -name 'EcoCode.${{ inputs.tag }}.nupkg' | head -n 1)" >> $GITHUB_ENV
+    - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.nuget-api-key }}" -s https://api.nuget.org/v3/index.json
   
   publish-tool:
     runs-on: ubuntu-latest
@@ -43,14 +42,13 @@ jobs:
     if: ${{ inputs.tag == inputs.version }}
     runs-on: windows-latest
     steps:
-    - run: echo "Skipped for now"
-    # - uses: actions/cache/restore@v4
-    #   with:
-    #     path: vsix
-    #     key: cache-${{ github.sha }}
-    #     enableCrossOsArchive: true
-    # - uses: cezarypiatek/VsixPublisherAction@1.1
-    #   with:
-    #     extension-file: vsix/EcoCode.vsix
-    #     publish-manifest-file: vsix/publishManifest.json
-    #     personal-access-code: ${{ secrets.vsmarketplace-api-key }}
+    - uses: actions/cache/restore@v4
+      with:
+        path: vsix
+        key: cache-${{ github.sha }}
+        enableCrossOsArchive: true
+    - uses: cezarypiatek/VsixPublisherAction@1.1
+      with:
+        extension-file: vsix/EcoCode.vsix
+        publish-manifest-file: vsix/publishManifest.json
+        personal-access-code: ${{ secrets.vsmarketplace-api-key }}
