@@ -35,7 +35,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" /> <!--Include latest Roslyn rules as transitive-->
+		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" ExcludeAssets="compile" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" IncludeAssets="analyzers" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" ExcludeAssets="compile" />
 		<PackageReference Include="Microsoft.VSSDK.BuildTools" PrivateAssets="all" />
 	</ItemGroup>
 

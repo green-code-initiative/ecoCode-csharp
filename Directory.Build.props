@@ -27,6 +27,12 @@
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyInformationalVersion>$(Version)</AssemblyInformationalVersion>
 		<PackageVersion>$(Version)</PackageVersion>
+
+		<!-- SourceLink -->
+		<DebugType>embedded</DebugType>
+		<IncludeSymbols>false</IncludeSymbols>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 	</PropertyGroup>
 
 	<ItemGroup>
