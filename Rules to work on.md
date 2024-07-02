@@ -25,13 +25,9 @@ From [Meziantou Analyzer](https://github.com/meziantou/Meziantou.Analyzer):
 + Use the Regex source generator: [MA0110](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0110.md)
 
 From [SonarQube](https://www.sonarsource.com/products/sonarqube/):
-+ Private fields only used as local variables in methods should become local variables: [S1450](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS1450&amp;rule_key=csharpsquid%3AS1450)
-+ Properties should not make collection or array copies: [S2365](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS2365&amp;rule_key=csharpsquid%3AS2365)
-+ "StringBuilder" data should be used: [S3063](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS3063&amp;rule_key=csharpsquid%3AS3063)
-+ "Assembly.GetExecutingAssembly" should not be called: [S3902](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS3902&amp;rule_key=csharpsquid%3AS3902)
-+ "static readonly" constants should be "const" instead: [S3962](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS3962&amp;rule_key=csharpsquid%3AS3962)
-+ Non-abstract attributes should be sealed: [S4060](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS4060&amp;rule_key=csharpsquid%3AS4060)
-
-Rules that are natively implemented in [Roslyn](https://github.com/dotnet/roslyn), that we could transitively enable:
-+ Do not declare static members on generic types: [CA1000](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1000)
-+ Mark members as static: [CA1822](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1822)
++ Private fields only used as local variables in methods should become local variables: [S1450](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS1450&rule_key=csharpsquid%3AS1450)
++ Properties should not make collection or array copies: [S2365](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS2365&rule_key=csharpsquid%3AS2365)
++ "StringBuilder" data should be used: [S3063](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS3063&rule_key=csharpsquid%3AS3063)
++ "Assembly.GetExecutingAssembly" should not be called: [S3902](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS3902&rule_key=csharpsquid%3AS3902)
++ "static readonly" constants should be "const" instead: [S3962](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS3962&rule_key=csharpsquid%3AS3962)
++ Non-abstract attributes should be sealed: [S4060](https://cloud-ci.sgs.com/sonar/coding_rules?open=csharpsquid%3AS4060&rule_key=csharpsquid%3AS4060)
