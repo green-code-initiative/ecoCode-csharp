@@ -1,5 +1,6 @@
 ﻿using EcoCode.Tool.Reports;
 using Microsoft.CodeAnalysis.MSBuild;
+using Microsoft.CodeAnalysis.Text;
 using System.Diagnostics.CodeAnalysis;
 
 namespace EcoCode.Tool.Commands;
@@ -29,6 +30,12 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
 
     public override async Task<int> ExecuteAsync(CommandContext context, AnalyzeSettings settings)
     {
+        var globalConfigFile = SourceText.From(await File.ReadAllTextAsync(
+            Path.GetDirectoryName(GetType().Assembly.Location) is { } asmLocation
+            ? Path.Combine(asmLocation, Files.EcoCodeGlobalConfigFile)
+            : Files.EcoCodeGlobalConfigFile)
+            .ConfigureAwait(false));
+
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Program.WriteLine(e.Diagnostic.Message, "red");
 
@@ -39,6 +46,8 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             try
             {
                 solution = await workspace.OpenSolutionAsync(settings.Source).ConfigureAwait(false);
+                foreach (var project in solution.Projects)
+                    _ = workspace.TryApplyChanges(project.AddAnalyzerConfigDocument(Files.EcoCodeGlobalConfigFile, globalConfigFile).Project.Solution);
             }
             catch (Exception ex)
             {
@@ -47,10 +56,10 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
                 return 1;
             }
 
-            var analizers = settings.GetActiveAnalyzers();
+            var analyzers = settings.GetActiveAnalyzers();
             report = AnalysisReport.Create(settings.OutputType);
             foreach (var project in solution.Projects)
-                await AnalyzeProject(project, analizers, report).ConfigureAwait(false);
+                await AnalyzeProject(project, analyzers, report).ConfigureAwait(false);
         }
         else // options.SourceType is SourceType.Project
         {
@@ -58,6 +67,8 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             try
             {
                 project = await workspace.OpenProjectAsync(settings.Source).ConfigureAwait(false);
+                project = project.AddAnalyzerConfigDocument(Files.EcoCodeGlobalConfigFile, globalConfigFile).Project;
+                _ = workspace.TryApplyChanges(project.Solution);
             }
             catch (Exception ex)
             {

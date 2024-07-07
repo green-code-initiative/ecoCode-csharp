@@ -32,6 +32,7 @@
 		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\..\EcoCode.globalconfig" Pack="true" PackagePath="analyzers/config" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<Target Name="PostPublishCleanup" AfterTargets="Publish">

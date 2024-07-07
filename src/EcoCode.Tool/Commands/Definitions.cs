@@ -23,8 +23,10 @@ internal enum SeverityLevel
     Error
 }
 
-internal static class Extensions
+internal static class Files
 {
+    public const string EcoCodeGlobalConfigFile = "EcoCode.globalconfig";
+
     private const string Project = ".csproj";
 
     private static readonly ImmutableArray<string> Solution = [".sln", ".slnf", ".slnx"];

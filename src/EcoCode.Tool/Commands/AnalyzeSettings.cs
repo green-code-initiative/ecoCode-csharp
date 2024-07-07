@@ -49,9 +49,7 @@ internal sealed class AnalyzeSettings : CommandSettings
         Severity = severity;
 
         string? ext = Path.GetExtension(source);
-        SourceType = Extensions.IsProject(ext) ? SourceType.Project
-            : Extensions.IsSolution(ext) ? SourceType.Solution
-            : SourceType.Unknown;
+        SourceType = Files.IsProject(ext) ? SourceType.Project : Files.IsSolution(ext) ? SourceType.Solution : SourceType.Unknown;
 
         OutputType = Enum.TryParse<OutputType>(Path.GetExtension(output)?[1..], ignoreCase: true, out var extType)
             ? extType // [1..] to remove the leading dot
