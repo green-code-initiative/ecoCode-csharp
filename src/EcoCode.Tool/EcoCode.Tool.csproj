@@ -32,7 +32,7 @@
 		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-		<None Include="..\..\EcoCode.globalconfig" Pack="true" PackagePath="analyzers/config" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\..\EcoCode.globalconfig" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<Target Name="PostPublishCleanup" AfterTargets="Publish">
@@ -44,6 +44,7 @@
 		<PackageReference Include="Microsoft.Build" PrivateAssets="all" ExcludeAssets="compile; runtime" />
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis" />
+		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" />
 		<PackageReference Include="Microsoft.Extensions.Logging" />
@@ -57,5 +58,13 @@
 	<ItemGroup>
 		<ProjectReference Include="..\EcoCode.Core\EcoCode.Core.csproj" />
 	</ItemGroup>
+
+	<Target Name="CopyNetAnalyzers" AfterTargets="Restore" BeforeTargets="Build">
+		<ItemGroup>
+			<AnalyzerAssemblies Include="$(NuGetPackageRoot)Microsoft.CodeAnalysis.NetAnalyzers\**\Microsoft.CodeAnalysis.NetAnalyzers.dll" />
+			<AnalyzerAssemblies Include="$(NuGetPackageRoot)Microsoft.CodeAnalysis.NetAnalyzers\**\Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll" />
+		</ItemGroup>
+		<Copy SourceFiles="@(AnalyzerAssemblies)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+	</Target>
 
 </Project>

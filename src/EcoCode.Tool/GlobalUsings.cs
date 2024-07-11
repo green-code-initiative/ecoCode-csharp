@@ -1,4 +1,5 @@
 ﻿global using EcoCode.Tool.Commands;
+global using EcoCode.Tool.Common;
 global using Microsoft.CodeAnalysis;
 global using Microsoft.CodeAnalysis.Diagnostics;
 global using Spectre.Console;

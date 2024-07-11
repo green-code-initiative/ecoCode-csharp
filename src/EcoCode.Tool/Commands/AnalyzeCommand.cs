@@ -1,11 +1,8 @@
 ﻿using EcoCode.Tool.Reports;
 using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis.Text;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EcoCode.Tool.Commands;
 
-[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "General error handling needed here")]
 internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
 {
     public override ValidationResult Validate(CommandContext context, AnalyzeSettings settings)
@@ -30,24 +27,18 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
 
     public override async Task<int> ExecuteAsync(CommandContext context, AnalyzeSettings settings)
     {
-        var globalConfigFile = SourceText.From(await File.ReadAllTextAsync(
-            Path.GetDirectoryName(GetType().Assembly.Location) is { } asmLocation
-            ? Path.Combine(asmLocation, Files.EcoCodeGlobalConfigFile)
-            : Files.EcoCodeGlobalConfigFile)
-            .ConfigureAwait(false));
-
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Program.WriteLine(e.Diagnostic.Message, "red");
 
-        IAnalysisReport report;
+        var analysisService = await AnalysisService.CreateFromConfigFileAsync();
+
+        var report = AnalysisReport.Create(settings.OutputType);
         if (settings.SourceType is SourceType.Solution)
         {
             Solution solution;
             try
             {
                 solution = await workspace.OpenSolutionAsync(settings.Source).ConfigureAwait(false);
-                foreach (var project in solution.Projects)
-                    _ = workspace.TryApplyChanges(project.AddAnalyzerConfigDocument(Files.EcoCodeGlobalConfigFile, globalConfigFile).Project.Solution);
             }
             catch (Exception ex)
             {
@@ -56,10 +47,8 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
                 return 1;
             }
 
-            var analyzers = settings.GetActiveAnalyzers();
-            report = AnalysisReport.Create(settings.OutputType);
             foreach (var project in solution.Projects)
-                await AnalyzeProject(project, analyzers, report).ConfigureAwait(false);
+                await analysisService.AnalyzeProjectAsync(project, settings.SeverityLevel, report).ConfigureAwait(false);
         }
         else // options.SourceType is SourceType.Project
         {
@@ -67,8 +56,6 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             try
             {
                 project = await workspace.OpenProjectAsync(settings.Source).ConfigureAwait(false);
-                project = project.AddAnalyzerConfigDocument(Files.EcoCodeGlobalConfigFile, globalConfigFile).Project;
-                _ = workspace.TryApplyChanges(project.Solution);
             }
             catch (Exception ex)
             {
@@ -77,28 +64,10 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
                 return 1;
             }
 
-            var analizers = settings.GetActiveAnalyzers();
-            report = AnalysisReport.Create(settings.OutputType);
-            await AnalyzeProject(project, analizers, report).ConfigureAwait(false);
+            await analysisService.AnalyzeProjectAsync(project, settings.SeverityLevel, report).ConfigureAwait(false);
         }
 
-        report.WriteToFile(settings.Output!);
+        report.WriteToFile(settings.Output);
         return 0;
-    }
-
-    private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalysisReport report)
-    {
-        Program.WriteLine($"Analyzing project {project.Name}...", "darkorange");
-
-        if (await project.GetCompilationAsync().ConfigureAwait(false) is not { } compilation)
-        {
-            Program.WriteLine($"Unable to load the project {project.Name} compilation, skipping.", "red");
-            return;
-        }
-
-        foreach (var diagnostic in await compilation.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync().ConfigureAwait(false))
-            report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
-
-        Program.WriteLine($"Analysis complete for project {project.Name}", "green");
     }
 }
