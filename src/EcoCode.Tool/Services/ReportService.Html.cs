@@ -1,4 +1,7 @@
-﻿namespace EcoCode.Tool.Services;
+﻿using System.Globalization;
+using System.Text;
+
+namespace EcoCode.Tool.Services;
 
 static partial class ReportService
 {
@@ -32,7 +35,7 @@ static partial class ReportService
         </html>
         """;
 
-        private const string Row = """
+        private static readonly CompositeFormat Row = CompositeFormat.Parse("""
               <tr>
                  <td>{0}</td>
                  <td>{1}</td>
@@ -41,16 +44,16 @@ static partial class ReportService
                  <td>{4}</td>
                  <td>{5}</td>
               </tr>
-        """;
+        """);
 
         public static async Task WriteToStreamAsync(StreamWriter writer, List<DiagnosticInfo> diagnostics)
         {
-            await writer.WriteLineAsync(Header);
+            await writer.WriteLineAsync(Header).ConfigureAwait(false);
 
             foreach (var diag in diagnostics)
-                await writer.WriteLineAsync(string.Format(Row, diag.Directory, diag.File, diag.Location, diag.Severity, diag.Code, diag.Message));
+                await writer.WriteLineAsync(string.Format(CultureInfo.InvariantCulture, Row, diag.Directory, diag.File, diag.Location, diag.Severity, diag.Code, diag.Message)).ConfigureAwait(false);
 
-            await writer.WriteLineAsync(Footer);
+            await writer.WriteLineAsync(Footer).ConfigureAwait(false);
         }
     }
 }

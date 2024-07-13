@@ -30,7 +30,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Program.WriteLine(e.Diagnostic.Message, "red");
 
-        var analysisService = await AnalysisService.CreateAsync(settings.SeverityLevel);
+        var analysisService = await AnalysisService.CreateAsync(settings.SeverityLevel).ConfigureAwait(false);
 
         var diagnostics = new List<DiagnosticInfo>();
 
@@ -68,7 +68,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             await analysisService.AnalyzeProjectAsync(project, diagnostics).ConfigureAwait(false);
         }
 
-        await ReportService.GenerateReportAsync(diagnostics, settings.Output, settings.OutputType);
+        await ReportService.GenerateReportAsync(diagnostics, settings.Output, settings.OutputType).ConfigureAwait(false);
 
         return 0;
     }

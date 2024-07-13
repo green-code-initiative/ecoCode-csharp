@@ -21,7 +21,7 @@ internal sealed partial class AnalysisService
 
     public static async Task<AnalysisService> CreateAsync(DiagnosticSeverity minSeverity)
     {
-        var globalConfig = await AdditionalFile.LoadGlobalConfigAsync();
+        var globalConfig = await AdditionalFile.LoadGlobalConfigAsync().ConfigureAwait(false);
 
         var analyzers = ImmutableArray.CreateBuilder<DiagnosticAnalyzer>();
 

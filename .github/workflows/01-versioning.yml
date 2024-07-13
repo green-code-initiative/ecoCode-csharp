@@ -42,15 +42,6 @@ jobs:
         fi
     - name: Set Version in Directory.Build.props
       run: xmlstarlet ed --inplace -u "/Project/PropertyGroup/Version" -v "${{ steps.versioning.outputs.version }}" Directory.Build.props
-    - name: Set Version in VSIX manifest
-      shell: pwsh
-      run: |
-        [xml]$manifest = Get-Content "src/EcoCode.Vsix/source.extension.vsixmanifest"
-        $identity = $manifest.SelectSingleNode("//*[local-name()='Identity']")
-        if ($identity -ne $null) {
-            $identity.Version = "${{ steps.versioning.outputs.version }}"
-        }
-        $manifest.Save("src/EcoCode.Vsix/source.extension.vsixmanifest")
     - name: Cache updated sources
       uses: actions/cache/save@v4
       with:

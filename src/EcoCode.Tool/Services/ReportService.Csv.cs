@@ -8,10 +8,10 @@ static partial class ReportService
 
         public static async Task WriteToStreamAsync(StreamWriter writer, List<DiagnosticInfo> diagnostics)
         {
-            await writer.WriteLineAsync(Header);
+            await writer.WriteLineAsync(Header).ConfigureAwait(false);
 
             foreach (var diag in diagnostics)
-                await writer.WriteLineAsync($"{diag.Directory};{diag.File};{diag.Location};{diag.Severity};{diag.Code};{diag.Message}");
+                await writer.WriteLineAsync($"{diag.Directory};{diag.File};{diag.Location};{diag.Severity};{diag.Code};{diag.Message}").ConfigureAwait(false);
         }
     }
 }
