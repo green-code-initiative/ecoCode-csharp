@@ -15,9 +15,7 @@ _ecoCode_ is based on evolving catalogs of [good practices](https://github.com/g
 There are several ways you can use the ecoCode C# analyzers in your .Net projects:
 1. As a [NuGet package](#nugetPackage)
 2. As a [.NET tool](#dotnetTool)
-3. As a [Visual Studio extension](#vsExtension)
-4. Coming soon : as a VS Code extension.
-5. As an [analyzer for SonarQube](#sonarQube).
+3. As an [analyzer for SonarQube](#sonarQube).
 
 <a name="nugetPackage"></a>🧩 NuGet package
 -----------------
@@ -39,15 +37,7 @@ Once installed, you can launch an analyzis on an existing codebase like this :
 
 The file to analyze can be a .sln, a .slnx or a .csproj. The report format depends on it's required extension, the following are currently supported : .html, .json and .csv.
 
-Pre-requisite : .Net 8 SDK, with the goal of requiring the oldest .Net Core LTS from then on (ie. require .Net 10 in November 2026).
-
-<a name="vsExtension"></a>🧩 Visual Studio extension
------------------
-The extension is available on  the VS marketplace at this address : https://marketplace.visualstudio.com/items?itemName=greencodeinitiative.ecoCode, and can be installed in your Visual Studio instance like any extension, typically through the extension manager available in Visual Studio. Once installed, the ecoCode analyzers are automatically activated in your IDE/compilation process, and will list any applicable info/alert.
-
-<a name="vsCodeExtension"></a>🧩 VS Code extension
------------------
-Not available yet, stay tuned.
+Pre-requisite : .Net 8 SDK.
 
 <a name="sonarQube"></a>🧩 Analyzer for SonarQube
 -----------------
@@ -73,10 +63,10 @@ EcoCode C# can use [SonarScanner for .Net](https://docs.sonarsource.com/sonarqub
 |[EC92](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC92/csharp/EC92.asciidoc)|Use `Length` to test empty `strings`|⚠️|✔️|
 |[EC93](https://github.com/green-code-initiative/ecoCode/blob/main/ecocode-rules-specifications/src/main/rules/EC93/csharp/EC93.asciidoc)|Return `Task` directly|ℹ️|✔️|
 
-🌿 Roslyn Rules
+🌿 Customized Roslyn Rules
 -------------------
 
-EcoCode C# customizes the severity of the following Microsoft-produced Roslyn rules.
+EcoCode C# customizes the severity of the following native Roslyn rules.
 
 |Id|Description|Old Severity|New Severity|
 |--|-----------|:----------:|:----------:|
