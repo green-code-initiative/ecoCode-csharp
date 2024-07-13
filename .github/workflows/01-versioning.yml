@@ -15,13 +15,16 @@ jobs:
       tag: ${{ steps.versioning.outputs.tag }}
       version: ${{ steps.versioning.outputs.version }} # same as tag but without the -betaN part at the end, if present
     steps:
+    
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Necessary to fetch tags
+
     - name: Install xmlstarlet
       run: |
         sudo apt-get update
         sudo apt-get install -y xmlstarlet
+
     - id: versioning
       run: |
         TAG=${GITHUB_REF#refs/tags/}
@@ -40,8 +43,10 @@ jobs:
           echo "Error: Tag does not match the expected format 'X.Y.Z' or 'X.Y.Z-betaN'"
           exit 1
         fi
+
     - name: Set Version in Directory.Build.props
       run: xmlstarlet ed --inplace -u "/Project/PropertyGroup/Version" -v "${{ steps.versioning.outputs.version }}" Directory.Build.props
+
     - name: Cache updated sources
       uses: actions/cache/save@v4
       with:

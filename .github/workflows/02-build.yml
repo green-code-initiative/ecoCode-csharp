@@ -19,10 +19,15 @@ jobs:
           **/*
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+
     - uses: actions/setup-dotnet@v4
+  
     - run: dotnet restore NuGetOnly.slnf
+  
     - run: dotnet build NuGetOnly.slnf -c Release --no-restore
+  
     - run: dotnet pack NuGetOnly.slnf -c Release --no-build -o ./nupkg -p:Version=${{ inputs.tag }}
+  
     - uses: actions/cache/save@v4
       with:
         path: nupkg
@@ -40,10 +45,15 @@ jobs:
           **/*
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+
     - uses: actions/setup-dotnet@v4
+  
     - run: dotnet restore ToolOnly.slnf
+  
     - run: dotnet build ToolOnly.slnf -c Release --no-restore
+  
     - run: dotnet pack ToolOnly.slnf -c Release --no-build -o ./tool -p:Version=${{ inputs.tag }}
+  
     - uses: actions/cache/save@v4
       with:
         path: tool
