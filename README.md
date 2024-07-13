@@ -76,12 +76,60 @@ EcoCode C# can use [SonarScanner for .Net](https://docs.sonarsource.com/sonarqub
 🌿 Roslyn Rules
 -------------------
 
-This plugin customizes the severity of certain Roslyn rules.
+EcoCode C# customizes the severity of the following Microsoft-produced Roslyn rules.
 
 |Id|Description|Old Severity|New Severity|
 |--|-----------|:----------:|:----------:|
+|[CA1001](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1001)|Types that own disposable fields should be disposable|💤|⚠️|
+|[CA1802](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1802)|Use Literals Where Appropriate|💤|⚠️|
+|[CA1805](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1805)|Do not initialize unnecessarily|💤|⚠️|
+|[CA1813](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1813)|Avoid unsealed attributes|💤|⚠️|
+|[CA1816](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1816)|Call GC.SuppressFinalize correctly|ℹ️|⚠️|
+|[CA1821](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1821)|Remove empty finalizers|ℹ️|⚠️|
+|[CA1822](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1822)|Mark members as static|ℹ️|⚠️|
+|[CA1824](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1824)|Mark assemblies with NeutralResourcesLanguageAttribute|ℹ️|⚠️|
 |[CA1825](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1825)|Avoid zero-length array allocations|ℹ️|⚠️|
+|[CA1826](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1826)|Use property instead of Linq Enumerable method|ℹ️|⚠️|
 |[CA1827](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1827)|Do not use Count()/LongCount() when Any() can be used|ℹ️|⚠️|
+|[CA1828](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1828)|Do not use CountAsync/LongCountAsync when AnyAsync can be used|ℹ️|⚠️|
+|[CA1829](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1829)|Use Length/Count property instead of Enumerable.Count method|ℹ️|⚠️|
+|[CA1830](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1830)|Prefer strongly-typed Append and Insert method overloads on StringBuilder|ℹ️|⚠️|
+|[CA1832](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1832)|Use AsSpan or AsMemory instead of Range-based indexers for getting ReadOnlySpan or ReadOnlyMemory portion of an array|ℹ️|⚠️|
+|[CA1833](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1833)|Use AsSpan or AsMemory instead of Range-based indexers for getting Span or Memory portion of an array|ℹ️|⚠️|
+|[CA1834](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1834)|Use StringBuilder.Append(char) for single character strings|ℹ️|⚠️|
+|[CA1835](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1835)|Prefer the memory-based overloads of ReadAsync/WriteAsync methods in stream-based classes|ℹ️|⚠️|
+|[CA1836](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1836)|Prefer IsEmpty over Count when available|ℹ️|⚠️|
+|[CA1837](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1837)|Use Environment.ProcessId instead of Process.GetCurrentProcess().Id|ℹ️|⚠️|
+|[CA1838](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1838)|Avoid StringBuilder parameters for P/Invokes|💤|⚠️|
+|[CA1839](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1839)|Use Environment.ProcessPath instead of Process.GetCurrentProcess().MainModule.FileName|ℹ️|⚠️|
+|[CA1840](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1840)|Use Environment.CurrentManagedThreadId instead of Thread.CurrentThread.ManagedThreadId|ℹ️|⚠️|
+|[CA1841](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1841)|Prefer Dictionary Contains methods|ℹ️|⚠️|
+|[CA1842](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1842)|Do not use 'WhenAll' with a single task|ℹ️|⚠️|
+|[CA1843](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1843)|Do not use 'WaitAll' with a single task|ℹ️|⚠️|
+|[CA1844](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1844)|Provide memory-based overrides of async methods when subclassing 'Stream'|ℹ️|⚠️|
+|[CA1845](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1845)|Use span-based 'string.Concat'|ℹ️|⚠️|
+|[CA1846](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1846)|Prefer AsSpan over Substring|ℹ️|⚠️|
+|[CA1847](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1847)|Use String.Contains(char) instead of String.Contains(string) with single characters|ℹ️|⚠️|
+|[CA1850](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1850)|Prefer static HashData method over ComputeHash|ℹ️|⚠️|
+|[CA1853](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1853)|Unnecessary call to 'Dictionary.ContainsKey(key)'|ℹ️|⚠️|
+|[CA1854](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1854)|Prefer the IDictionary.TryGetValue(TKey, out TValue) method|ℹ️|⚠️|
+|[CA1855](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1855)|Use Span<T>.Clear() instead of Span<T>.Fill()|ℹ️|⚠️|
+|[CA1858](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1858)|Use StartsWith instead of IndexOf|ℹ️|⚠️|
+|[CA1859](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1859)|Prefer concrete types when possible for improved performance|ℹ️|⚠️|
+|[CA1860](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1860)|Avoid using 'Enumerable.Any()' extension method|ℹ️|⚠️|
+|[CA1863](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1863)|Use 'CompositeFormat'|💤|⚠️|
+|[CA1864](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1864)|Prefer the 'IDictionary.TryAdd(TKey, TValue)' method|ℹ️|⚠️|
+|[CA1865-7](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1865-ca1867)|Use 'string.Method(char)' instead of 'string.Method(string)' for string with single char|ℹ️|⚠️|
+|[CA1868](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1868)|Unnecessary call to 'Contains' for sets|ℹ️|⚠️|
+|[CA1869](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1869)|Cache and reuse 'JsonSerializerOptions' instances|ℹ️|⚠️|
+|[CA1870](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1870)|Use a cached 'SearchValues' instance|ℹ️|⚠️|
+|[CA1871](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1871)|Do not pass a nullable struct to 'ArgumentNullException.ThrowIfNull'|ℹ️|⚠️|
+|[CA1872](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1872)|Prefer 'Convert.ToHexString' and 'Convert.ToHexStringLower' over call chains based on 'BitConverter.ToString'|ℹ️|⚠️|
+|[CA2009](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2009)|Do not call ToImmutableCollection on an ImmutableCollection value|ℹ️|⚠️|
+|[CA2215](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2215)|Dispose methods should call base class dispose|💤|⚠️|
+|[CA2218](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2218)|Override GetHashCode on overriding Equals|ℹ️|⚠️|
+|[CA2251](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2251)|Use String.Equals over String.Compare|💤|⚠️|
+|[CA2264](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2264)|Do not pass a non-nullable value to 'ArgumentNullException.ThrowIfNull'|ℹ️|⚠️|
 
 🤝 Contribution
 ---------------
