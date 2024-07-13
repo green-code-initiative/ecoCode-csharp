@@ -28,10 +28,8 @@ jobs:
     uses: ./.github/workflows/03-publish.yml
     with:
       tag: ${{ needs.versioning.outputs.tag }}
-      version: ${{ needs.versioning.outputs.version }}
     secrets:
       nuget-api-key: ${{ secrets.NUGET_API_KEY }}
-      vsmarketplace-api-key: ${{ secrets.VSMARKETPLACE_API_KEY }}
 
   release:
     needs: publish

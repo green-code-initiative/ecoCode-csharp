@@ -20,6 +20,6 @@ internal sealed class AdditionalFile(string path, string text) : AdditionalText
             throw new FileNotFoundException($"Editor config file not found at {editorConfigPath}");
 
         string fileContent = await File.ReadAllTextAsync(editorConfigPath).ConfigureAwait(false);
-        return new AdditionalFile(GlobalConfigFile, fileContent.Replace("is_global = true", string.Empty));
+        return new AdditionalFile(GlobalConfigFile, fileContent.Replace("is_global = true", string.Empty, StringComparison.OrdinalIgnoreCase));
     }
 }

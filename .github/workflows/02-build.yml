@@ -19,10 +19,15 @@ jobs:
           **/*
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+
     - uses: actions/setup-dotnet@v4
+  
     - run: dotnet restore NuGetOnly.slnf
+  
     - run: dotnet build NuGetOnly.slnf -c Release --no-restore
+  
     - run: dotnet pack NuGetOnly.slnf -c Release --no-build -o ./nupkg -p:Version=${{ inputs.tag }}
+  
     - uses: actions/cache/save@v4
       with:
         path: nupkg
@@ -40,33 +45,17 @@ jobs:
           **/*
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+
     - uses: actions/setup-dotnet@v4
+  
     - run: dotnet restore ToolOnly.slnf
+  
     - run: dotnet build ToolOnly.slnf -c Release --no-restore
+  
     - run: dotnet pack ToolOnly.slnf -c Release --no-build -o ./tool -p:Version=${{ inputs.tag }}
+  
     - uses: actions/cache/save@v4
       with:
         path: tool
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-
-  build-vsix:
-    runs-on: windows-latest
-    steps:
-    - name: Restore versioned sources
-      uses: actions/cache/restore@v4
-      with:
-        path: |
-          !**/.git
-          **/*
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: actions/setup-dotnet@v4
-    - run: dotnet restore VsixOnly.slnf
-    - uses: microsoft/setup-msbuild@v2
-    - run: msbuild VsixOnly.slnf "-p:OutputPath=..\..\vsix;Configuration=Release"
-    - uses: actions/cache/save@v4
-      with:
-        path: vsix
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true

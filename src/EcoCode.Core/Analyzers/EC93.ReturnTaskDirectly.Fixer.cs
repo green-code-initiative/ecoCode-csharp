@@ -84,7 +84,7 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
 
         return await document.WithUpdatedRoot(methodDecl, methodDecl
             .WithModifiers(methodDecl.Modifiers.RemoveAt(asyncIndex))
-            .WithExpressionBody(newBody));
+            .WithExpressionBody(newBody)).ConfigureAwait(false);
     }
 
     private static async Task<Document> ReturnTaskDirectlyWithBodyAwaitAsync(
@@ -104,7 +104,7 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
 
         return await document.WithUpdatedRoot(methodDecl, methodDecl
             .WithModifiers(methodDecl.Modifiers.RemoveAt(asyncIndex))
-            .WithBody(newBody));
+            .WithBody(newBody)).ConfigureAwait(false);
     }
 
     private static async Task<Document> ReturnTaskDirectlyWithBodyReturnAwaitAsync(
@@ -123,6 +123,6 @@ public sealed class ReturnTaskDirectlyFixer : CodeFixProvider
 
         return await document.WithUpdatedRoot(methodDecl, methodDecl
             .WithModifiers(methodDecl.Modifiers.RemoveAt(asyncIndex))
-            .WithBody(newBody));
+            .WithBody(newBody)).ConfigureAwait(false);
     }
 }

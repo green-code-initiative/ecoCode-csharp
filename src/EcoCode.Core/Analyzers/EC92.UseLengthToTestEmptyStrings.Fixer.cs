@@ -35,7 +35,7 @@ public sealed class UseLengthToTestEmptyStringsFixer : CodeFixProvider
     {
         var (left, right) = (binaryExpr.Left, binaryExpr.Right);
         var stringExpr = left.IsEmptyStringLiteral() ? right : right.IsEmptyStringLiteral() ? left : null;
-        return stringExpr is null ? document : await document.WithUpdatedRoot(binaryExpr, UpdateBinaryExpression(binaryExpr, stringExpr));
+        return stringExpr is null ? document : await document.WithUpdatedRoot(binaryExpr, UpdateBinaryExpression(binaryExpr, stringExpr)).ConfigureAwait(false);
 
         static BinaryExpressionSyntax UpdateBinaryExpression(BinaryExpressionSyntax binaryExpr, ExpressionSyntax stringExpr) =>
             SyntaxFactory.BinaryExpression(binaryExpr.Kind(),

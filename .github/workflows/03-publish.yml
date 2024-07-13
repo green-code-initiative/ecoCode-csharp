@@ -6,13 +6,8 @@ on:
       tag:
         required: true
         type: string
-      version:
-        required: true
-        type: string
     secrets:
       nuget-api-key:
-        required: true
-      vsmarketplace-api-key:
         required: true
 
 jobs:
@@ -24,7 +19,9 @@ jobs:
         path: nupkg
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
+
     - run: echo "PACKAGE=$(find . -name 'EcoCode.${{ inputs.tag }}.nupkg' | head -n 1)" >> $GITHUB_ENV
+  
     - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.nuget-api-key }}" -s https://api.nuget.org/v3/index.json
   
   publish-tool:
@@ -35,20 +32,7 @@ jobs:
         path: tool
         key: cache-${{ github.sha }}
         enableCrossOsArchive: true
-    - run: echo "PACKAGE=$(find . -name 'EcoCode.Tool.${{ inputs.tag }}.nupkg' | head -n 1)" >> $GITHUB_ENV
-    - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.nuget-api-key }}" -s https://api.nuget.org/v3/index.json
 
-  publish-vsix:
-    if: ${{ inputs.tag == inputs.version }}
-    runs-on: windows-latest
-    steps:
-    - uses: actions/cache/restore@v4
-      with:
-        path: vsix
-        key: cache-${{ github.sha }}
-        enableCrossOsArchive: true
-    - uses: cezarypiatek/VsixPublisherAction@1.1
-      with:
-        extension-file: vsix/EcoCode.vsix
-        publish-manifest-file: vsix/publishManifest.json
-        personal-access-code: ${{ secrets.vsmarketplace-api-key }}
+    - run: echo "PACKAGE=$(find . -name 'EcoCode.Tool.${{ inputs.tag }}.nupkg' | head -n 1)" >> $GITHUB_ENV
+  
+    - run: dotnet nuget push ${{ env.PACKAGE }} -k "${{ secrets.nuget-api-key }}" -s https://api.nuget.org/v3/index.json

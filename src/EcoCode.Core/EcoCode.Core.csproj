@@ -5,6 +5,8 @@
 		<Product>EcoCode.Core</Product>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+		<NoWarn>${NoWarn};CA1062</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

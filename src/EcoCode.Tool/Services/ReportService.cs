@@ -4,14 +4,16 @@ internal static partial class ReportService
 {
     public static async Task GenerateReportAsync(List<DiagnosticInfo> diagnostics, string outputPath, OutputType outputType)
     {
-        await using var writer = new StreamWriter(outputPath, append: false);
-
-        switch (outputType)
+        var writer = new StreamWriter(outputPath, append: false);
+        await using (writer.ConfigureAwait(false)) // In two steps to avoid CA2008 Consider calling ConfigureAwait on the awaited task
         {
-            case OutputType.Html: await Html.WriteToStreamAsync(writer, diagnostics); break;
-            case OutputType.Json: await Json.WriteToStreamAsync(writer, diagnostics); break;
-            case OutputType.Csv: await Csv.WriteToStreamAsync(writer, diagnostics); break;
-            default: throw new NotSupportedException();
+            switch (outputType)
+            {
+                case OutputType.Html: await Html.WriteToStreamAsync(writer, diagnostics).ConfigureAwait(false); break;
+                case OutputType.Json: await Json.WriteToStreamAsync(writer, diagnostics).ConfigureAwait(false); break;
+                case OutputType.Csv: await Csv.WriteToStreamAsync(writer, diagnostics).ConfigureAwait(false); break;
+                default: throw new NotSupportedException();
+            }
         }
     }
 }

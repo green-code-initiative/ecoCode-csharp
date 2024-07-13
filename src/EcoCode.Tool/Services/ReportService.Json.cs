@@ -8,14 +8,14 @@ static partial class ReportService
     {
         public static async Task WriteToStreamAsync(StreamWriter writer, List<DiagnosticInfo> diagnostics)
         {
-            await writer.WriteLineAsync("[");
+            await writer.WriteLineAsync("[").ConfigureAwait(false);
 
             for (int i = 0; i < diagnostics.Count - 1; i++)
-                await writer.WriteLineAsync(JsonSerializer.Serialize(diagnostics[i]) + ',');
+                await writer.WriteLineAsync(JsonSerializer.Serialize(diagnostics[i]) + ',').ConfigureAwait(false);
 
-            await writer.WriteLineAsync(JsonSerializer.Serialize(diagnostics[^1]));
+            await writer.WriteLineAsync(JsonSerializer.Serialize(diagnostics[^1])).ConfigureAwait(false);
 
-            await writer.WriteLineAsync("]");
+            await writer.WriteLineAsync("]").ConfigureAwait(false);
         }
     }
 }
