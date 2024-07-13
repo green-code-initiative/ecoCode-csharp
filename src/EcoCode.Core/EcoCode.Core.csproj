@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<Title>EcoCode.Core</Title>
 		<Product>EcoCode.Core</Product>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 	</PropertyGroup>
 

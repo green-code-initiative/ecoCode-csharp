@@ -1,7 +1,0 @@
-is_global = true
-
-# CA1825: Avoid zero-length array allocations
-dotnet_diagnostic.CA1825.severity = warning
-
-#CA1827: Do not use Count()/LongCount() when Any() can be used
-dotnet_diagnostic.CA1827.severity = warning

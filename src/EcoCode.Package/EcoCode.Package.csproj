@@ -35,12 +35,9 @@
 		<Content Include="..\..\icon.jpeg" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\NOTICE.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="..\..\README.md" Pack="true" PackagePath="" CopyToOutputDirectory="PreserveNewest" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\EcoCode.Core\bin\$(Configuration)\$(TargetFramework)\EcoCode.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
-		<None Include="EcoCode.globalconfig" Pack="true" PackagePath="analyzers/config" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="EcoCode.props" Pack="true" PackagePath="build" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="..\EcoCode.Core\bin\$(Configuration)\$(TargetFramework)\EcoCode.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" />
+		<None Include="..\..\EcoCode.globalconfig" Pack="true" PackagePath="analyzers/config" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<ItemGroup>

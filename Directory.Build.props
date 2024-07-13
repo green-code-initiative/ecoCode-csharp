@@ -11,13 +11,10 @@
 		<GenerateDependencyFile>false</GenerateDependencyFile>
 		<Nullable>enable</Nullable>
 
-		<NeutralLanguage>en</NeutralLanguage>
-		<SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-		<InvariantGlobalization>true</InvariantGlobalization>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-		<AnalysisMode>all</AnalysisMode>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
 		<TreatWarningsAsErrors Condition="'$(Configuration)' != 'Debug'">true</TreatWarningsAsErrors>
 

@@ -1,10 +1,8 @@
-﻿using EcoCode.Tool.Reports;
+﻿using EcoCode.Tool.Services;
 using Microsoft.CodeAnalysis.MSBuild;
-using System.Diagnostics.CodeAnalysis;
 
 namespace EcoCode.Tool.Commands;
 
-[SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "General error handling needed here")]
 internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
 {
     public override ValidationResult Validate(CommandContext context, AnalyzeSettings settings)
@@ -32,7 +30,10 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Program.WriteLine(e.Diagnostic.Message, "red");
 
-        IAnalysisReport report;
+        var analysisService = await AnalysisService.CreateAsync(settings.SeverityLevel);
+
+        var diagnostics = new List<DiagnosticInfo>();
+
         if (settings.SourceType is SourceType.Solution)
         {
             Solution solution;
@@ -47,10 +48,8 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
                 return 1;
             }
 
-            var analizers = settings.GetActiveAnalyzers();
-            report = AnalysisReport.Create(settings.OutputType);
             foreach (var project in solution.Projects)
-                await AnalyzeProject(project, analizers, report).ConfigureAwait(false);
+                await analysisService.AnalyzeProjectAsync(project, diagnostics).ConfigureAwait(false);
         }
         else // options.SourceType is SourceType.Project
         {
@@ -66,28 +65,11 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
                 return 1;
             }
 
-            var analizers = settings.GetActiveAnalyzers();
-            report = AnalysisReport.Create(settings.OutputType);
-            await AnalyzeProject(project, analizers, report).ConfigureAwait(false);
+            await analysisService.AnalyzeProjectAsync(project, diagnostics).ConfigureAwait(false);
         }
 
-        report.WriteToFile(settings.Output!);
+        await ReportService.GenerateReportAsync(diagnostics, settings.Output, settings.OutputType);
+
         return 0;
-    }
-
-    private static async Task AnalyzeProject(Project project, ImmutableArray<DiagnosticAnalyzer> analyzers, IAnalysisReport report)
-    {
-        Program.WriteLine($"Analyzing project {project.Name}...", "darkorange");
-
-        if (await project.GetCompilationAsync().ConfigureAwait(false) is not { } compilation)
-        {
-            Program.WriteLine($"Unable to load the project {project.Name} compilation, skipping.", "red");
-            return;
-        }
-
-        foreach (var diagnostic in await compilation.WithAnalyzers(analyzers).GetAnalyzerDiagnosticsAsync().ConfigureAwait(false))
-            report.Add(DiagnosticInfo.FromDiagnostic(diagnostic));
-
-        Program.WriteLine($"Analysis complete for project {project.Name}", "green");
     }
 }

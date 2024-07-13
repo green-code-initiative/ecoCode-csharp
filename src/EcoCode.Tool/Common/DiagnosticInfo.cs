@@ -1,4 +1,4 @@
-﻿namespace EcoCode.Tool.Reports;
+﻿namespace EcoCode.Tool.Common;
 
 internal readonly struct DiagnosticInfo : IEquatable<DiagnosticInfo>
 {
