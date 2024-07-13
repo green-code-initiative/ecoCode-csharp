@@ -1,4 +1,4 @@
-﻿using EcoCode.Tool.Reports;
+﻿using EcoCode.Tool.Services;
 using Microsoft.CodeAnalysis.MSBuild;
 
 namespace EcoCode.Tool.Commands;
@@ -30,9 +30,10 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
         using var workspace = MSBuildWorkspace.Create();
         workspace.WorkspaceFailed += (sender, e) => Program.WriteLine(e.Diagnostic.Message, "red");
 
-        var analysisService = await AnalysisService.CreateFromConfigFileAsync();
+        var analysisService = await AnalysisService.CreateAsync(settings.SeverityLevel);
 
-        var report = AnalysisReport.Create(settings.OutputType);
+        var diagnostics = new List<DiagnosticInfo>();
+
         if (settings.SourceType is SourceType.Solution)
         {
             Solution solution;
@@ -48,7 +49,7 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
             }
 
             foreach (var project in solution.Projects)
-                await analysisService.AnalyzeProjectAsync(project, settings.SeverityLevel, report).ConfigureAwait(false);
+                await analysisService.AnalyzeProjectAsync(project, diagnostics).ConfigureAwait(false);
         }
         else // options.SourceType is SourceType.Project
         {
@@ -64,10 +65,11 @@ internal sealed class AnalyzeCommand : AsyncCommand<AnalyzeSettings>
                 return 1;
             }
 
-            await analysisService.AnalyzeProjectAsync(project, settings.SeverityLevel, report).ConfigureAwait(false);
+            await analysisService.AnalyzeProjectAsync(project, diagnostics).ConfigureAwait(false);
         }
 
-        report.WriteToFile(settings.Output);
+        await ReportService.GenerateReportAsync(diagnostics, settings.Output, settings.OutputType);
+
         return 0;
     }
 }
