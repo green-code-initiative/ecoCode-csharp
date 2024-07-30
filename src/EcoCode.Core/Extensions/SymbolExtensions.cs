@@ -1,4 +1,6 @@
-﻿namespace EcoCode.Extensions;
+﻿using Microsoft.CodeAnalysis;
+
+namespace EcoCode.Extensions;
 
 /// <summary>Extensions methods for <see cref="ISymbol"/>.</summary>
 public static class SymbolExtensions
@@ -6,8 +8,12 @@ public static class SymbolExtensions
     /// <summary>Returns whether the symbol is a variable.</summary>
     /// <param name="symbol">The symbol.</param>
     /// <returns>True if the symbol is a variable, false otherwise.</returns>
-    public static bool IsVariable(this ISymbol symbol) =>
-        symbol is ILocalSymbol or IFieldSymbol or IPropertySymbol or IParameterSymbol;
+    public static bool IsVariable(this ISymbol symbol) => symbol switch
+    {
+        IFieldSymbol fieldSymbol => !fieldSymbol.HasConstantValue,
+        ILocalSymbol localSymbol => !localSymbol.HasConstantValue,
+        _ => symbol is IPropertySymbol or IParameterSymbol,
+    };
 
     /// <summary>Returns whether the symbol is a variable of the specified type.</summary>
     /// <param name="symbol">The symbol.</param>
@@ -15,12 +21,12 @@ public static class SymbolExtensions
     /// <returns>True if the symbol is a variable of the given type, false otherwise.</returns>
     public static bool IsVariableOfType(this ISymbol symbol, SpecialType type) => symbol switch
     {
-        ILocalSymbol s => s.Type.SpecialType,
-        IFieldSymbol s => s.Type.SpecialType,
-        IPropertySymbol s => s.Type.SpecialType,
-        IParameterSymbol s => s.Type.SpecialType,
-        _ => SpecialType.None,
-    } == type;
+        IFieldSymbol s => !s.HasConstantValue && s.Type.SpecialType == type,
+        ILocalSymbol s => !s.HasConstantValue && s.Type.SpecialType == type,
+        IPropertySymbol s => s.Type.SpecialType == type,
+        IParameterSymbol s => s.Type.SpecialType == type,
+        _ => false,
+    };
 
     /// <summary>Returns whether the symbol implements a given interface.</summary>
     /// <param name="symbol">The symbol.</param>

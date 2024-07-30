@@ -47,6 +47,14 @@ public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
         {
             if (node is not InvocationExpressionSyntax invocation) continue;
 
+            // Analyze the object on which the method is called
+            if (invocation.Expression is MemberAccessExpressionSyntax memberAccessExpression)
+            {
+                if (context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression).Symbol is ISymbol symbol && symbol.IsVariable())
+                    _ = loopInvariantSymbols.Add(symbol);
+            }
+
+            // Analyze the arguments of the method call
             foreach (var arg in invocation.ArgumentList.Arguments)
             {
                 if (context.SemanticModel.GetSymbolInfo(arg.Expression).Symbol is ISymbol symbol && symbol.IsVariable())
@@ -68,19 +76,26 @@ public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
         {
             if (node is not InvocationExpressionSyntax invocation) continue;
 
-            bool loopInvariant = true;
-
-            foreach (var arg in invocation.ArgumentList.Arguments)
-            {
-                if (context.SemanticModel.GetSymbolInfo(arg.Expression).Symbol is ISymbol symbol && !loopInvariantSymbols.Contains(symbol))
-                {
-                    loopInvariant = false;
-                    break;
-                }
-            }
+            bool loopInvariant =
+                invocation.Expression is not MemberAccessExpressionSyntax memberAccessExpression ||
+                context.SemanticModel.GetSymbolInfo(memberAccessExpression.Expression).Symbol is not ISymbol symbol ||
+                !symbol.IsVariable() ||
+                loopInvariantSymbols.Contains(symbol);
 
             if (loopInvariant)
-                context.ReportDiagnostic(Diagnostic.Create(Descriptor, invocation.GetLocation()));
+            {
+                foreach (var arg in invocation.ArgumentList.Arguments)
+                {
+                    if (context.SemanticModel.GetSymbolInfo(arg.Expression).Symbol is ISymbol s && !loopInvariantSymbols.Contains(s))
+                    {
+                        loopInvariant = false;
+                        break;
+                    }
+                }
+
+                if (loopInvariant)
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, invocation.GetLocation()));
+            }
         }
 
         static void RemoveMutatedSymbols(IEnumerable<SyntaxNode> nodes, HashSet<ISymbol> loopInvariantSymbols, SemanticModel semanticModel)

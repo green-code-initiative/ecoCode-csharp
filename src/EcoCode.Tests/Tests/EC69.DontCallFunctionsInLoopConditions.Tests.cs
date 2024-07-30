@@ -9,6 +9,20 @@ public sealed class DontCallFunctionsInLoopConditionsTests
     public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
 
     [TestMethod]
+    public async Task TestAsync() => await VerifyAsync("""
+        using System;
+        using System.IO;
+        public static class Test
+        {
+            public static void Run(string path)
+            {
+                while (!path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase))
+                    path = Path.GetDirectoryName(path)!;
+            }
+        }
+        """).ConfigureAwait(false);
+
+    [TestMethod]
     public async Task ForLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
         public class Test
         {
