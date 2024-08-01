@@ -6,10 +6,10 @@ public sealed class VariableCanBeMadeConstantTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<VariableCanBeMadeConstant, VariableCanBeMadeConstantFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task VariableCanBeConstAsync() => await VerifyAsync("""
+    public Task VariableCanBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -29,10 +29,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(i);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableIsReassignedAsync() => await VerifyAsync("""
+    public Task VariableIsReassignedAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -42,10 +42,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(i++);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableIsAlreadyConstAsync() => await VerifyAsync("""
+    public Task VariableIsAlreadyConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -55,10 +55,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(i);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableHasNoInitializerAsync() => await VerifyAsync("""
+    public Task VariableHasNoInitializerAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -69,10 +69,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(i);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableCannotBeConstAsync() => await VerifyAsync("""
+    public Task VariableCannotBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -82,10 +82,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(i);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableWithMultipleInitializersCannotBeConstAsync() => await VerifyAsync("""
+    public Task VariableWithMultipleInitializersCannotBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -96,10 +96,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(j);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableWithMultipleInitializersCanBeConstAsync() => await VerifyAsync("""
+    public Task VariableWithMultipleInitializersCanBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -121,10 +121,10 @@ public sealed class VariableCanBeMadeConstantTests
                 Console.WriteLine(j);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VariableInitializerIsInvalidAsync() => await VerifyAsync("""
+    public Task VariableInitializerIsInvalidAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -133,10 +133,10 @@ public sealed class VariableCanBeMadeConstantTests
                 int x = {|CS0029:"abc"|};
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task StringObjectCannotBeConstAsync() => await VerifyAsync("""
+    public Task StringObjectCannotBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -145,10 +145,10 @@ public sealed class VariableCanBeMadeConstantTests
                 object s = "abc";
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task StringCanBeConstAsync() => await VerifyAsync("""
+    public Task StringCanBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -166,10 +166,10 @@ public sealed class VariableCanBeMadeConstantTests
                 const string s = "abc";
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VarIntCanBeConstAsync() => await VerifyAsync("""
+    public Task VarIntCanBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -187,10 +187,10 @@ public sealed class VariableCanBeMadeConstantTests
                 const int item = 4;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task VarStringCanBeConstAsync() => await VerifyAsync("""
+    public Task VarStringCanBeConstAsync() => VerifyAsync("""
         using System;
         public class Program
         {
@@ -208,5 +208,5 @@ public sealed class VariableCanBeMadeConstantTests
                 const string item = "abc";
             }
         }
-        """).ConfigureAwait(false);
+        """);
 }

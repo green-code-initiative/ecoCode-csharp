@@ -6,10 +6,10 @@ public sealed class MakeTypeSealedTests
     private static readonly AnalyzerDlg AnalyzeAsync = TestRunner.VerifyAsync<MakeTypeSealed>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await AnalyzeAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => AnalyzeAsync("");
 
     [TestMethod]
-    public async Task SealableClassesAsync() => await AnalyzeAsync("""
+    public Task SealableClassesAsync() => AnalyzeAsync("""
         public class [|TestA|];
         internal class [|TestB|];
         public static class Test0
@@ -24,10 +24,10 @@ public sealed class MakeTypeSealedTests
             internal class [|Test12|];
             private class [|Test13|];
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task SealableRecordsAsync() => await AnalyzeAsync("""
+    public Task SealableRecordsAsync() => AnalyzeAsync("""
         public record [|TestA|];
         internal record [|TestB|];
         public static class Test0
@@ -42,10 +42,10 @@ public sealed class MakeTypeSealedTests
             internal record [|Test12|];
             private record [|Test13|];
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task NonSealableStructsAsync() => await AnalyzeAsync("""
+    public Task NonSealableStructsAsync() => AnalyzeAsync("""
         public struct TestA;
         internal struct TestB;
         public static class Test0
@@ -60,10 +60,10 @@ public sealed class MakeTypeSealedTests
             internal struct Test12;
             private struct Test13;
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task StaticClassesAsync() => await AnalyzeAsync("""
+    public Task StaticClassesAsync() => AnalyzeAsync("""
         public static class Test0
         {
             public static class Test01;
@@ -76,10 +76,10 @@ public sealed class MakeTypeSealedTests
             internal static class Test12;
             private static class Test13;
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task AbstractClassesAsync() => await AnalyzeAsync("""
+    public Task AbstractClassesAsync() => AnalyzeAsync("""
         public abstract class TestA;
         internal abstract class TestB;
         public static class Test0
@@ -94,10 +94,10 @@ public sealed class MakeTypeSealedTests
             internal abstract class Test12;
             private abstract class Test13;
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task SealedClassesAsync() => await AnalyzeAsync("""
+    public Task SealedClassesAsync() => AnalyzeAsync("""
         public sealed class TestA;
         internal sealed class TestB;
         public static class Test0
@@ -112,10 +112,10 @@ public sealed class MakeTypeSealedTests
             internal sealed class Test12;
             private sealed class Test13;
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task SealableClassesWithInterfaceAsync() => await AnalyzeAsync("""
+    public Task SealableClassesWithInterfaceAsync() => AnalyzeAsync("""
         public interface ITest { void Method(); }
         public class [|TestA|] : ITest { public void Method() { } }
         internal class [|TestB|] : ITest { public void Method() { } }
@@ -131,10 +131,10 @@ public sealed class MakeTypeSealedTests
             internal class [|Test12|] : ITest { public void Method() { } }
             private class [|Test13|] : ITest { public void Method() { } }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task SealableClassesWithOverridableAsync() => await AnalyzeAsync("""
+    public Task SealableClassesWithOverridableAsync() => AnalyzeAsync("""
         public class TestA1 { public virtual void Method() { } };
         public class [|TestA2|] { internal virtual void Method() { } };
         public class TestA3 { protected virtual void Method() { } };
@@ -188,10 +188,10 @@ public sealed class MakeTypeSealedTests
             private class [|TestC4|] { protected internal virtual void Method() { } };
             private class [|TestC5|] { private protected virtual void Method() { } };
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task InheritanceAsync() => await AnalyzeAsync("""
+    public Task InheritanceAsync() => AnalyzeAsync("""
         public abstract class Test2 { public virtual void Overridable() { } }
         public class Test3 : Test2;
         public sealed class Test4 : Test3;
@@ -200,10 +200,10 @@ public sealed class MakeTypeSealedTests
         public class [|Test7|] : Test3 { public sealed override void Overridable() { } }
         public class Test8 : Test3 { public sealed override void Overridable() { } }
         public class [|Test9|] : Test8;
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task PartialAsync() => await AnalyzeAsync("""
+    public Task PartialAsync() => AnalyzeAsync("""
         public partial class [|Test1|];
         partial class Test1 { public void Method() { } }
 
@@ -215,10 +215,10 @@ public sealed class MakeTypeSealedTests
 
         public partial class Test4;
         sealed partial class Test4 { public void Method() { } }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task Partial2Async() => await AnalyzeAsync("""
+    public Task Partial2Async() => AnalyzeAsync("""
         public partial class [|Test1|];
         partial class Test1(int Value) { public int Method() => Value; }
 
@@ -235,5 +235,5 @@ public sealed class MakeTypeSealedTests
 
         public partial class Test4;
         sealed partial class Test4(int Value) { public int Method() => Value; }
-        """).ConfigureAwait(false);
+        """);
 }

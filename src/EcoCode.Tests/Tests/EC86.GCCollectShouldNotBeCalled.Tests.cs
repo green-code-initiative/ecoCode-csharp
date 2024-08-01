@@ -6,10 +6,10 @@ public class GCCollectShouldNotBeCalledTests
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<GCCollectShouldNotBeCalled>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -18,10 +18,10 @@ public class GCCollectShouldNotBeCalledTests
                 [|GC.Collect()|];
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledSystemAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledSystemAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -30,10 +30,10 @@ public class GCCollectShouldNotBeCalledTests
                 [|System.GC.Collect()|];
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledNamedArgumentsAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledNamedArgumentsAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -42,10 +42,10 @@ public class GCCollectShouldNotBeCalledTests
                 [|GC.Collect(mode: GCCollectionMode.Optimized, generation: 1)|];
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledMultipleCodeAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledMultipleCodeAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -54,10 +54,10 @@ public class GCCollectShouldNotBeCalledTests
                 string text="";       [|GC.Collect()|]; string text2 = "";
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledCommentedAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledCommentedAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -66,10 +66,10 @@ public class GCCollectShouldNotBeCalledTests
                 //GC.Collect();
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledGeneration0Async() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledGeneration0Async() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -78,10 +78,10 @@ public class GCCollectShouldNotBeCalledTests
                 GC.Collect(0);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledGeneration10Async() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledGeneration10Async() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -90,10 +90,10 @@ public class GCCollectShouldNotBeCalledTests
                 [|GC.Collect(10)|];
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledGeneratio0CollectionModeAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledGeneratio0CollectionModeAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -102,10 +102,10 @@ public class GCCollectShouldNotBeCalledTests
                 GC.Collect(0, GCCollectionMode.Forced);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task GCCollectShouldNotBeCalledGeneration10CollectionModeAsync() => await VerifyAsync("""
+    public Task GCCollectShouldNotBeCalledGeneration10CollectionModeAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -114,5 +114,5 @@ public class GCCollectShouldNotBeCalledTests
                 [|GC.Collect(10, GCCollectionMode.Forced)|];
             }
         }
-        """).ConfigureAwait(false);
+        """);
 }

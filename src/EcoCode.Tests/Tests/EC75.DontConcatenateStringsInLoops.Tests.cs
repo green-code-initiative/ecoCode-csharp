@@ -6,7 +6,7 @@ public sealed class DontConcatenateStringsInLoopsTests
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontConcatenateStringsInLoops>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     private const string WarningCode = """
 
@@ -22,7 +22,7 @@ public sealed class DontConcatenateStringsInLoopsTests
     #region Regular loops
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoopsParameterWithAllLoopsAsync() => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInLoopsParameterWithAllLoopsAsync() => VerifyAsync($$"""
         using System.Linq;
         class Test
         {
@@ -48,10 +48,10 @@ public sealed class DontConcatenateStringsInLoopsTests
                 do{{WarningCode}} while (++i < 10);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoopsFieldAsync() => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInLoopsFieldAsync() => VerifyAsync($$"""
         class Test
         {
             string s = string.Empty;
@@ -60,10 +60,10 @@ public sealed class DontConcatenateStringsInLoopsTests
                 for (int i = 0; i < 10; i++){{WarningCode}}
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoopsPropertyAsync() => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInLoopsPropertyAsync() => VerifyAsync($$"""
         class Test
         {
             string s { get; set; } = string.Empty;
@@ -72,10 +72,10 @@ public sealed class DontConcatenateStringsInLoopsTests
                 for (int i = 0; i < 10; i++){{WarningCode}}
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoopsStaticFieldAsync() => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInLoopsStaticFieldAsync() => VerifyAsync($$"""
         class Test
         {
             static string s = string.Empty;
@@ -84,10 +84,10 @@ public sealed class DontConcatenateStringsInLoopsTests
                 for (int i = 0; i < 10; i++){{WarningCode}}
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoopsStaticPropertyAsync() => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInLoopsStaticPropertyAsync() => VerifyAsync($$"""
         class Test
         {
             static string s { get; set; } = string.Empty;
@@ -96,10 +96,10 @@ public sealed class DontConcatenateStringsInLoopsTests
                 for (int i = 0; i < 10; i++){{WarningCode}}
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontConcatenateStringsInLoopsLocalVariableAsync() => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInLoopsLocalVariableAsync() => VerifyAsync($$"""
         class Test
         {
             void Run()
@@ -118,7 +118,7 @@ public sealed class DontConcatenateStringsInLoopsTests
                 }
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     #endregion
 
@@ -127,7 +127,7 @@ public sealed class DontConcatenateStringsInLoopsTests
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("ImmutableList<int>")]
-    public async Task DontConcatenateStringsInForEachParameterAsync(string type) => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInForEachParameterAsync(string type) => VerifyAsync($$"""
         using System.Collections.Generic;
         using System.Collections.Immutable;
         using System.Threading.Tasks;
@@ -148,12 +148,12 @@ public sealed class DontConcatenateStringsInLoopsTests
                 Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("ImmutableList<int>")]
-    public async Task DontConcatenateStringsInForEachFieldAsync(string type) => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInForEachFieldAsync(string type) => VerifyAsync($$"""
         using System.Collections.Generic;
         using System.Collections.Immutable;
         using System.Threading.Tasks;
@@ -175,12 +175,12 @@ public sealed class DontConcatenateStringsInLoopsTests
                 Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("ImmutableList<int>")]
-    public async Task DontConcatenateStringsInForEachPropertyAsync(string type) => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInForEachPropertyAsync(string type) => VerifyAsync($$"""
         using System.Collections.Generic;
         using System.Collections.Immutable;
         using System.Threading.Tasks;
@@ -202,12 +202,12 @@ public sealed class DontConcatenateStringsInLoopsTests
                 Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("ImmutableList<int>")]
-    public async Task DontConcatenateStringsInForEachStaticFieldAsync(string type) => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInForEachStaticFieldAsync(string type) => VerifyAsync($$"""
         using System.Collections.Generic;
         using System.Collections.Immutable;
         using System.Threading.Tasks;
@@ -229,12 +229,12 @@ public sealed class DontConcatenateStringsInLoopsTests
                 Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("ImmutableList<int>")]
-    public async Task DontConcatenateStringsInForEachStaticPropertyAsync(string type) => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInForEachStaticPropertyAsync(string type) => VerifyAsync($$"""
         using System.Collections.Generic;
         using System.Collections.Immutable;
         using System.Threading.Tasks;
@@ -256,12 +256,12 @@ public sealed class DontConcatenateStringsInLoopsTests
                 Parallel.ForEach(list, i => s = i.ToString() + i.ToString());
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
     [DataRow("List<int>")]
     [DataRow("ImmutableList<int>")]
-    public async Task DontConcatenateStringsInForEachLocalVariableAsync(string type) => await VerifyAsync($$"""
+    public Task DontConcatenateStringsInForEachLocalVariableAsync(string type) => VerifyAsync($$"""
         using System.Collections.Generic;
         using System.Collections.Immutable;
         using System.Threading.Tasks;
@@ -303,7 +303,7 @@ public sealed class DontConcatenateStringsInLoopsTests
                 });
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     #endregion
 }

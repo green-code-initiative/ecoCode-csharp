@@ -47,40 +47,53 @@ public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
         {
             if (node is not InvocationExpressionSyntax invocation) continue;
 
+            // Analyze the object on which the method is called, if any
+            var callee = invocation.Expression switch
+            {
+                MemberAccessExpressionSyntax m => m.Expression,
+                MemberBindingExpressionSyntax => (node.Parent as ConditionalAccessExpressionSyntax)?.Expression, // ?. operator
+                _ => null,
+            };
+            if (callee is not null && context.SemanticModel.GetSymbolInfo(callee).Symbol is ISymbol c && c.IsVariable())
+                _ = loopInvariantSymbols.Add(c);
+
+            // Analyze the arguments of the method call
             foreach (var arg in invocation.ArgumentList.Arguments)
             {
-                if (context.SemanticModel.GetSymbolInfo(arg.Expression).Symbol is ISymbol symbol && symbol.IsVariable())
-                    _ = loopInvariantSymbols.Add(symbol);
+                if (context.SemanticModel.GetSymbolInfo(arg.Expression).Symbol is ISymbol s && s.IsVariable())
+                    _ = loopInvariantSymbols.Add(s);
             }
         }
-        if (loopInvariantSymbols.Count == 0) return;
 
-        // Step 2: Remove the variables that are mutated in the loop body or the for loop incrementors
-        RemoveMutatedSymbols(expression.DescendantNodes(), loopInvariantSymbols, context.SemanticModel);
-        if (loopInvariantSymbols.Count == 0) return;
-
-        foreach (var inc in incrementors)
-            RemoveMutatedSymbols(inc.DescendantNodesAndSelf(), loopInvariantSymbols, context.SemanticModel);
-        if (loopInvariantSymbols.Count == 0) return;
+        // Step 2: Remove the variables that are mutated in the loop body and/or the for loop incrementors
+        if (loopInvariantSymbols.Count != 0)
+        {
+            RemoveMutatedSymbols(expression.DescendantNodes(), loopInvariantSymbols, context.SemanticModel);
+            foreach (var inc in incrementors)
+                RemoveMutatedSymbols(inc.DescendantNodesAndSelf(), loopInvariantSymbols, context.SemanticModel);
+        }
 
         // Step 3: Identify conditions that are loop invariant
         foreach (var node in condition.DescendantNodes())
         {
             if (node is not InvocationExpressionSyntax invocation) continue;
 
-            bool loopInvariant = true;
-
-            foreach (var arg in invocation.ArgumentList.Arguments)
+            if (invocation.Expression is MemberBindingExpressionSyntax memberBinding)
             {
-                if (context.SemanticModel.GetSymbolInfo(arg.Expression).Symbol is ISymbol symbol && !loopInvariantSymbols.Contains(symbol))
+                if (node.Parent is ConditionalAccessExpressionSyntax conditionalAccess &&
+                    IsLoopInvariant(conditionalAccess.Expression) &&
+                    invocation.ArgumentList.Arguments.All(arg => IsLoopInvariant(arg.Expression)))
                 {
-                    loopInvariant = false;
-                    break;
+                    context.ReportDiagnostic(Diagnostic.Create(Descriptor, conditionalAccess.GetLocation()));
                 }
+                continue;
             }
 
-            if (loopInvariant)
+            if ((invocation.Expression is not MemberAccessExpressionSyntax memberAccess || IsLoopInvariant(memberAccess.Expression)) &&
+                invocation.ArgumentList.Arguments.All(arg => IsLoopInvariant(arg.Expression)))
+            {
                 context.ReportDiagnostic(Diagnostic.Create(Descriptor, invocation.GetLocation()));
+            }
         }
 
         static void RemoveMutatedSymbols(IEnumerable<SyntaxNode> nodes, HashSet<ISymbol> loopInvariantSymbols, SemanticModel semanticModel)
@@ -100,5 +113,10 @@ public sealed class DontCallFunctionsInLoopConditions : DiagnosticAnalyzer
                     return;
             }
         }
+
+        bool IsLoopInvariant(ExpressionSyntax expr) =>
+            context.SemanticModel.GetSymbolInfo(expr).Symbol is not ISymbol s ||
+            !s.IsVariable() ||
+            loopInvariantSymbols.Contains(s);
     }
 }
