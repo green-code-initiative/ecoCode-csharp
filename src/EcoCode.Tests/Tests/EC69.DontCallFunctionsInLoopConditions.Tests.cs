@@ -6,24 +6,10 @@ public sealed class DontCallFunctionsInLoopConditionsTests
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontCallFunctionsInLoopConditions>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task TestAsync() => await VerifyAsync("""
-        using System;
-        using System.IO;
-        public static class Test
-        {
-            public static void Run(string path)
-            {
-                while (!path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase))
-                    path = Path.GetDirectoryName(path)!;
-            }
-        }
-        """).ConfigureAwait(false);
-
-    [TestMethod]
-    public async Task ForLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
+    public Task ForLoopFunctionCallShouldNotBeCalledAsync() => VerifyAsync("""
         public class Test
         {
             private const int C = 10;
@@ -44,10 +30,10 @@ public sealed class DontCallFunctionsInLoopConditionsTests
                 }
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WhileLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
+    public Task WhileLoopFunctionCallShouldNotBeCalledAsync() => VerifyAsync("""
         public class Test
         {
             private const int C = 10;
@@ -68,10 +54,10 @@ public sealed class DontCallFunctionsInLoopConditionsTests
                 }
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DoWhileLoopFunctionCallShouldNotBeCalledAsync() => await VerifyAsync("""
+    public Task DoWhileLoopFunctionCallShouldNotBeCalledAsync() => VerifyAsync("""
         public class Test
         {
             private const int C = 10;
@@ -92,5 +78,45 @@ public sealed class DontCallFunctionsInLoopConditionsTests
                 } while (i < V1 && i < [|V2()|] && i < V3(i) && i < V3(j) && i < [|V3(k)|] && i < [|V3(p)|] && i < [|V3(C)|]);
             }
         }
-        """).ConfigureAwait(false);
+        """);
+
+    [TestMethod]
+    public Task WithLoopVariantNullablesAsync() => VerifyAsync("""
+        using System;
+        using System.IO;
+        public class Test
+        {
+            public static void Run1(string? path)
+            {
+                for (path = Path.GetDirectoryName(path); !path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase); path = Path.GetDirectoryName(path)) { }
+                for (path = Path.GetDirectoryName(path); path?.Equals(@"S:\", StringComparison.OrdinalIgnoreCase) != true; path = Path.GetDirectoryName(path)) { }
+
+                while (!path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)) path = Path.GetDirectoryName(path);
+                while (path?.Equals(@"S:\", StringComparison.OrdinalIgnoreCase) != true) path = Path.GetDirectoryName(path);
+
+                do path = Path.GetDirectoryName(path); while (!path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase));
+                do path = Path.GetDirectoryName(path); while (path?.Equals(@"S:\", StringComparison.OrdinalIgnoreCase) != true);
+            }
+        }
+        """);
+
+    [TestMethod]
+    public Task WithLoopInvariantNullablesAsync() => VerifyAsync("""
+        using System;
+        using System.IO;
+        public class Test
+        {
+            public static void Run(string? path)
+            {
+                for (path = Path.GetDirectoryName(path); ![|path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)|]; ) { }
+                for (path = Path.GetDirectoryName(path); [|path?.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)|] != true; ) { }
+        
+                while (![|path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)|]) ;
+                while ([|path?.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)|] != true) ;
+        
+                do ; while (![|path.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)|]);
+                do ; while ([|path?.Equals(@"S:\", StringComparison.OrdinalIgnoreCase)|] != true);
+            }
+        }
+        """);
 }
