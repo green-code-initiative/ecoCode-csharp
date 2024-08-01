@@ -6,7 +6,7 @@ public sealed class UseListIndexerTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseListIndexer, UseListIndexerFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     #region First
 

@@ -6,7 +6,7 @@ public sealed class DisposeResourceAsynchronouslyTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<DisposeResourceAsynchronously, DisposeResourceAsynchronouslyFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
     public Task DontWarnOnMissingUsingsAsync() => VerifyAsync("""

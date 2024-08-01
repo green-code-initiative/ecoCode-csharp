@@ -6,12 +6,12 @@ public sealed class UseWhereBeforeOrderByTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<UseWhereBeforeOrderBy, UseWhereBeforeOrderByFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     #region Method syntax
 
     [TestMethod]
-    public async Task DontWarnOnWhereOnlyMethodAsync() => await VerifyAsync("""
+    public Task DontWarnOnWhereOnlyMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -25,10 +25,10 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnOrderByOnlyMethodAsync() => await VerifyAsync("""
+    public Task DontWarnOnOrderByOnlyMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -42,10 +42,10 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnOrderByDescendingOnlyMethodAsync() => await VerifyAsync("""
+    public Task DontWarnOnOrderByDescendingOnlyMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -59,10 +59,10 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnRightOrderMethodAsync() => await VerifyAsync("""
+    public Task DontWarnOnRightOrderMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -77,10 +77,10 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongOrderMethodAsync() => await VerifyAsync("""
+    public Task WarnOnWrongOrderMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -112,10 +112,10 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongOrderDescendingMethodAsync() => await VerifyAsync("""
+    public Task WarnOnWrongOrderDescendingMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -147,10 +147,10 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongMultipleOrderMethodAsync() => await VerifyAsync("""
+    public Task WarnOnWrongMultipleOrderMethodAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -186,14 +186,14 @@ public sealed class UseWhereBeforeOrderByTests
                     .Select(x => x);
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     #endregion
 
     #region Query syntax
 
     [TestMethod]
-    public async Task DontWarnOnWhereOnlyQueryAsync() => await VerifyAsync("""
+    public Task DontWarnOnWhereOnlyQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -207,10 +207,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnOrderByOnlyQueryAsync() => await VerifyAsync("""
+    public Task DontWarnOnOrderByOnlyQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -224,10 +224,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnOrderByDescendingOnlyQueryAsync() => await VerifyAsync("""
+    public Task DontWarnOnOrderByDescendingOnlyQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -241,10 +241,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }            
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnRightOrderQueryAsync() => await VerifyAsync("""
+    public Task DontWarnOnRightOrderQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -259,10 +259,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongOrderQueryAsync() => await VerifyAsync("""
+    public Task WarnOnWrongOrderQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -292,10 +292,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongMultipleOrderQueryAsync() => await VerifyAsync("""
+    public Task WarnOnWrongMultipleOrderQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -327,10 +327,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnDisjointedOrderQueryAsync() => await VerifyAsync("""
+    public Task DontWarnOnDisjointedOrderQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -347,10 +347,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongOrderDescendingQueryAsync() => await VerifyAsync("""
+    public Task WarnOnWrongOrderDescendingQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -380,10 +380,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task DontWarnOnDisjointedOrderDescendingQueryAsync() => await VerifyAsync("""
+    public Task DontWarnOnDisjointedOrderDescendingQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -400,10 +400,10 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task WarnOnWrongMultipleOrderDescendingQueryAsync() => await VerifyAsync("""
+    public Task WarnOnWrongMultipleOrderDescendingQueryAsync() => VerifyAsync("""
         using System.Linq;
         using System.Collections.Generic;
         
@@ -435,7 +435,7 @@ public sealed class UseWhereBeforeOrderByTests
                             select item;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     #endregion
 }

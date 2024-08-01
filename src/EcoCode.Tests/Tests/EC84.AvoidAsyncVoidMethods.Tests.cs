@@ -6,17 +6,17 @@ public sealed class AvoidAsyncVoidMethodsTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<AvoidAsyncVoidMethods, AvoidAsyncVoidMethodsFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task AvoidAsyncVoidMethodAsync() => await VerifyAsync("""
+    public Task AvoidAsyncVoidMethodAsync() => VerifyAsync("""
         using System;
         using System.Threading.Tasks;
         public static class Program
         {
             public static async void [|Main|]()
             {
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(1000);
                 Console.WriteLine();
             }
         }
@@ -27,14 +27,14 @@ public sealed class AvoidAsyncVoidMethodsTests
         {
             public static async Task Main()
             {
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(1000);
                 Console.WriteLine();
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task AvoidAsyncVoidMethodWithMissingUsingAsync() => await VerifyAsync("""
+    public Task AvoidAsyncVoidMethodWithMissingUsingAsync() => VerifyAsync("""
         using System;
         using System.Net.Http;
         public static class Program
@@ -42,7 +42,7 @@ public sealed class AvoidAsyncVoidMethodsTests
             public static async void [|Main|]()
             {
                 using var httpClient = new HttpClient();
-                _ = await httpClient.GetAsync(new Uri("URL")).ConfigureAwait(false);
+                _ = await httpClient.GetAsync(new Uri("URL"));
             }
         }
         """, """
@@ -53,35 +53,35 @@ public sealed class AvoidAsyncVoidMethodsTests
             public static async {|CS0246:Task|} {|CS0161:Main|}()
             {
                 using var httpClient = new HttpClient();
-                _ = await httpClient.GetAsync(new Uri("URL")).ConfigureAwait(false);
+                _ = await httpClient.GetAsync(new Uri("URL"));
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task AsyncTaskMethodIsOkAsync() => await VerifyAsync("""
+    public Task AsyncTaskMethodIsOkAsync() => VerifyAsync("""
         using System;
         using System.Threading.Tasks;
         public static class Program
         {
             public static async Task Main()
             {
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(1000);
                 Console.WriteLine();
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task AsyncGenericTaskMethodIsOkAsync() => await VerifyAsync("""
+    public Task AsyncGenericTaskMethodIsOkAsync() => VerifyAsync("""
         using System.Threading.Tasks;
         public static class Program
         {
             public static async Task<int> Main()
             {
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(1000);
                 return 1;
             }
         }
-        """).ConfigureAwait(false);
+        """);
 }

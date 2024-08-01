@@ -6,10 +6,10 @@ public sealed class ReplaceEnumToStringWithNameOfTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<ReplaceEnumToStringWithNameOf, ReplaceEnumToStringWithNameOfFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task EnumToStringShouldBeNameOfAsync1() => await VerifyAsync("""
+    public Task EnumToStringShouldBeNameOfAsync1() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -35,10 +35,10 @@ public sealed class ReplaceEnumToStringWithNameOfTests
                 Console.WriteLine(nameof(MyEnum.D));
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task EnumToStringShouldBeNameOfAsync2() => await VerifyAsync("""
+    public Task EnumToStringShouldBeNameOfAsync2() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -62,10 +62,10 @@ public sealed class ReplaceEnumToStringWithNameOfTests
                 Console.WriteLine(MyEnum.C.ToString("N"));
             }
         }
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task EnumInterpolationShouldBeNameOfAsync() => await VerifyAsync("""
+    public Task EnumInterpolationShouldBeNameOfAsync() => VerifyAsync("""
         using System;
         public static class Program
         {
@@ -91,5 +91,5 @@ public sealed class ReplaceEnumToStringWithNameOfTests
                 Console.WriteLine($"{MyEnum.D:N}");
             }
         }
-        """).ConfigureAwait(false);
+        """);
 }

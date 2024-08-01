@@ -6,10 +6,10 @@ public sealed class DontExecuteSqlCommandsInLoopsTests
     private static readonly AnalyzerDlg VerifyAsync = TestRunner.VerifyAsync<DontExecuteSqlCommandsInLoops>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task DontExecuteSqlCommandsInLoopsAsync() => await VerifyAsync("""
+    public Task DontExecuteSqlCommandsInLoopsAsync() => VerifyAsync("""
         using System.Data;
         public class Test
         {
@@ -30,5 +30,5 @@ public sealed class DontExecuteSqlCommandsInLoopsTests
                 }
             }
         }
-        """).ConfigureAwait(false);
+        """);
 }

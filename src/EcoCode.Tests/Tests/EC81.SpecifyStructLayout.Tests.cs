@@ -6,23 +6,23 @@ public sealed class SpecifyStructLayoutTests
     private static readonly CodeFixerDlg VerifyAsync = TestRunner.VerifyAsync<SpecifyStructLayout, SpecifyStructLayoutFixer>;
 
     [TestMethod]
-    public async Task EmptyCodeAsync() => await VerifyAsync("").ConfigureAwait(false);
+    public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
-    public async Task EmptyStructWithNoLayoutAsync() => await VerifyAsync(
-        "public record struct TestStruct;").ConfigureAwait(false);
+    public Task EmptyStructWithNoLayoutAsync() => VerifyAsync(
+        "public record struct TestStruct;");
 
     [TestMethod]
-    public async Task ValuePropWithNoLayoutAsync() => await VerifyAsync(
-        "public record struct TestStruct(int A);").ConfigureAwait(false);
+    public Task ValuePropWithNoLayoutAsync() => VerifyAsync(
+        "public record struct TestStruct(int A);");
 
     [TestMethod]
-    public async Task ReferencePropWithNoLayoutAsync() => await VerifyAsync(
-        "public record struct TestStruct(string A);").ConfigureAwait(false);
+    public Task ReferencePropWithNoLayoutAsync() => VerifyAsync(
+        "public record struct TestStruct(string A);");
 
     [TestMethod]
     // For some reason this test doesn't pass with the 'record' syntax on GitHub, but it passes locally..
-    public async Task ValuePropsWithNoLayoutAsync() => await VerifyAsync("""
+    public Task ValuePropsWithNoLayoutAsync() => VerifyAsync("""
         public struct [|TestStruct|]
         {
             public int A { get; set; }
@@ -37,23 +37,23 @@ public sealed class SpecifyStructLayoutTests
             public int A { get; set; }
             public double B { get; set; }
         };
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task ValuePropsWithLayoutAsync() => await VerifyAsync("""
+    public Task ValuePropsWithLayoutAsync() => VerifyAsync("""
         using System.Runtime.InteropServices;
         
         [StructLayout(LayoutKind.Auto)]
         public record struct TestStruct(int A, double B);
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task ValueAndReferencePropsWithNoLayoutAsync() => await VerifyAsync(
-        "public record struct TestStruct(int A, string B);").ConfigureAwait(false);
+    public Task ValueAndReferencePropsWithNoLayoutAsync() => VerifyAsync(
+        "public record struct TestStruct(int A, string B);");
 
     [TestMethod]
     // For some reason this test doesn't pass with the 'record' syntax on GitHub, but it passes locally..
-    public async Task AdditionalValuePropsWithNoLayout1Async() => await VerifyAsync("""
+    public Task AdditionalValuePropsWithNoLayout1Async() => VerifyAsync("""
         public struct [|TestStruct|]
         {
             public int A { get; set; }
@@ -70,10 +70,10 @@ public sealed class SpecifyStructLayoutTests
             public double B { get; set; }
             public int C { get; set; }
         };
-        """).ConfigureAwait(false);
+        """);
 
     [TestMethod]
-    public async Task AdditionalValueFieldsWithNoLayout2Async() => await VerifyAsync("""
+    public Task AdditionalValueFieldsWithNoLayout2Async() => VerifyAsync("""
         using System;
 
         public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, DateTime F);
@@ -83,5 +83,5 @@ public sealed class SpecifyStructLayoutTests
 
         [StructLayout(LayoutKind.Auto)]
         public record struct [|TestStruct|](bool A, int B, char C, short D, ulong E, DateTime F);
-        """).ConfigureAwait(false);
+        """);
 }
