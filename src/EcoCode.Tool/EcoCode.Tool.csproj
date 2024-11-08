@@ -46,7 +46,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="all" ExcludeAssets="compile" />
-		<PackageReference Include="Microsoft.Build" PrivateAssets="all" ExcludeAssets="compile; runtime" />
+		<PackageReference Include="Microsoft.Build" PrivateAssets="all" ExcludeAssets="compile; runtime">
+		  <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.Build.Locator" />
 		<PackageReference Include="Microsoft.CodeAnalysis" />
 		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />

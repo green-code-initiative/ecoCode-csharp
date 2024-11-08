@@ -15,7 +15,8 @@ public sealed class ReplaceEnumToStringWithNameOfFixer : CodeFixProvider
     /// <inheritdoc/>
     public override async Task RegisterCodeFixesAsync(CodeFixContext context)
     {
-        if (context.Diagnostics.Length == 0) return;
+        if (context.Diagnostics.Length == 0 || context.Document.GetLanguageVersion() < LanguageVersion.CSharp6)
+            return;
 
         var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
         if (root is null) return;
