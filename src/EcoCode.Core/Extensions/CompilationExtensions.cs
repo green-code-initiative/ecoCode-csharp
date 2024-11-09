@@ -3,6 +3,12 @@
 /// <summary>Extension methods for <see cref="Compilation"/>.</summary>
 public static class CompilationExtensions
 {
+    /// <summary>Returns the language version of the compilation.</summary>
+    /// <param name="compilation">The compilation.</param>
+    /// <returns>The language version.</returns>
+    public static LanguageVersion GetLanguageVersion(this Compilation compilation) =>
+        ((CSharpCompilation)compilation).LanguageVersion;
+
     /// <summary>
     /// Gets a type by its metadata name to use for code analysis within a <see cref="Compilation"/>. This method
     /// attempts to find the "best" symbol to use for code analysis, which is the symbol matching the first of the

@@ -9,6 +9,22 @@ public sealed class ReplaceEnumToStringWithNameOfTests
     public Task EmptyCodeAsync() => VerifyAsync("");
 
     [TestMethod]
+    public Task EnumToStringShouldNotBeNameOfAsync() => VerifyAsync("""
+        using System;
+        public static class Program
+        {
+            private enum MyEnum { A, B, C, D }
+            public static void Main()
+            {
+                Console.WriteLine(MyEnum.A.ToString());
+                Console.WriteLine(MyEnum.B.ToString(""));
+                Console.WriteLine(MyEnum.C.ToString(string.Empty));
+                Console.WriteLine(MyEnum.D.ToString(format: null));
+            }
+        }
+        """, languageVersion: LanguageVersion.CSharp5);
+
+    [TestMethod]
     public Task EnumToStringShouldBeNameOfAsync1() => VerifyAsync("""
         using System;
         public static class Program

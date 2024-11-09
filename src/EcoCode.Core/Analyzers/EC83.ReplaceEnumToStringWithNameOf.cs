@@ -37,7 +37,8 @@ public sealed class ReplaceEnumToStringWithNameOf : DiagnosticAnalyzer
 
     private static void AnalyzeInvocation(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation { TargetMethod.Name: nameof(object.ToString) } operation ||
+        if (context.Compilation.GetLanguageVersion() < LanguageVersion.CSharp6 ||
+            context.Operation is not IInvocationOperation { TargetMethod.Name: nameof(object.ToString) } operation ||
             !SymbolEqualityComparer.Default.Equals(operation.TargetMethod.ContainingType, context.Compilation.GetSpecialType(SpecialType.System_Enum)) ||
             operation.Instance is not IMemberReferenceOperation { Member.ContainingType.EnumUnderlyingType: { } })
         {
@@ -62,7 +63,8 @@ public sealed class ReplaceEnumToStringWithNameOf : DiagnosticAnalyzer
 
     private static void AnalyzeInterpolation(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInterpolationOperation operation ||
+        if (context.Compilation.GetLanguageVersion() < LanguageVersion.CSharp6 ||
+            context.Operation is not IInterpolationOperation operation ||
             operation.Expression is not IMemberReferenceOperation { Member.ContainingType.EnumUnderlyingType: { } } ||
             operation.FormatString is ILiteralOperation { ConstantValue: { HasValue: true, Value: var value } } && !UsesConstantFormat(value))
         {
