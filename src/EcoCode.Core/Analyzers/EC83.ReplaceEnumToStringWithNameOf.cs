@@ -25,7 +25,6 @@ public sealed class ReplaceEnumToStringWithNameOf : DiagnosticAnalyzer
     {
         context.EnableConcurrentExecution();
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
         context.RegisterOperationAction(static context => AnalyzeInvocation(context), Invocation);
         context.RegisterOperationAction(static context => AnalyzeInterpolation(context), Interpolation);
     }
